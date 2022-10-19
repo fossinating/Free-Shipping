@@ -20,7 +20,7 @@ func _physics_process(delta):
 	nav.set_target_location(target.global_transform.origin)
 	
 	var next_target = nav.get_next_location()
-	print(robot.global_transform.origin.distance_squared_to(next_target))
+	#print(robot.global_transform.origin.distance_squared_to(next_target))
 	
 	#var _rotation_degrees = robot.rotation_degrees
 	#robot.look_at(next_target, Vector3(0, 1, 0))
@@ -40,7 +40,7 @@ func _physics_process(delta):
 #	#robot.move_in_direction(move_direction, delta)
 	
 	if robot.global_transform.origin.distance_squared_to(target.global_transform.origin) < 5:
-		print("found my target")
+		#print("found my target")
 		target = null
 	nav.set_velocity(robot.global_transform.origin.direction_to(next_target) * 5)
 

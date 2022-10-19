@@ -61,7 +61,38 @@ func extend(amount):
 	
 	$Core.translation.y = _extension
 	$Legs.shape.extents.y = _extension
-	$"Legs/Leg Mesh".scale.y = max(2*_extension, 0.001)
-	$Treads.translation.y = -_extension - 1 + 0.1
+	$"Legs/Leg Mesh".scale.y = max(1.25*_extension, 0.001)
+	$"Legs/Leg Mesh".translation.y = -1*_extension
+	$Treads.translation.y = -_extension - 0.825
+	#$"Left Arm Root".translation.y = _extension + .45
+	#$"Right Arm Collision".translation.y = _extension + .45
 	
 	$"Core/Third-Person Camera".scale.z = 1 + _extension * 0.5
+
+func arms_out():
+	$AnimationPlayer.play("ArmsOut")
+
+func arms_in():
+	$AnimationPlayer.play("ArmsIn")
+
+var held_item = null
+onready var tween = $Tween
+
+func pickup_box(node):
+	held_item = node
+	# disable the collision when picking the box up
+	node.get_node("CollisionShape").disabled = true
+	node.get_parent().remove_child(node)
+	node.translation = Vector3(0,0,0)
+	$"Core/Right Arm Root/Box Holder/Offset".add_child(node)
+	$"AnimationPlayer".play("Pickup")
+	tween.interpolate_property(node, "rotation_degrees",
+		node.rotation_degrees, Vector3(0, 0, 0), 0.2,
+		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	#tween.start()
+
+func _on_AnimationPlayer_animation_finished(anim_name):
+	if anim_name == "Pickup":
+		# i may want to have it re-enable the collision later but for now that is too complicated
+		pass
+		#held_item.get_node("CollisionShape").disabled = false

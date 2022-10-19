@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/treads.obj-0adb5a98ab41009a89e0f323fca08d7a.mesh"
+
+[deps]
+
+files=[ "res://.import/treads.obj-0adb5a98ab41009a89e0f323fca08d7a.mesh" ]
+
+source_file="res://assets/Robot/treads.obj"
+dest_files=[ "res://.import/treads.obj-0adb5a98ab41009a89e0f323fca08d7a.mesh", "res://.import/treads.obj-0adb5a98ab41009a89e0f323fca08d7a.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286

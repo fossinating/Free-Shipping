@@ -1,7 +1,8 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://robot.tscn" type="PackedScene" id=1]
-[ext_resource path="res://AI Robot.gd" type="Script" id=2]
+[ext_resource path="res://Entities/robot.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Entities/AI Robot.gd" type="Script" id=2]
+
 
 [node name="AI Robot" type="Spatial"]
 script = ExtResource( 2 )

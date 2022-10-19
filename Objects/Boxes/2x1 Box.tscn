@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Objects/Boxes/Box.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/Objects/Boxes/2x1box.obj" type="ArrayMesh" id=2]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 1, 1, 2 )
+
+[node name="2x1 Box" instance=ExtResource( 1 )]
+particle_count = 32
+particle_spawn_range = Vector3( 1, 1, 2 )
+
+[node name="CollisionShape" parent="." index="0"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" parent="." index="1"]
+mesh = ExtResource( 2 )

@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/arm.obj-da75c0ac83a0359e0d0a8ae331d82681.mesh"
+
+[deps]
+
+files=[ "res://.import/arm.obj-da75c0ac83a0359e0d0a8ae331d82681.mesh" ]
+
+source_file="res://assets/Robot/arm.obj"
+dest_files=[ "res://.import/arm.obj-da75c0ac83a0359e0d0a8ae331d82681.mesh", "res://.import/arm.obj-da75c0ac83a0359e0d0a8ae331d82681.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=191
