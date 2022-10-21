@@ -16,6 +16,10 @@ func _ready():
 var arms_out = false
 var lookaround = false
 var throwing = false
+var throw_charge = 0.0
+export var min_throw_charge = 20.0
+export var max_throw_charge = 60.0
+export var throw_charge_rate = 20.0
 
 func _physics_process(delta):
 	#var rotation_vel = (Input.get_action_strength("movement_left") - Input.get_action_strength("movement_right")) * rotation_speed
@@ -57,8 +61,14 @@ func _physics_process(delta):
 				break
 	if Input.is_action_just_pressed("throw") and robot.held_item != null:
 		throwing = true
+		throw_charge = min_throw_charge
+	if Input.is_action_pressed("throw") and throwing:
+		throw_charge = min(throw_charge + delta*throw_charge_rate, max_throw_charge)
+		if robot.held_item != null:
+			print(robot.held_item.linear_velocity)
 	if Input.is_action_just_released("throw") and throwing:
-		robot.held_item.throw(-20*Vector3(0, 0, 1).rotated(Vector3(1,0,0), max(0, camera_manager.rotation.x)).rotated(Vector3.UP, robot.rotation.y).normalized())
+		robot.held_item.linear_velocity = robot._velocity
+		robot.held_item.throw(-throw_charge*Vector3(0, 0, 1).rotated(Vector3(1,0,0), max(0, camera_manager.rotation.x)).rotated(Vector3.UP, robot.rotation.y).normalized())
 		robot.held_item = null
 		throwing = false
 		$Robot/AnimationPlayer.play("RESET")

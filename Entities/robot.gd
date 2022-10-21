@@ -1,13 +1,13 @@
 extends KinematicBody
 
 
-export var accel := 5
+export var accel := 15
 export var max_air_speed := 15.0
-export var max_ground_speed := 10.0
+export var max_ground_speed := 30.0
 export var jump_strength := 20.0
 export var gravity := 50.0
 export var friction := 0.1
-export var max_extension := 5
+export var max_extension := 6
 export var extension_speed := 1
 export var rotation_speed := 30
 
@@ -54,6 +54,20 @@ func move_in_direction(move_direction, delta):
 	elif just_landed:
 		_snap_vector = Vector3.DOWN
 	_velocity = move_and_slide_with_snap(_velocity, _snap_vector, Vector3.UP, false, 100, 0.785398, false)
+	var col_force = 1
+	#print(col_force)
+	for index in get_slide_count():
+		var collision = get_slide_collision(index)
+		var collider = collision.collider
+		if (collider.get_class() == "RigidBody"):
+			var col_force_vec = -collision.normal * col_force # rotate the force along collision normal
+			# collision pos
+			# > RigidBody.add_force(force, pos) > The position uses the rotation of the global coordinate system, but is centered at the object's origin.
+			# > KinematicCollision.position() > The point of collision, in global coordinates.
+			# So to add force at collision position, substract colliders pos from collision.position
+			var col_pos = collision.position - collider.transform.origin
+			collider.add_force(col_force_vec, col_pos)
+			print(col_force_vec)
 
 
 func extend(amount):

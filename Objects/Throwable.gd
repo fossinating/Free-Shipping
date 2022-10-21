@@ -5,12 +5,14 @@ class_name Throwable
 export(PackedScene) var particle_scene = preload("res://Particles/Packing Peanut.tscn")
 export var particle_count := 16
 export var particle_spawn_range := Vector3(1,1,1)
+var thrown = false
 
 func _ready():
-	set_physics_process(false)
+	pass
+	#set_physics_process(false)
 
 func throw(impulse):
-	print("thrown")
+	thrown = true
 	var root = get_tree().root
 	var thrown_from = self.global_transform
 	self.get_parent().remove_child(self)
@@ -19,12 +21,10 @@ func throw(impulse):
 	set_physics_process(true)
 	
 	self.global_transform = thrown_from
-	self.apply_central_impulse(impulse)
+	self.apply_central_impulse(mass/2*impulse)
 
 func _physics_process(delta):
-	if (get_colliding_bodies().size() != 0):
-		print(get_colliding_bodies().size())
-	if get_colliding_bodies().size() > 0:
+	if thrown and get_colliding_bodies().size() > 0:
 		destroy()
 
 func destroy():

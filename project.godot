@@ -27,8 +27,18 @@ _global_script_class_icons={
 [application]
 
 config/name="Nc Game Jam 2022"
-run/main_scene="res://Worlds/testing world.tscn"
+run/main_scene="res://Worlds/Warehouse.tscn"
 config/icon="res://icon.png"
+
+[display]
+
+window/size/width=1920
+window/size/height=1080
+window/size/fullscreen=true
+
+[global]
+
+snap=false
 
 [gui]
 
