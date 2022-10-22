@@ -326,3 +326,5 @@ cast_to = Vector3( 0, -2, 0 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, 0.7 )
 enabled = true
 cast_to = Vector3( 0, -2, 0 )
+
+[node name="Tween" type="Tween" parent="."]

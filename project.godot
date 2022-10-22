@@ -24,6 +24,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Objects/Items/Item.gd"
 }, {
+"base": "KinematicBody",
+"class": "Robot",
+"language": "GDScript",
+"path": "res://Entities/robot.gd"
+}, {
 "base": "RigidBody",
 "class": "Throwable",
 "language": "GDScript",
@@ -33,6 +38,7 @@ _global_script_class_icons={
 "Box": "",
 "InventoryLocation": "",
 "Item": "",
+"Robot": "",
 "Throwable": ""
 }
 

@@ -1,5 +1,6 @@
 extends KinematicBody
 
+class_name Robot
 
 export var accel := 15
 export var max_air_speed := 15.0
@@ -112,8 +113,11 @@ func arms_in():
 var held_item = null
 onready var tween = $Tween
 
-func pickup_box(node):
+func set_held_item(node):
 	held_item = node
+
+func pickup_box(node):
+	set_held_item(node)
 	# disable the collision when picking the box up
 	node.get_node("CollisionShape").disabled = true
 	node.get_parent().remove_child(node)
