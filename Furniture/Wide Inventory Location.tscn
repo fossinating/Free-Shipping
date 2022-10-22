@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Furniture/Inventory Location.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Furniture/Wide Inventory Location.gd" type="Script" id=2]
+
+[node name="Wide Inventory Location" groups=["wide_inventory_location"] instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+location1 = NodePath("")
+location2 = NodePath("")

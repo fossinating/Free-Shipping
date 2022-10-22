@@ -5,7 +5,7 @@ export var accel := 15
 export var max_air_speed := 15.0
 export var max_ground_speed := 30.0
 export var jump_strength := 20.0
-export var gravity := 50.0
+export var gravity := 35.0
 export var friction := 0.1
 export var max_extension := 6
 export var extension_speed := 1
@@ -42,18 +42,30 @@ func move_in_direction(move_direction, delta):
 	
 	_velocity = Vector3(horiz_vel.x, _velocity.y, horiz_vel.y)
 	
-	_velocity.y = clamp(_velocity.y - gravity * delta, -100, 100)
 	
 	var just_landed := is_on_floor() and _snap_vector == Vector3.ZERO
 	# leaving this in just in case i add jumping as a powerup
 	var is_jumping := false and is_on_floor() and Input.is_action_pressed("movement_jump")
-	
+	var normal = get_floor_normal() if is_on_floor() else Vector3.UP
 	if is_jumping:
 		_velocity.y = jump_strength
 		_snap_vector = Vector3.ZERO
 	elif just_landed:
-		_snap_vector = Vector3.DOWN
-	_velocity = move_and_slide_with_snap(_velocity, _snap_vector, Vector3.UP, false, 100, 0.785398, false)
+		_snap_vector = normal
+	
+	_velocity -= normal * gravity * delta
+	_velocity.y = clamp(_velocity.y, -100, 100)
+	
+	_velocity = move_and_slide_with_snap(_velocity, _snap_vector, Vector3.UP, false, 4, 0.785398, false)
+	
+	# at some point i should change this to be the average of all 4 potential planes for the 4 points
+	# https://math.stackexchange.com/questions/2177006/how-to-define-a-plane-based-on-4-points
+	var n = (($Treads/RayCast2.get_collision_point() - $Treads/RayCast.get_collision_point()).cross($Treads/RayCast3.get_collision_point() - $Treads/RayCast2.get_collision_point())
+			if ($Treads/RayCast.is_colliding() and $Treads/RayCast2.is_colliding() and $Treads/RayCast3.is_colliding()) 
+			else get_floor_normal() if is_on_floor() else Vector3.ZERO)
+	if n != Vector3.ZERO:
+		var xform = align_with_y(global_transform, n)
+		global_transform = global_transform.interpolate_with(xform, 0.2)
 	var col_force = 1
 	#print(col_force)
 	for index in get_slide_count():
@@ -67,7 +79,15 @@ func move_in_direction(move_direction, delta):
 			# So to add force at collision position, substract colliders pos from collision.position
 			var col_pos = collision.position - collider.transform.origin
 			collider.add_force(col_force_vec, col_pos)
-			print(col_force_vec)
+			#print(col_force_vec)
+
+
+# blatantly stolen from https://www.youtube.com/watch?v=7axJJYont6Y
+func align_with_y(xform, new_y):
+	xform.basis.y = new_y
+	xform.basis.x = -xform.basis.z.cross(new_y)
+	xform.basis = xform.basis.orthonormalized()
+	return xform
 
 
 func extend(amount):

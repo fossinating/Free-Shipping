@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/platform L with dot.obj-2ded8754313d764407afe070b8897324.mesh"
+
+[deps]
+
+files=[ "res://.import/platform L with dot.obj-2ded8754313d764407afe070b8897324.mesh" ]
+
+source_file="res://assets/Furniture/Platforms/platform L with dot.obj"
+dest_files=[ "res://.import/platform L with dot.obj-2ded8754313d764407afe070b8897324.mesh", "res://.import/platform L with dot.obj-2ded8754313d764407afe070b8897324.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286

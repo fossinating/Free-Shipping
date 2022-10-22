@@ -306,3 +306,23 @@ shape = SubResource( 5 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0 )
 layers = 512
 mesh = ExtResource( 3 )
+
+[node name="RayCast" type="RayCast" parent="Treads"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, -0.7 )
+enabled = true
+cast_to = Vector3( 0, -2, 0 )
+
+[node name="RayCast2" type="RayCast" parent="Treads"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, -0.7 )
+enabled = true
+cast_to = Vector3( 0, -2, 0 )
+
+[node name="RayCast3" type="RayCast" parent="Treads"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 0.7 )
+enabled = true
+cast_to = Vector3( 0, -2, 0 )
+
+[node name="RayCast4" type="RayCast" parent="Treads"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, 0.7 )
+enabled = true
+cast_to = Vector3( 0, -2, 0 )

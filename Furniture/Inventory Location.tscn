@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Furniture/Inventory Location.gd" type="Script" id=1]
+
+[node name="Inventory Location" type="Position3D" groups=["inventory_location"]]
+script = ExtResource( 1 )

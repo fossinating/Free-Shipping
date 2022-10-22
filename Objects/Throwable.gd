@@ -23,7 +23,7 @@ func throw(impulse):
 	self.global_transform = thrown_from
 	self.apply_central_impulse(mass/2*impulse)
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if thrown and get_colliding_bodies().size() > 0:
 		destroy()
 

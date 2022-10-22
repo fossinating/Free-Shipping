@@ -14,6 +14,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Objects/Boxes/Box.gd"
 }, {
+"base": "Position3D",
+"class": "InventoryLocation",
+"language": "GDScript",
+"path": "res://Furniture/Inventory Location.gd"
+}, {
+"base": "RigidBody",
+"class": "Item",
+"language": "GDScript",
+"path": "res://Objects/Items/Item.gd"
+}, {
 "base": "RigidBody",
 "class": "Throwable",
 "language": "GDScript",
@@ -21,13 +31,15 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Box": "",
+"InventoryLocation": "",
+"Item": "",
 "Throwable": ""
 }
 
 [application]
 
 config/name="Nc Game Jam 2022"
-run/main_scene="res://Worlds/Warehouse.tscn"
+run/main_scene="res://Worlds/Kids Warehouse.tscn"
 config/icon="res://icon.png"
 
 [display]

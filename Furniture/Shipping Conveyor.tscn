@@ -1,0 +1,59 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://assets/Furniture/shipping conveyor.obj" type="ArrayMesh" id=1]
+
+[sub_resource type="BoxShape" id=7]
+extents = Vector3( 0.1, 0.2, 5 )
+
+[sub_resource type="BoxShape" id=8]
+extents = Vector3( 0.1, 2.3, 2.3 )
+
+[sub_resource type="BoxShape" id=9]
+extents = Vector3( 2.3, 0.1, 2.3 )
+
+[sub_resource type="BoxShape" id=6]
+extents = Vector3( 2.3, 2.3, 0.1 )
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 2.5, 0.1, 4.8 )
+
+[node name="Shipping Conveyor" type="StaticBody"]
+collision_layer = 209
+collision_mask = 209
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+mesh = ExtResource( 1 )
+
+[node name="CollisionShape2" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0.2, -0.2 )
+shape = SubResource( 7 )
+
+[node name="CollisionShape3" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.2, -0.2 )
+shape = SubResource( 7 )
+
+[node name="CollisionShape4" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 2.7, -2.9 )
+shape = SubResource( 8 )
+
+[node name="CollisionShape5" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 2.7, -2.9 )
+shape = SubResource( 8 )
+
+[node name="CollisionShape6" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.9, -2.9 )
+shape = SubResource( 9 )
+
+[node name="Anti-robot" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -0.8 )
+collision_layer = 2
+collision_mask = 193
+
+[node name="CollisionShape" type="CollisionShape" parent="Anti-robot"]
+shape = SubResource( 6 )
+
+[node name="Conveyor" type="StaticBody" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="Conveyor"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
+shape = SubResource( 1 )

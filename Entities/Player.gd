@@ -29,7 +29,7 @@ func _physics_process(delta):
 	var move_direction := Vector3.ZERO
 	move_direction.x = Input.get_action_strength("movement_right") - Input.get_action_strength("movement_left")
 	move_direction.z = Input.get_action_strength("movement_back") - Input.get_action_strength("movement_forward")
-	move_direction = move_direction.rotated(Vector3.UP, robot.rotation.y).normalized()
+	move_direction = move_direction.rotated(Vector3.UP, robot.global_rotation.y).normalized()
 	robot.move_in_direction(move_direction, delta)
 	
 	var ext_vel = 0
@@ -64,11 +64,9 @@ func _physics_process(delta):
 		throw_charge = min_throw_charge
 	if Input.is_action_pressed("throw") and throwing:
 		throw_charge = min(throw_charge + delta*throw_charge_rate, max_throw_charge)
-		if robot.held_item != null:
-			print(robot.held_item.linear_velocity)
 	if Input.is_action_just_released("throw") and throwing:
 		robot.held_item.linear_velocity = robot._velocity
-		robot.held_item.throw(-throw_charge*Vector3(0, 0, 1).rotated(Vector3(1,0,0), max(0, camera_manager.rotation.x)).rotated(Vector3.UP, robot.rotation.y).normalized())
+		robot.held_item.throw(-throw_charge*Vector3(0, 0, 1).rotated(Vector3(1,0,0), max(0, camera_manager.rotation.x)).rotated(Vector3.UP, robot.global_rotation.y).normalized())
 		robot.held_item = null
 		throwing = false
 		$Robot/AnimationPlayer.play("RESET")
