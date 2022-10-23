@@ -12,6 +12,7 @@ export var max_extension := 7
 export var extension_speed := 1
 export var rotation_speed := 30
 export var health := 5
+export var max_health := 5
 
 var _extension := 0.0
 var _velocity := Vector3.ZERO

@@ -1,0 +1,216 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Entities/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Furniture/Elevator.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Furniture/MeshLibrary.tres" type="MeshLibrary" id=3]
+[ext_resource path="res://assets/Furniture/wall.obj" type="ArrayMesh" id=4]
+[ext_resource path="res://Furniture/Robot Station.tscn" type="PackedScene" id=5]
+
+[sub_resource type="NavigationMesh" id=1]
+
+[sub_resource type="BoxShape" id=2]
+extents = Vector3( 2, 2, 2 )
+
+[sub_resource type="ConvexPolygonShape" id=3]
+points = PoolVector3Array( -16, 0.1, 0.1, -16, 0, 0.1, -16, 0, -0.1, 16, 0.1, 0.1, 16, 0, 0.1, 16, 0, -0.1 )
+
+[node name="Maintenance" type="Spatial"]
+
+[node name="Entities" type="Spatial" parent="."]
+
+[node name="Player" parent="Entities" instance=ExtResource( 1 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 3.7, -22 )
+
+[node name="Navigable" type="NavigationMeshInstance" parent="."]
+navmesh = SubResource( 1 )
+
+[node name="Elevator" parent="Navigable" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -24 )
+
+[node name="GridMap" type="GridMap" parent="Navigable"]
+mesh_library = ExtResource( 3 )
+cell_size = Vector3( 4, 4, 4 )
+data = {
+"cells": PoolIntArray( 0, 0, 2, 1, 0, 2, 2, 0, 2, 3, 0, 2, 65532, 0, 2, 65533, 0, 2, 65534, 0, 2, 65535, 0, 2, 196608, 0, 1, 196609, 0, 1, 196610, 0, 1, 196611, 0, 1, 262140, 0, 1, 262141, 0, 1, 262142, 0, 1, 262143, 0, 1, 0, 1, 2, 1, 1, 2, 2, 1, 2, 3, 1, 2, 65532, 1, 2, 65533, 1, 2, 65534, 1, 2, 65535, 1, 2, 196608, 1, 1, 196609, 1, 1, 196610, 1, 1, 196611, 1, 1, 262140, 1, 1, 262141, 1, 1, 262142, 1, 1, 262143, 1, 1, 0, 2, 2, 1, 2, 2, 2, 2, 2, 3, 2, 2, 65532, 2, 2, 65533, 2, 2, 65534, 2, 2, 65535, 2, 2, 196608, 2, 1, 196609, 2, 1, 196610, 2, 1, 196611, 2, 1, 262140, 2, 1, 262141, 2, 1, 262142, 2, 1, 262143, 2, 1, 0, 3, 2, 1, 3, 2, 2, 3, 2, 3, 3, 2, 65532, 3, 2, 65533, 3, 2, 65534, 3, 2, 65535, 3, 2, 196608, 3, 1, 196609, 3, 1, 196610, 3, 1, 196611, 3, 1, 262140, 3, 1, 262141, 3, 1, 262142, 3, 1, 262143, 3, 1, 0, 65532, 2, 1, 65532, 2, 2, 65532, 2, 3, 65532, 2, 65532, 65532, 2, 65533, 65532, 2, 65534, 65532, 2, 65535, 65532, 2, 196608, 65532, 1, 196609, 65532, 1, 196610, 65532, 1, 196611, 65532, 1, 262140, 65532, 1, 262141, 65532, 1, 262142, 65532, 1, 262143, 65532, 1, 0, 65533, 2, 1, 65533, 2, 2, 65533, 2, 3, 65533, 2, 65532, 65533, 2, 65533, 65533, 2, 65534, 65533, 2, 65535, 65533, 2, 196608, 65533, 1, 196609, 65533, 1, 196610, 65533, 1, 196611, 65533, 1, 262140, 65533, 1, 262141, 65533, 1, 262142, 65533, 1, 262143, 65533, 1, 0, 65534, 2, 1, 65534, 2, 2, 65534, 2, 3, 65534, 2, 65532, 65534, 2, 65533, 65534, 2, 65534, 65534, 2, 65535, 65534, 2, 196608, 65534, 1, 196609, 65534, 1, 196610, 65534, 1, 196611, 65534, 1, 262140, 65534, 1, 262141, 65534, 1, 262142, 65534, 1, 262143, 65534, 1, 0, 65535, 2, 1, 65535, 2, 2, 65535, 2, 3, 65535, 2, 65532, 65535, 2, 65533, 65535, 2, 65534, 65535, 2, 65535, 65535, 2, 196608, 65535, 1, 196609, 65535, 1, 196610, 65535, 1, 196611, 65535, 1, 262140, 65535, 1, 262141, 65535, 1, 262142, 65535, 1, 262143, 65535, 1 )
+}
+__meta__ = {
+"_editor_clip_": 0,
+"_editor_floor_": Vector3( 0, 3, 0 )
+}
+
+[node name="Wall" type="StaticBody" parent="Navigable"]
+transform = Transform( -3.14315e-06, 0, 8, 0, 4, 0, -1, 0, -2.51452e-05, 0.000389099, 2, 18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="Navigable/Wall"]
+transform = Transform( 1, 0, 2.91038e-11, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+mesh = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Navigable/Wall"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+shape = SubResource( 2 )
+
+[node name="Wall4" type="StaticBody" parent="Navigable"]
+transform = Transform( -3.14315e-06, 0, 2, 0, 4, 0, -1, 0, -6.28631e-06, 12.0004, 2, -18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="Navigable/Wall4"]
+transform = Transform( 1, 0, 2.91038e-11, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+mesh = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Navigable/Wall4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+shape = SubResource( 2 )
+
+[node name="Wall5" type="StaticBody" parent="Navigable"]
+transform = Transform( -3.14315e-06, 0, 2, 0, 4, 0, -1, 0, -6.28631e-06, -11.9996, 2, -18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="Navigable/Wall5"]
+transform = Transform( 1, 0, 2.91038e-11, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+mesh = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Navigable/Wall5"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+shape = SubResource( 2 )
+
+[node name="Wall2" type="StaticBody" parent="Navigable"]
+transform = Transform( -1, 0, -2.54949e-05, 0, 4, 0, 3.18686e-06, 0, -8, 18.0004, 2, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="Navigable/Wall2"]
+transform = Transform( 1, 0, 2.91038e-11, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+mesh = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Navigable/Wall2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+shape = SubResource( 2 )
+
+[node name="Wall3" type="StaticBody" parent="Navigable"]
+transform = Transform( -1, 0, -2.54949e-05, 0, 4, 0, 3.18686e-06, 0, -8, -17.9996, 2, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="Navigable/Wall3"]
+transform = Transform( 1, 0, 2.91038e-11, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+mesh = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Navigable/Wall3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+shape = SubResource( 2 )
+
+[node name="Robot Stations" type="Spatial" parent="Navigable"]
+
+[node name="Robot Station" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 14, 2.5, 14 )
+
+[node name="Robot Station2" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 10, 2.5, 14 )
+
+[node name="Robot Station3" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 6, 2.5, 14 )
+
+[node name="Robot Station4" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2, 2.5, 14 )
+start_open = true
+
+[node name="Robot Station5" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2, 2.5, 14 )
+
+[node name="Robot Station6" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -6, 2.5, 14 )
+
+[node name="Robot Station7" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -10, 2.5, 14 )
+
+[node name="Robot Station8" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -14, 2.5, 14 )
+
+[node name="Robot Station9" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 14, 6.3, 14 )
+
+[node name="Robot Station10" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 10, 6.3, 14 )
+
+[node name="Robot Station11" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 6, 6.3, 14 )
+
+[node name="Robot Station12" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2, 6.3, 14 )
+
+[node name="Robot Station13" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2, 6.3, 14 )
+
+[node name="Robot Station14" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -6, 6.3, 14 )
+
+[node name="Robot Station15" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -10, 6.3, 14 )
+
+[node name="Robot Station16" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -14, 6.3, 14 )
+
+[node name="Robot Station17" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 14, 10.1, 14 )
+
+[node name="Robot Station18" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 10, 10.1, 14 )
+
+[node name="Robot Station19" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 6, 10.1, 14 )
+
+[node name="Robot Station20" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2, 10.1, 14 )
+
+[node name="Robot Station21" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2, 10.1, 14 )
+
+[node name="Robot Station22" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -6, 10.1, 14 )
+
+[node name="Robot Station23" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -10, 10.1, 14 )
+
+[node name="Robot Station24" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -14, 10.1, 14 )
+
+[node name="Robot Station25" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 14, 13.9, 14 )
+
+[node name="Robot Station26" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 10, 13.9, 14 )
+
+[node name="Robot Station27" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 6, 13.9, 14 )
+
+[node name="Robot Station28" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2, 13.9, 14 )
+
+[node name="Robot Station29" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2, 13.9, 14 )
+
+[node name="Robot Station30" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -6, 13.9, 14 )
+
+[node name="Robot Station31" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -10, 13.9, 14 )
+
+[node name="Robot Station32" parent="Navigable/Robot Stations" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -14, 13.9, 14 )
+
+[node name="StaticBody" type="StaticBody" parent="Navigable"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Navigable/StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 12 )
+shape = SubResource( 3 )
+
+[node name="Decoration" type="Spatial" parent="."]

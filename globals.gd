@@ -1,6 +1,6 @@
 extends Node
 
 
-var game_state = GameState.new()
+var save
 var root
 

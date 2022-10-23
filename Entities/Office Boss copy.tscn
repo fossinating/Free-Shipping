@@ -43,7 +43,6 @@ _data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.727723, 1 ), 0.0, 0.0, 0, 
 
 [node name="Office Boss" type="KinematicBody"]
 script = ExtResource( 1 )
-health = 15
 
 [node name="Base Mesh" type="MeshInstance" parent="."]
 mesh = ExtResource( 2 )

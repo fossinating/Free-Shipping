@@ -369,6 +369,9 @@ script = ExtResource( 6 )
 
 [node name="Player" parent="Entities" instance=ExtResource( 2 )]
 transform = Transform( -1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 3.5, -129 )
+min_throw_charge = 20.0
+max_throw_charge = 60.0
+throw_charge_rate = 20.0
 
 [node name="Navigable" type="NavigationMeshInstance" parent="."]
 navmesh = SubResource( 2 )
@@ -858,6 +861,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
 shape = SubResource( 49 )
 
 [node name="Elevator" parent="Navigable" instance=ExtResource( 11 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -128 )
 
 [node name="Objects" type="Spatial" parent="."]
 

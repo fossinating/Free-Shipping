@@ -44,6 +44,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Objects/Items/Item.gd"
 }, {
+"base": "MarginContainer",
+"class": "MaxSizeContainer",
+"language": "GDScript",
+"path": "res://addons/MaxSizeContainer/max_size_container.gd"
+}, {
 "base": "Robot",
 "class": "Player",
 "language": "GDScript",
@@ -59,6 +64,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Entities/robot.gd"
 }, {
+"base": "Resource",
+"class": "SaveGame",
+"language": "GDScript",
+"path": "res://SaveGame.gd"
+}, {
 "base": "Projectile",
 "class": "Throwable",
 "language": "GDScript",
@@ -72,15 +82,17 @@ _global_script_class_icons={
 "GameState": "",
 "InventoryLocation": "",
 "Item": "",
+"MaxSizeContainer": "",
 "Player": "",
 "Projectile": "",
 "Robot": "",
+"SaveGame": "",
 "Throwable": ""
 }
 
 [application]
 
-config/name="Nc Game Jam 2022"
+config/name="Free Shipping"
 run/main_scene="res://Menus/Main Menu.tscn"
 config/icon="res://icon.png"
 
@@ -99,6 +111,7 @@ window/stretch/aspect="keep"
 [global]
 
 snap=false
+name=false
 
 [gui]
 

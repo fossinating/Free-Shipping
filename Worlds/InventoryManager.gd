@@ -10,15 +10,17 @@ onready var _1x1_box_scene = preload("res://Objects/Boxes/1x1 Box.tscn")
 onready var _1x2_box_scene = preload("res://Objects/Boxes/1x2 Box.tscn")
 onready var _2x1_box_scene = preload("res://Objects/Boxes/2x1 Box.tscn")
 var rng = RandomNumberGenerator.new()
-var thread = Thread.new()
+var box_spawn_thread = Thread.new()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	Globals.root = self
 	item_table = item_table_scene.instance()
 	rng.randomize()
-	thread.start(self, "_box_spawn_thread", null)
-	$Navigable/Elevator/AnimationPlayer.play("Elevator Open")
+	box_spawn_thread.start(self, "_box_spawn_thread", null)
+
+func _exit_tree():
+	box_spawn_thread.wait_to_finish()
 
 func _box_spawn_thread():
 	for child in $Navigable/Objects.get_children():

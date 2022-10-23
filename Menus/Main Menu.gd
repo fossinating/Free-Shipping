@@ -5,6 +5,7 @@ extends Control
 func _ready():
 	load_settings()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	$"UI/Menus/Main Menu/HBoxContainer5/Load Game".disabled = !SaveGame.save_exists()
 
 
 onready var _active_menu = $"UI/Menus/Main Menu"
@@ -37,8 +38,15 @@ func switch_menu(to_node):
 	tween.start()
 
 
+func _on_Load_Game_pressed():
+	Globals.save = SaveGame.load_savegame()
+	var _trash = get_tree().change_scene("res://Worlds/Maintenance.tscn")
+
+
+# actually the game start
 func _on_Level_Select_pressed():
-	var _trash = get_tree().change_scene("res://Worlds/Office Warehouse.tscn")
+	Globals.save = SaveGame.new()
+	var _trash = get_tree().change_scene("res://Worlds/Maintenance.tscn")
 
 
 func _on_Settings_pressed():
@@ -57,59 +65,6 @@ func _on_Quit_to_Desktop_pressed():
 	get_tree().quit()
 
 var switch_to = "res://Menus/Main Menu.tscn"
-
-func play_level(level):
-	switch_to = "res://Rooms/Level_" + str(level) + ".tscn"
-	var tween = $Tween
-	tween.interpolate_property(
-		$UI,
-		"modulate:a",
-		$UI.modulate.a,
-		0, # final value
-		0.4, # time taken
-		tween.TRANS_SINE,
-		tween.EASE_IN
-	)
-	tween.interpolate_property(
-		$"CanvasLayer/ViewportContainer/Viewport/Menu Room/Camera",
-		"global_transform:origin",
-		$"CanvasLayer/ViewportContainer/Viewport/Menu Room/Camera".global_transform.origin,
-		$"CanvasLayer/ViewportContainer/Viewport/Menu Room/Slime".global_transform.origin,
-		1.6, # time taken
-		tween.TRANS_SINE,
-		# Easing out means we start fast and slow down as we reach the target value.
-		tween.EASE_OUT
-	)
-	var original_basis = $"CanvasLayer/ViewportContainer/Viewport/Menu Room/Camera".global_transform.basis
-	$"CanvasLayer/ViewportContainer/Viewport/Menu Room/Camera".look_at($"CanvasLayer/ViewportContainer/Viewport/Menu Room/Slime".global_transform.origin, Vector3.UP)
-	var basis = $"CanvasLayer/ViewportContainer/Viewport/Menu Room/Camera".global_transform.basis
-	$"CanvasLayer/ViewportContainer/Viewport/Menu Room/Camera".global_transform.basis = original_basis
-	tween.interpolate_property(
-		$"CanvasLayer/ViewportContainer/Viewport/Menu Room/Camera",
-		"global_transform:basis",
-		original_basis,
-		basis,
-		1.6,
-		tween.TRANS_SINE,
-		# Easing out means we start fast and slow down as we reach the target value.
-		tween.EASE_OUT
-	)
-	tween.interpolate_property(
-		$CanvasLayer/CanvasModulate,
-		"color",
-		$CanvasLayer/CanvasModulate.color,
-		Color(0.0, 0.0, 0.0), # final_val
-		1.2,
-		tween.TRANS_SINE,
-		tween.EASE_OUT
-	)
-	
-	tween.start()
-
-
-func _on_Tween_tween_completed(object, key):
-	if object == $"CanvasLayer/ViewportContainer/Viewport/Menu Room/Camera" and key == ":global_transform:origin":
-		var _trash = get_tree().change_scene(switch_to)
 
 onready var _master_bus := AudioServer.get_bus_index("Master")
 onready var _music_bus := AudioServer.get_bus_index("Music")

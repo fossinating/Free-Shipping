@@ -40,8 +40,8 @@ margin_top = 287.0
 margin_right = 781.0
 margin_bottom = 492.0
 theme = ExtResource( 4 )
-text = "Slimey
-Dungeons"
+text = "Free
+Shipping"
 
 [node name="Menus" type="Control" parent="UI"]
 anchor_left = 1.0
@@ -62,9 +62,9 @@ anchor_bottom = 1.0
 alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/Menus/Main Menu"]
-margin_top = 207.0
+margin_top = 174.0
 margin_right = 917.0
-margin_bottom = 257.0
+margin_bottom = 224.0
 alignment = 1
 
 [node name="Play Game" type="Button" parent="UI/Menus/Main Menu/HBoxContainer"]
@@ -74,10 +74,24 @@ margin_bottom = 50.0
 rect_min_size = Vector2( 400, 50 )
 text = "Play Game"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="UI/Menus/Main Menu"]
-margin_top = 272.0
+[node name="HBoxContainer5" type="HBoxContainer" parent="UI/Menus/Main Menu"]
+margin_top = 239.0
 margin_right = 917.0
-margin_bottom = 322.0
+margin_bottom = 289.0
+alignment = 1
+
+[node name="Load Game" type="Button" parent="UI/Menus/Main Menu/HBoxContainer5"]
+margin_left = 258.0
+margin_right = 658.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 400, 50 )
+disabled = true
+text = "Load Game"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UI/Menus/Main Menu"]
+margin_top = 304.0
+margin_right = 917.0
+margin_bottom = 354.0
 alignment = 1
 
 [node name="Settings" type="Button" parent="UI/Menus/Main Menu/HBoxContainer2"]
@@ -88,9 +102,9 @@ rect_min_size = Vector2( 400, 50 )
 text = "Settings"
 
 [node name="HBoxContainer4" type="HBoxContainer" parent="UI/Menus/Main Menu"]
-margin_top = 337.0
+margin_top = 369.0
 margin_right = 917.0
-margin_bottom = 387.0
+margin_bottom = 419.0
 alignment = 1
 
 [node name="Credits" type="Button" parent="UI/Menus/Main Menu/HBoxContainer4"]
@@ -101,9 +115,9 @@ rect_min_size = Vector2( 400, 50 )
 text = "Credits"
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="UI/Menus/Main Menu"]
-margin_top = 402.0
+margin_top = 434.0
 margin_right = 917.0
-margin_bottom = 452.0
+margin_bottom = 484.0
 alignment = 1
 
 [node name="Quit to Desktop" type="Button" parent="UI/Menus/Main Menu/HBoxContainer3"]
@@ -278,6 +292,7 @@ text = "Back"
 [node name="Tween" type="Tween" parent="."]
 
 [connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer/Play Game" to="." method="_on_Level_Select_pressed"]
+[connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer5/Load Game" to="." method="_on_Load_Game_pressed"]
 [connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer2/Settings" to="." method="_on_Settings_pressed"]
 [connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer4/Credits" to="." method="_on_Credits_pressed"]
 [connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer3/Quit to Desktop" to="." method="_on_Quit_to_Desktop_pressed"]

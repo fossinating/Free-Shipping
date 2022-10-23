@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Entities/Player.gd" type="Script" id=1]
 [ext_resource path="res://Entities/robot.tscn" type="PackedScene" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://assets/UI/Left Click Mouse Icon.png" type="Texture" id=5]
 [ext_resource path="res://assets/UI/UI Theme.tres" type="Theme" id=6]
 [ext_resource path="res://Entities/UI.gd" type="Script" id=7]
+[ext_resource path="res://Dialogue.gd" type="Script" id=8]
 
 [sub_resource type="SphereShape" id=1]
 radius = 3.0
@@ -14,6 +15,10 @@ radius = 3.0
 [node name="Player" instance=ExtResource( 2 )]
 script = ExtResource( 1 )
 health = 15
+max_health = 15
+min_throw_charge = 20.0
+max_throw_charge = 60.0
+throw_charge_rate = 20.0
 
 [node name="Third-Person Camera" type="Spatial" parent="Core" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.5 )
@@ -234,7 +239,54 @@ margin_bottom = 620.0
 rect_min_size = Vector2( 300, 100 )
 text = "Maintenance"
 
-[node name="Pause Menu" type="Control" parent="Core/Third-Person Camera/UI" index="3"]
+[node name="Robot Station Menu" type="CenterContainer" parent="Core/Third-Person Camera/UI" index="3"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ColorRect" type="ColorRect" parent="Core/Third-Person Camera/UI/Robot Station Menu" index="0"]
+margin_right = 1920.0
+margin_bottom = 1080.0
+rect_min_size = Vector2( 1920, 1080 )
+color = Color( 0, 0.129412, 0.133333, 1 )
+
+[node name="GridContainer" type="GridContainer" parent="Core/Third-Person Camera/UI/Robot Station Menu" index="1"]
+margin_left = 810.0
+margin_top = 295.0
+margin_right = 1110.0
+margin_bottom = 785.0
+custom_constants/vseparation = 30
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer" index="0"]
+margin_right = 300.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 300, 100 )
+text = "Robot Station"
+align = 1
+valign = 1
+
+[node name="Repair Button" type="Button" parent="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer" index="1"]
+margin_top = 130.0
+margin_right = 300.0
+margin_bottom = 230.0
+rect_min_size = Vector2( 300, 100 )
+text = "Repair"
+
+[node name="Save Button" type="Button" parent="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer" index="2"]
+margin_top = 260.0
+margin_right = 300.0
+margin_bottom = 360.0
+rect_min_size = Vector2( 300, 100 )
+text = "Save Game"
+
+[node name="Exit Button" type="Button" parent="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer" index="3"]
+margin_top = 390.0
+margin_right = 300.0
+margin_bottom = 490.0
+rect_min_size = Vector2( 300, 100 )
+text = "Leave Station"
+
+[node name="Pause Menu" type="Control" parent="Core/Third-Person Camera/UI" index="4"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -283,19 +335,57 @@ margin_bottom = 682.0
 rect_min_size = Vector2( 0, 60 )
 text = "Quit To Desktop"
 
+[node name="Dialogue" type="PanelContainer" parent="Core/Third-Person Camera/UI" index="5"]
+visible = false
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -400.0
+margin_top = -100.0
+margin_bottom = 100.0
+grow_horizontal = 0
+grow_vertical = 2
+rect_min_size = Vector2( 400, 200 )
+script = ExtResource( 8 )
+
+[node name="HBoxContainer" type="VBoxContainer" parent="Core/Third-Person Camera/UI/Dialogue" index="0"]
+margin_right = 400.0
+margin_bottom = 200.0
+grow_horizontal = 0
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Dialogue/HBoxContainer" index="0"]
+margin_top = 86.0
+margin_right = 400.0
+margin_bottom = 113.0
+rect_min_size = Vector2( 400, 0 )
+align = 2
+autowrap = true
+percent_visible = -0.0666667
+
+[node name="Tween" type="Tween" parent="Core/Third-Person Camera/UI/Dialogue" index="1"]
+
 [node name="Item Pickup Area" type="Area" parent="Core" index="4"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Core/Item Pickup Area" index="0"]
 shape = SubResource( 1 )
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
+[connection signal="visibility_changed" from="Core/Third-Person Camera/UI/Elevator Control" to="Core/Third-Person Camera/UI" method="_on_Elevator_Control_visibility_changed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Elevator Control/GridContainer/BEZOS Button" to="Core/Third-Person Camera/UI" method="_on_BEZOS_Button_pressed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Elevator Control/GridContainer/Kids Toys" to="Core/Third-Person Camera/UI" method="_on_Kids_Toys_pressed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Elevator Control/GridContainer/Office Supplies" to="Core/Third-Person Camera/UI" method="_on_Office_Supplies_pressed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Elevator Control/GridContainer/Maintenance Button" to="Core/Third-Person Camera/UI" method="_on_Maintenance_Button_pressed"]
+[connection signal="visibility_changed" from="Core/Third-Person Camera/UI/Robot Station Menu" to="Core/Third-Person Camera/UI" method="_on_Robot_Station_Menu_visibility_changed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer/Repair Button" to="Core/Third-Person Camera/UI" method="_on_Robot_Station_Repair_Button_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer/Save Button" to="Core/Third-Person Camera/UI" method="_on_Robot_Station_Save_Button_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer/Exit Button" to="Core/Third-Person Camera/UI" method="_on_Robot_Station_Exit_Button_pressed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Resume Game Button" to="Core/Third-Person Camera/UI" method="_on_Resume_Game_Button_pressed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Quit To Menu Button" to="Core/Third-Person Camera/UI" method="_on_Quit_To_Menu_Button_pressed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Quit To Desktop Button2" to="Core/Third-Person Camera/UI" method="_on_Quit_Game_Button_pressed"]
+[connection signal="tween_completed" from="Core/Third-Person Camera/UI/Dialogue/Tween" to="Core/Third-Person Camera/UI/Dialogue" method="_on_Tween_tween_completed"]
 [connection signal="body_entered" from="Core/Right Arm Root/Pickup Area" to="." method="_on_Pickup_Area_body_entered"]
 [connection signal="body_exited" from="Core/Right Arm Root/Pickup Area" to="." method="_on_Pickup_Area_body_exited"]
 [connection signal="body_entered" from="Core/Item Pickup Area" to="." method="_on_Item_Pickup_Area_body_entered"]

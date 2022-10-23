@@ -7,15 +7,22 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	set_lookaround(false)
 	activate_action(reach_action)
+	if Globals.save.game_state.player_health == null:
+		Globals.save.game_state.player_health = max_health
+	elif Globals.save.game_state.player_health == -1337:
+		Globals.save.game_state.player_health = max_health
+	set_health(Globals.save.game_state.player_health)
+	$"Core/Third-Person Camera/UI/Dialogue".queue_message("testing the method")
 
 
 var arms_out = false
 var lookaround = false
 var throwing = false
 var throw_charge = 0.0
-export var min_throw_charge = 20.0
-export var max_throw_charge = 60.0
-export var throw_charge_rate = 20.0
+export var min_throw_charge := 20.0
+export var max_throw_charge := 60.0
+export var throw_charge_rate := 20.0
+var current_robot_station = null
 
 func _physics_process(delta):
 	#var rotation_vel = (Input.get_action_strength("movement_left") - Input.get_action_strength("movement_right")) * rotation_speed
@@ -153,12 +160,12 @@ func _input(event):
 
 
 func _on_Item_Pickup_Area_body_entered(body):
-	if held_item == null and body is Item:
+	if held_item == null and body is Item and body.holder == null:
 		item_pickup_test()
 
 
 func _on_Item_Pickup_Area_body_exited(body):
-	if held_item == null and body is Item:
+	if held_item == null and body is Item and body.holder == null:
 		item_pickup_test()
 
 var pickup_item_action = Action.new("interact", "Pickup Item")
@@ -197,12 +204,12 @@ func _on_AnimationPlayer_animation_finished(anim_name):
 
 
 func _on_Pickup_Area_body_entered(body):
-	if held_item == null and body is Box:
+	if held_item == null and body is Box and body.holder == null:
 		test_box_pickup()
 
 
 func _on_Pickup_Area_body_exited(body):
-	if held_item == null and body is Box:
+	if held_item == null and body is Box and body.holder == null:
 		test_box_pickup()
 
 var pickup_box_action = Action.new("interact", "Pick Up Box")
@@ -215,10 +222,15 @@ func test_box_pickup():
 
 func set_health(health):
 	$"Core/Third-Person Camera/UI/Health Bar".value = health
+	Globals.save.game_state.player_health = health
 	.set_health(health)
 
 func die():
+	set_health(max_health)
 	var _trash = get_tree().change_scene("res://Menus/Main Menu.tscn")
 
 func show_elevator_controls():
 	$"Core/Third-Person Camera/UI".show_elevator_controls()
+
+func show_ui(ui):
+	get_node("Core/Third-Person Camera/UI/" + ui).visible = true

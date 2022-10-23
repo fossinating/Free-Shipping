@@ -6,7 +6,7 @@ var paper_scene = preload("res://Objects/Paper Projectile.tscn")
 
 
 func _ready():
-	if Globals.game_state.office_boss_beat:
+	if Globals.save.game_state.office_boss_beat:
 		set_health(0)
 
 
@@ -41,19 +41,8 @@ func _on_Focus_timeout():
 	target = null
 	$Firerate.stop()
 
-func damage(damage):
-	.damage(damage)
-	$Spark.amount = 8*damage
-	$Spark.emitting = true
-
-func set_health(health_):
-	.set_health(health_)
-	if health_ < 5:
-		$Smoke.emitting = true
-		$Smoke.amount = 50 - health_*10
-
 func die():
-	Globals.game_state.office_boss_beat = true
-	$"Constant Spark".emitting = true
+	Globals.save.game_state.office_boss_beat = true
 	$Firerate.stop()
 	set_physics_process(false)
+	.die()

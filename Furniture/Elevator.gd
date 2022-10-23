@@ -3,6 +3,9 @@ extends StaticBody
 
 var elevator_exited = false
 
+func _ready():
+	$AnimationPlayer.play("Elevator Open")
+
 func _on_AnimationPlayer_animation_finished(anim_name):
 	if anim_name == "Elevator Cycle" or anim_name == "Elevator Close":
 		for body in $Area.get_overlapping_bodies():

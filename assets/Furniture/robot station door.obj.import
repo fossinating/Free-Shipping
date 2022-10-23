@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/robot station door.obj-47d0cda5f2f26e0f93c0087d66097eac.mesh"
+
+[deps]
+
+files=[ "res://.import/robot station door.obj-47d0cda5f2f26e0f93c0087d66097eac.mesh" ]
+
+source_file="res://assets/Furniture/robot station door.obj"
+dest_files=[ "res://.import/robot station door.obj-47d0cda5f2f26e0f93c0087d66097eac.mesh", "res://.import/robot station door.obj-47d0cda5f2f26e0f93c0087d66097eac.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286
