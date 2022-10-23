@@ -14,6 +14,6 @@ func _ready():
 
 func destroy():
 	var item_drop = item.duplicate()
-	get_tree().root.get_child(0).get_node("Objects").add_child(item_drop)
+	Globals.root.get_node("Objects").add_child(item_drop)
 	item_drop.global_transform = global_transform
 	.destroy()

@@ -1,9 +1,12 @@
 extends Robot
 
+class_name Player
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	set_lookaround(false)
+	activate_action(reach_action)
 
 
 var arms_out = false
@@ -41,22 +44,33 @@ func _physics_process(delta):
 			set_lookaround(true)
 		if Input.is_action_just_pressed("lookaround"):
 			set_lookaround(false)
-	if Input.is_action_just_pressed("reach") and !arms_out and held_item == null:
-		arms_out = true
+	if Input.is_action_just_pressed("reach") and $AnimationPlayer.current_animation != "ArmsOut" and held_item == null:
 		arms_out()
-	if Input.is_action_just_released("reach") and arms_out and held_item == null:
-		arms_out = false
+	if Input.is_action_just_released("reach") and $AnimationPlayer.current_animation != "ArmsIn" and held_item == null:
 		arms_in()
 	if Input.is_action_just_pressed("interact"):
-		
-		
-		# if no other interactions, pick up any box you can
-		if held_item == null:
-			for node in $"Core/Right Arm Root/Pickup Area".get_overlapping_bodies():
-				if node is Box:
-					pickup_box(node)
-					break
+		if keybind_actions.has("interact") and keybind_actions["interact"].size() > 0:
+			var action = keybind_actions["interact"].back()
+			if action == pickup_item_action:
+				pickup_item()
+			elif action == drop_action:
+				drop()
+			elif action == pickup_box_action:
+				for node in $"Core/Right Arm Root/Pickup Area".get_overlapping_bodies():
+					if node is Box:
+						pickup_box(node)
+						deactivate_action(pickup_box_action)
+						break
+			elif action is ConnectedAction:
+				action.trigger(self)
+	if Input.is_action_just_pressed("attack"):
+		if keybind_actions.has("attack") and keybind_actions["attack"].size() > 0:
+			var action = keybind_actions["attack"].back()
+			if action == attack_action:
+				if held_item is Item:
+					held_item.attack()
 	if Input.is_action_just_pressed("throw") and held_item != null:
+		deactivate_action(drop_action)
 		throwing = true
 		throw_charge = min_throw_charge
 	if Input.is_action_pressed("throw") and throwing:
@@ -69,16 +83,45 @@ func _physics_process(delta):
 		$AnimationPlayer.play("RESET")
 		arms_out = false
 
+var attack_action = Action.new("attack", "Attack")
+var throw_action = Action.new("throw", "Throw")
+var reach_action = Action.new("reach", "Reach")
+var drop_action = Action.new("interact", "Drop")
 func set_held_item(item):
 	if item == null:
-		pass
+		activate_action(reach_action)
+		deactivate_action(attack_action)
+		deactivate_action(throw_action)
+		deactivate_action(drop_action)
 	if item != null:
-		pass
+		deactivate_action(reach_action)
+		if item is Item:
+			activate_action(attack_action)
+		activate_action(throw_action)
+		activate_action(drop_action)
 	.set_held_item(item)
 
 
-func 
+var keybind_actions = {}
 
+
+func activate_action(action):
+	if not keybind_actions.has(action.keybind):
+		keybind_actions[action.keybind] = [action]
+	else:
+		keybind_actions[action.keybind].append(action)
+	var keybind_display = get_node("Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/" + action.keybind)
+	keybind_display.get_node("Label").text = action.description
+	keybind_display.visible = true
+
+func deactivate_action(action):
+	if keybind_actions.has(action.keybind):
+		keybind_actions[action.keybind].erase(action)
+		var keybind_display = get_node("Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/" + action.keybind)
+		if keybind_actions[action.keybind].size() > 0:
+			keybind_display.get_node("Label").text = keybind_actions[action.keybind].back().description
+		else:
+			keybind_display.visible = false
 
 func set_lookaround(_lookaround):
 	lookaround = _lookaround
@@ -93,7 +136,7 @@ func set_lookaround(_lookaround):
 		$"Legs".visible = false
 
 var mouse_sensitivity = 0.15
-var camera_anglev=0
+var camera_anglev = 0
 onready var camera_manager = $"Core/Third-Person Camera"
 
 func _input(event):
@@ -107,3 +150,75 @@ func _input(event):
 		else:
 			rotation_degrees.y -= event.relative.x * mouse_sensitivity
 			rotation_degrees.y = wrapf(rotation_degrees.y, 0.0, 360.0)
+
+
+func _on_Item_Pickup_Area_body_entered(body):
+	if held_item == null and body is Item:
+		item_pickup_test()
+
+
+func _on_Item_Pickup_Area_body_exited(body):
+	if held_item == null and body is Item:
+		item_pickup_test()
+
+var pickup_item_action = Action.new("interact", "Pickup Item")
+
+func item_pickup_test():
+	for body in $"Core/Item Pickup Area".get_overlapping_bodies():
+		if body is Item and body.holder == null:
+			activate_action(pickup_item_action)
+			return
+	deactivate_action(pickup_item_action)
+
+func pickup_item():
+	for body in $"Core/Item Pickup Area".get_overlapping_bodies():
+		if body is Item and body.holder == null:
+			deactivate_action(pickup_item_action)
+			body.holder = self
+			$AnimationPlayer.play("RightArmOut")
+			set_held_item(body)
+			body.get_parent().remove_child(body)
+			$"Core/Right Arm Root/Item Holder".add_child(body)
+			body.set_collision(false)
+			body.transform.origin = Vector3(0,0,0)
+			body.rotation = Vector3(0,0,0)
+			body.mode = RigidBody.MODE_STATIC
+			return
+	
+func _on_AnimationPlayer_animation_finished(anim_name):
+	if anim_name == "RightArmOut":
+		pass
+	elif anim_name == "ArmsIn":
+		arms_out = false
+	elif anim_name == "ArmsOut":
+		arms_out = true
+	._on_AnimationPlayer_animation_finished(anim_name)
+		
+
+
+func _on_Pickup_Area_body_entered(body):
+	if held_item == null and body is Box:
+		test_box_pickup()
+
+
+func _on_Pickup_Area_body_exited(body):
+	if held_item == null and body is Box:
+		test_box_pickup()
+
+var pickup_box_action = Action.new("interact", "Pick Up Box")
+func test_box_pickup():
+	for body in $"Core/Right Arm Root/Pickup Area".get_overlapping_bodies():
+		if body is Box and body.holder == null:
+			activate_action(pickup_box_action)
+			return
+	deactivate_action(pickup_box_action)
+
+func set_health(health):
+	$"Core/Third-Person Camera/UI/Health Bar".value = health
+	.set_health(health)
+
+func die():
+	var _trash = get_tree().change_scene("res://Menus/Main Menu.tscn")
+
+func show_elevator_controls():
+	$"Core/Third-Person Camera/UI".show_elevator_controls()

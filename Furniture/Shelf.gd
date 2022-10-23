@@ -14,7 +14,7 @@ func spawn_boxes():
 	var narrow_placement_options = [$"Inventory Location",$"Inventory Location2",$"Inventory Location3",$"Inventory Location4", $"Inventory Location5", $"Inventory Location6"]
 	var wide_placement_options = [$"Wide Inventory Location",$"Wide Inventory Location2",$"Wide Inventory Location3",$"Wide Inventory Location4"]
 	for i in 1:
-		var box = get_tree().root.get_child(0).box_item()
+		var box = Globals.root.box_item()
 		var placement_options = []
 		if box.item.size <= 1:
 			placement_options = narrow_placement_options
@@ -25,7 +25,7 @@ func spawn_boxes():
 		if placement_options.size() == 0:
 			box.queue_free()
 			continue
-		box.assigned_location = placement_options[get_tree().root.get_child(0).rng.randi_range(0, placement_options.size() - 1)]
+		box.assigned_location = placement_options[Globals.root.rng.randi_range(0, placement_options.size() - 1)]
 		
 		if box.item.size <= 1:
 			narrow_placement_options.erase(box.assigned_location)
@@ -41,7 +41,7 @@ func spawn_boxes():
 #		print("wide placement:", wide_placement_options)
 #		print("narrow placement:", narrow_placement_options)
 		box.auto_place = true
-		get_tree().root.get_child(0).get_node("Objects").call_deferred("add_child", box)
+		Globals.root.get_node("Objects").call_deferred("add_child", box)
 #		print("called add child")
 		count += 1
 	return count

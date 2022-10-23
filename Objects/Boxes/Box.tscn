@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Objects/Throwable.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Objects/Projectile.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Objects/Boxes/Box.gd" type="Script" id=2]
 [ext_resource path="res://assets/Particles/packingpeanut.obj" type="ArrayMesh" id=3]
 

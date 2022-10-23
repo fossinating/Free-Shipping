@@ -14,6 +14,7 @@ var thread = Thread.new()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	Globals.root = self
 	item_table = item_table_scene.instance()
 	rng.randomize()
 	thread.start(self, "_box_spawn_thread", null)
@@ -69,15 +70,7 @@ func import_item():
 		location.neighbor.inventory = box
 		return box
 
-var elevator_exited = false
 
-func _on_Elevator_Area_body_exited(body):
-	if !elevator_exited:
-		$Navigable/Elevator/AnimationPlayer.play("Elevator Close")
-		elevator_exited = true
-
-
-func _on_Elevator_AnimationPlayer_animation_finished(anim_name):
-	if anim_name == "Elevator Cycle" or anim_name == "Elevator Close":
-		# display floor select screen
-		pass
+func export_box(box):
+	# probably wont be able to implement this before the deadline unfortunately :(
+	pass

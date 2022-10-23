@@ -1,0 +1,270 @@
+[gd_scene load_steps=19 format=2]
+
+[ext_resource path="res://assets/Furniture/elevator frame.obj" type="ArrayMesh" id=1]
+[ext_resource path="res://Furniture/Elevator.gd" type="Script" id=2]
+
+[sub_resource type="BoxShape" id=50]
+extents = Vector3( 8, 0.5, 8 )
+
+[sub_resource type="BoxShape" id=51]
+extents = Vector3( 0.3, 7, 8 )
+
+[sub_resource type="CubeMesh" id=52]
+size = Vector3( 6, 12, 0.3 )
+
+[sub_resource type="SpatialMaterial" id=53]
+metallic = 1.0
+roughness = 0.51
+
+[sub_resource type="BoxShape" id=54]
+extents = Vector3( 3, 6, 0.15 )
+
+[sub_resource type="CubeMesh" id=55]
+size = Vector3( 1, 1, 0.2 )
+
+[sub_resource type="SpatialMaterial" id=56]
+metallic = 0.79
+roughness = 0.75
+
+[sub_resource type="CubeMesh" id=10]
+size = Vector3( 0.75, 0.75, 0.5 )
+
+[sub_resource type="SpatialMaterial" id=11]
+albedo_color = Color( 0.992157, 1, 0, 1 )
+
+[sub_resource type="BoxShape" id=12]
+extents = Vector3( 1.5, 1.5, 3 )
+
+[sub_resource type="Animation" id=13]
+resource_name = "Button Press"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Button/Button:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0.0999985 ), Vector3( 0, 0, -0.0999985 ) ]
+}
+
+[sub_resource type="Animation" id=14]
+resource_name = "Elevator Close"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Elevator Door:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 2, 4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 8.5, 6, 7.8 ), Vector3( 3, 6, 7.8 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Elevator Door2:translation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 2, 4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( -8.5, 6, 7.8 ), Vector3( -3, 6, 7.8 ) ]
+}
+
+[sub_resource type="Animation" id=15]
+resource_name = "Elevator Cycle"
+length = 8.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Elevator Door:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2, 6, 8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 3, 6, 7.8 ), Vector3( 8.5, 6, 7.8 ), Vector3( 8.5, 6, 7.8 ), Vector3( 3, 6, 7.8 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Elevator Door2:translation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 2, 6, 8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( -3, 6, 7.8 ), Vector3( -8.5, 6, 7.8 ), Vector3( -8.5, 6, 7.8 ), Vector3( -3, 6, 7.8 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Button/Button:translation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.1, 7.9, 8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0.0999985 ), Vector3( 0, 0, -0.0999985 ), Vector3( 0, 0, -0.0999985 ), Vector3( 0, 0, 0.0999985 ) ]
+}
+
+[sub_resource type="Animation" id=16]
+resource_name = "Elevator Open"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Elevator Door:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 3, 6, 7.8 ), Vector3( 3, 6, 7.8 ), Vector3( 8.5, 6, 7.8 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Elevator Door2:translation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 2, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( -3, 6, 7.8 ), Vector3( -3, 6, 7.8 ), Vector3( -8.5, 6, 7.8 ) ]
+}
+
+[sub_resource type="Animation" id=17]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Button/Button:translation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0.0999985 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Elevator Door:translation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector3( 3, 6, 7.8 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Elevator Door2:translation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector3( -3, 6, 7.8 ) ]
+}
+
+[sub_resource type="BoxShape" id=18]
+extents = Vector3( 8, 8, 8 )
+
+[node name="Elevator" type="StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -128 )
+collision_mask = 211
+script = ExtResource( 2 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+mesh = ExtResource( 1 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 50 )
+
+[node name="CollisionShape2" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14, 0 )
+shape = SubResource( 50 )
+
+[node name="CollisionShape3" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8, 7, 0 )
+shape = SubResource( 51 )
+
+[node name="CollisionShape4" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.2, 7, 0 )
+shape = SubResource( 51 )
+
+[node name="CollisionShape5" type="CollisionShape" parent="."]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.199997, 7, -7 )
+shape = SubResource( 51 )
+
+[node name="Elevator Door" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 6, 7.8 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Elevator Door"]
+mesh = SubResource( 52 )
+material/0 = SubResource( 53 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Elevator Door"]
+shape = SubResource( 54 )
+
+[node name="Elevator Door2" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 6, 7.8 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Elevator Door2"]
+mesh = SubResource( 52 )
+material/0 = SubResource( 53 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Elevator Door2"]
+shape = SubResource( 54 )
+
+[node name="Button" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7, 6, 8 )
+mesh = SubResource( 55 )
+material/0 = SubResource( 56 )
+
+[node name="Button" type="MeshInstance" parent="Button"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0999985 )
+mesh = SubResource( 10 )
+material/0 = SubResource( 11 )
+
+[node name="Area" type="Area" parent="Button"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Button/Area"]
+shape = SubResource( 12 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+"anims/Button Press" = SubResource( 13 )
+"anims/Elevator Close" = SubResource( 14 )
+"anims/Elevator Cycle" = SubResource( 15 )
+"anims/Elevator Open" = SubResource( 16 )
+anims/RESET = SubResource( 17 )
+
+[node name="Area" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+shape = SubResource( 18 )
+
+[connection signal="body_entered" from="Button/Area" to="." method="_on_Button_Area_body_entered"]
+[connection signal="body_exited" from="Button/Area" to="." method="_on_Button_Area_body_exited"]
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
+[connection signal="body_exited" from="Area" to="." method="_on_Area_body_exited"]

@@ -1,0 +1,290 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Menus/Main Menu.gd" type="Script" id=1]
+[ext_resource path="res://assets/UI/UI Theme.tres" type="Theme" id=4]
+[ext_resource path="res://assets/UI/VCR_OSD_MONO_1.001.ttf" type="DynamicFontData" id=5]
+
+[sub_resource type="DynamicFont" id=1]
+size = 25
+font_data = ExtResource( 5 )
+
+[node name="Main Menu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 4 )
+script = ExtResource( 1 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="CanvasModulate" type="CanvasModulate" parent="CanvasLayer"]
+modulate = Color( 0, 0, 0, 0.694118 )
+color = Color( 0.372549, 0.372549, 0.372549, 1 )
+
+[node name="ViewportContainer" type="ViewportContainer" parent="CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Viewport" type="Viewport" parent="CanvasLayer/ViewportContainer"]
+size = Vector2( 1920, 1080 )
+handle_input_locally = false
+render_target_update_mode = 3
+
+[node name="UI" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Label" type="Label" parent="UI"]
+margin_left = 113.0
+margin_top = 287.0
+margin_right = 781.0
+margin_bottom = 492.0
+theme = ExtResource( 4 )
+text = "Slimey
+Dungeons"
+
+[node name="Menus" type="Control" parent="UI"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -1123.0
+margin_top = -361.0
+margin_right = -206.0
+margin_bottom = 298.0
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Main Menu" type="VBoxContainer" parent="UI/Menus"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/Menus/Main Menu"]
+margin_top = 207.0
+margin_right = 917.0
+margin_bottom = 257.0
+alignment = 1
+
+[node name="Play Game" type="Button" parent="UI/Menus/Main Menu/HBoxContainer"]
+margin_left = 258.0
+margin_right = 658.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 400, 50 )
+text = "Play Game"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UI/Menus/Main Menu"]
+margin_top = 272.0
+margin_right = 917.0
+margin_bottom = 322.0
+alignment = 1
+
+[node name="Settings" type="Button" parent="UI/Menus/Main Menu/HBoxContainer2"]
+margin_left = 258.0
+margin_right = 658.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 400, 50 )
+text = "Settings"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="UI/Menus/Main Menu"]
+margin_top = 337.0
+margin_right = 917.0
+margin_bottom = 387.0
+alignment = 1
+
+[node name="Credits" type="Button" parent="UI/Menus/Main Menu/HBoxContainer4"]
+margin_left = 258.0
+margin_right = 658.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 400, 50 )
+text = "Credits"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="UI/Menus/Main Menu"]
+margin_top = 402.0
+margin_right = 917.0
+margin_bottom = 452.0
+alignment = 1
+
+[node name="Quit to Desktop" type="Button" parent="UI/Menus/Main Menu/HBoxContainer3"]
+margin_left = 258.0
+margin_right = 658.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 400, 50 )
+text = "Quit to Desktop"
+
+[node name="Settings Menu" type="Control" parent="UI/Menus"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1254.0
+margin_right = 1254.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Menus/Settings Menu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="Control4" type="Control" parent="UI/Menus/Settings Menu/VBoxContainer"]
+margin_top = 34.0
+margin_right = 917.0
+margin_bottom = 184.0
+rect_min_size = Vector2( 0, 150 )
+
+[node name="Master Volume" type="HBoxContainer" parent="UI/Menus/Settings Menu/VBoxContainer"]
+margin_top = 199.0
+margin_right = 917.0
+margin_bottom = 249.0
+alignment = 1
+
+[node name="Master Volume Label" type="Label" parent="UI/Menus/Settings Menu/VBoxContainer/Master Volume"]
+margin_left = 54.0
+margin_top = 11.0
+margin_right = 354.0
+margin_bottom = 38.0
+rect_min_size = Vector2( 300, 0 )
+text = "Master Volume"
+align = 2
+
+[node name="Master Volume Slider" type="HSlider" parent="UI/Menus/Settings Menu/VBoxContainer/Master Volume"]
+margin_left = 362.0
+margin_right = 862.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 500, 50 )
+max_value = 1.0
+step = 0.01
+tick_count = 10
+ticks_on_borders = true
+
+[node name="Music Volume" type="HBoxContainer" parent="UI/Menus/Settings Menu/VBoxContainer"]
+margin_top = 264.0
+margin_right = 917.0
+margin_bottom = 314.0
+alignment = 1
+
+[node name="Music Volume Label" type="Label" parent="UI/Menus/Settings Menu/VBoxContainer/Music Volume"]
+margin_left = 54.0
+margin_top = 11.0
+margin_right = 354.0
+margin_bottom = 38.0
+rect_min_size = Vector2( 300, 0 )
+text = "Music Volume"
+align = 2
+
+[node name="Music Volume Slider" type="HSlider" parent="UI/Menus/Settings Menu/VBoxContainer/Music Volume"]
+margin_left = 362.0
+margin_right = 862.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 500, 50 )
+max_value = 1.0
+step = 0.01
+tick_count = 10
+ticks_on_borders = true
+
+[node name="Sounds Volume" type="HBoxContainer" parent="UI/Menus/Settings Menu/VBoxContainer"]
+margin_top = 329.0
+margin_right = 917.0
+margin_bottom = 379.0
+alignment = 1
+
+[node name="Sounds Volume Label" type="Label" parent="UI/Menus/Settings Menu/VBoxContainer/Sounds Volume"]
+margin_left = 54.0
+margin_top = 11.0
+margin_right = 354.0
+margin_bottom = 38.0
+rect_min_size = Vector2( 300, 0 )
+text = "Sounds Volume"
+align = 2
+
+[node name="Sounds Volume Slider" type="HSlider" parent="UI/Menus/Settings Menu/VBoxContainer/Sounds Volume"]
+margin_left = 362.0
+margin_right = 862.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 500, 50 )
+max_value = 1.0
+step = 0.01
+tick_count = 10
+ticks_on_borders = true
+
+[node name="Control" type="Control" parent="UI/Menus/Settings Menu/VBoxContainer"]
+margin_top = 394.0
+margin_right = 917.0
+margin_bottom = 544.0
+rect_min_size = Vector2( 0, 150 )
+
+[node name="Save" type="HBoxContainer" parent="UI/Menus/Settings Menu/VBoxContainer"]
+margin_top = 559.0
+margin_right = 917.0
+margin_bottom = 624.0
+alignment = 1
+
+[node name="Save Button" type="Button" parent="UI/Menus/Settings Menu/VBoxContainer/Save"]
+margin_left = 283.0
+margin_right = 633.0
+margin_bottom = 65.0
+rect_min_size = Vector2( 350, 65 )
+text = "Save Settings"
+
+[node name="Back to Main Menu" type="Button" parent="UI/Menus/Settings Menu"]
+margin_right = 117.0
+margin_bottom = 47.0
+text = "Back"
+
+[node name="Credits" type="Control" parent="UI/Menus"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 1254.0
+margin_right = 1254.0
+
+[node name="Credits Label" type="RichTextLabel" parent="UI/Menus/Credits"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/normal_font = SubResource( 1 )
+bbcode_enabled = true
+bbcode_text = "
+
+
+[center]
+[b]Art[/b]
+
+Font - Riciery Leal
+
+
+[b]Entertainment[/b]
+
+Cars 2
+Robots
+[/center]"
+text = "
+
+
+
+Art
+
+Font - Riciery Leal
+
+
+Entertainment
+
+Cars 2
+Robots
+"
+scroll_active = false
+
+[node name="Back to Main Menu" type="Button" parent="UI/Menus/Credits"]
+margin_right = 117.0
+margin_bottom = 47.0
+text = "Back"
+
+[node name="Tween" type="Tween" parent="."]
+
+[connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer/Play Game" to="." method="_on_Level_Select_pressed"]
+[connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer2/Settings" to="." method="_on_Settings_pressed"]
+[connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer4/Credits" to="." method="_on_Credits_pressed"]
+[connection signal="pressed" from="UI/Menus/Main Menu/HBoxContainer3/Quit to Desktop" to="." method="_on_Quit_to_Desktop_pressed"]
+[connection signal="value_changed" from="UI/Menus/Settings Menu/VBoxContainer/Master Volume/Master Volume Slider" to="." method="_on_Master_Volume_Slider_value_changed"]
+[connection signal="value_changed" from="UI/Menus/Settings Menu/VBoxContainer/Music Volume/Music Volume Slider" to="." method="_on_Music_Volume_Slider_value_changed"]
+[connection signal="value_changed" from="UI/Menus/Settings Menu/VBoxContainer/Sounds Volume/Sounds Volume Slider" to="." method="_on_Sounds_Volume_Slider_value_changed"]
+[connection signal="pressed" from="UI/Menus/Settings Menu/VBoxContainer/Save/Save Button" to="." method="save_settings"]
+[connection signal="pressed" from="UI/Menus/Settings Menu/Back to Main Menu" to="." method="_on_Back_to_Main_Menu_pressed"]
+[connection signal="pressed" from="UI/Menus/Credits/Back to Main Menu" to="." method="_on_Back_to_Main_Menu_pressed"]
+[connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]

@@ -1,0 +1,130 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Entities/Office Boss.gd" type="Script" id=1]
+[ext_resource path="res://assets/Entities/Office Boss Base.obj" type="ArrayMesh" id=2]
+[ext_resource path="res://assets/Entities/Office Boss Core.obj" type="ArrayMesh" id=3]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 1.5, 2.1, 1.5 )
+
+[sub_resource type="BoxShape" id=2]
+extents = Vector3( 2, 0.5, 2 )
+
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 30, 9, 30 )
+
+[sub_resource type="SpatialMaterial" id=4]
+vertex_color_use_as_albedo = true
+
+[sub_resource type="CubeMesh" id=5]
+material = SubResource( 4 )
+size = Vector3( 0.2, 0.2, 0.2 )
+
+[sub_resource type="Curve" id=6]
+_data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.717822, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.90099, 0.504545 ), -2.59251, -2.59251, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="Gradient" id=7]
+offsets = PoolRealArray( 0, 0.614525 )
+
+[sub_resource type="SpatialMaterial" id=8]
+vertex_color_use_as_albedo = true
+emission_enabled = true
+emission = Color( 1, 0.960784, 0, 1 )
+emission_energy = 3.0
+emission_operator = 0
+emission_on_uv2 = false
+
+[sub_resource type="CubeMesh" id=9]
+material = SubResource( 8 )
+size = Vector3( 0.1, 0.1, 0.1 )
+
+[sub_resource type="Curve" id=10]
+_data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.727723, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
+
+[node name="Office Boss" type="KinematicBody"]
+script = ExtResource( 1 )
+health = 15
+
+[node name="Base Mesh" type="MeshInstance" parent="."]
+mesh = ExtResource( 2 )
+
+[node name="Core Mesh" type="MeshInstance" parent="."]
+mesh = ExtResource( 3 )
+
+[node name="Projectile Spawn Location" type="Position3D" parent="Core Mesh"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 2.7, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+shape = SubResource( 1 )
+
+[node name="CollisionShape2" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
+shape = SubResource( 2 )
+
+[node name="Visible Area" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Visible Area"]
+shape = SubResource( 3 )
+
+[node name="RayCast" type="RayCast" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0 )
+enabled = true
+collision_mask = 209
+
+[node name="Firerate" type="Timer" parent="."]
+
+[node name="Focus" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="Smoke" type="CPUParticles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0 )
+emitting = false
+amount = 100
+lifetime = 4.0
+mesh = SubResource( 5 )
+emission_shape = 1
+emission_sphere_radius = 0.75
+direction = Vector3( 0, 1, 0 )
+spread = 16.93
+flatness = 1.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 1.0
+damping = 0.05
+scale_amount_curve = SubResource( 6 )
+color = Color( 0.588235, 0.588235, 0.588235, 1 )
+color_ramp = SubResource( 7 )
+
+[node name="Spark" type="CPUParticles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+emitting = false
+amount = 16
+lifetime = 1.5
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource( 9 )
+direction = Vector3( 0, 1, 0 )
+spread = 31.1
+initial_velocity = 10.0
+initial_velocity_random = 1.0
+scale_amount_curve = SubResource( 10 )
+color = Color( 0.968627, 1, 0, 1 )
+
+[node name="Constant Spark" type="CPUParticles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+emitting = false
+amount = 16
+lifetime = 1.5
+explosiveness = 1.0
+mesh = SubResource( 9 )
+direction = Vector3( 0, 1, 0 )
+spread = 31.1
+initial_velocity = 10.0
+initial_velocity_random = 1.0
+scale_amount_curve = SubResource( 10 )
+color = Color( 0.968627, 1, 0, 1 )
+
+[connection signal="timeout" from="Firerate" to="." method="_on_Firerate_timeout"]
+[connection signal="timeout" from="Focus" to="." method="_on_Focus_timeout"]

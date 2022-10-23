@@ -8,9 +8,10 @@ export var max_ground_speed := 30.0
 export var jump_strength := 20.0
 export var gravity := 35.0
 export var friction := 0.1
-export var max_extension := 6
+export var max_extension := 7
 export var extension_speed := 1
 export var rotation_speed := 30
+export var health := 5
 
 var _extension := 0.0
 var _velocity := Vector3.ZERO
@@ -57,7 +58,7 @@ func move_in_direction(move_direction, delta):
 	_velocity -= normal * gravity * delta
 	_velocity.y = clamp(_velocity.y, -100, 100)
 	
-	_velocity = move_and_slide_with_snap(_velocity, _snap_vector, Vector3.UP, false, 4, 0.785398, false)
+	_velocity = move_and_slide_with_snap(_velocity, _snap_vector, Vector3.UP, false, 4, 0.785398, true)
 	
 	# at some point i should change this to be the average of all 4 potential planes for the 4 points
 	# https://math.stackexchange.com/questions/2177006/how-to-define-a-plane-based-on-4-points
@@ -73,7 +74,7 @@ func move_in_direction(move_direction, delta):
 		var collision = get_slide_collision(index)
 		var collider = collision.collider
 		if (collider.get_class() == "RigidBody"):
-			var col_force_vec = -collision.normal * col_force # rotate the force along collision normal
+			var col_force_vec = -1*collision.normal * col_force # rotate the force along collision normal
 			# collision pos
 			# > RigidBody.add_force(force, pos) > The position uses the rotation of the global coordinate system, but is centered at the object's origin.
 			# > KinematicCollision.position() > The point of collision, in global coordinates.
@@ -92,6 +93,15 @@ func align_with_y(xform, new_y):
 
 
 func extend(amount):
+	if amount > 0:
+		for body in $"Core/Ceiling Detector".get_overlapping_bodies():
+			if body != self:
+				# don't hit the ceiling
+				return
+	if amount < 0:
+		# TODO: re-enable the treads when floor detection happens again
+		$Treads.disabled = $"Treads/Floor Detection".get_overlapping_bodies().size() == 0
+		
 	_extension = clamp(_extension + amount, 0, max_extension)
 	
 	$Core.translation.y = _extension
@@ -114,23 +124,68 @@ var held_item = null
 onready var tween = $Tween
 
 func set_held_item(node):
+	if (held_item != null):
+		held_item.holder = null
 	held_item = node
+	if (held_item != null):
+		held_item.holder = self
 
 func pickup_box(node):
 	set_held_item(node)
 	# disable the collision when picking the box up
-	node.get_node("CollisionShape").disabled = true
+	node.set_collision(false)
 	node.get_parent().remove_child(node)
 	node.translation = Vector3(0,0,0)
 	$"Core/Right Arm Root/Box Holder/Offset".add_child(node)
 	$"AnimationPlayer".play("Pickup")
+	node.mode = RigidBody.MODE_STATIC
 	tween.interpolate_property(node, "rotation_degrees",
 		node.rotation_degrees, Vector3(0, 0, 0), 0.2,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	#tween.start()
+
+func drop():
+	if held_item is Item:
+		var _global_transform = held_item.global_transform
+		$"Core/Right Arm Root/Item Holder".remove_child(held_item)
+		Globals.root.get_node("Objects").add_child(held_item)
+		held_item.global_transform = _global_transform
+		held_item.set_collision(true)
+		held_item.sleeping = false
+		held_item.mode = RigidBody.MODE_RIGID
+		held_item.linear_velocity = _velocity
+		set_held_item(null)
+		$AnimationPlayer.play("RightArmIn")
+	elif held_item is Box:
+		$AnimationPlayer.play("Place Box")
 
 func _on_AnimationPlayer_animation_finished(anim_name):
 	if anim_name == "Pickup":
 		# i may want to have it re-enable the collision later but for now that is too complicated
 		pass
 		#held_item.get_node("CollisionShape").disabled = false
+	elif anim_name == "Place Box":
+		var _global_transform = held_item.global_transform
+		$"Core/Right Arm Root/Box Holder/Offset".remove_child(held_item)
+		Globals.root.get_node("Objects").add_child(held_item)
+		held_item.global_transform = _global_transform
+		held_item.set_collision(true)
+		held_item.sleeping = false
+		held_item.mode = RigidBody.MODE_RIGID
+		held_item.linear_velocity = _velocity
+		set_held_item(null)
+		
+		$AnimationPlayer.play("ArmsIn")
+
+func damage(damage):
+	set_health(health-damage)
+	if health <= 0:
+		die()
+
+
+func set_health(health_):
+	self.health = health_
+
+
+func die():
+	pass

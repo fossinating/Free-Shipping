@@ -1,9 +1,302 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=9 format=2]
 
+[ext_resource path="res://Entities/Player.gd" type="Script" id=1]
 [ext_resource path="res://Entities/robot.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/UI/Right Click Mouse Icon.png" type="Texture" id=3]
+[ext_resource path="res://assets/UI/Key Icon.png" type="Texture" id=4]
+[ext_resource path="res://assets/UI/Left Click Mouse Icon.png" type="Texture" id=5]
+[ext_resource path="res://assets/UI/UI Theme.tres" type="Theme" id=6]
+[ext_resource path="res://Entities/UI.gd" type="Script" id=7]
+
+[sub_resource type="SphereShape" id=1]
+radius = 3.0
 
 [node name="Player" instance=ExtResource( 2 )]
+script = ExtResource( 1 )
+health = 15
 
 [node name="Third-Person Camera" type="Spatial" parent="Core" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.5 )
 
 [node name="ClippedCamera" type="ClippedCamera" parent="Core/Third-Person Camera" index="0"]
+far = 406.2
+
+[node name="UI" type="Control" parent="Core/Third-Person Camera" index="1"]
+pause_mode = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 6 )
+script = ExtResource( 7 )
+
+[node name="Temporary Controls" type="PanelContainer" parent="Core/Third-Person Camera/UI" index="0"]
+pause_mode = 1
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -19.5
+margin_right = 83.0
+margin_bottom = 19.5
+
+[node name="MarginContainer" type="MarginContainer" parent="Core/Third-Person Camera/UI/Temporary Controls" index="0"]
+margin_right = 83.0
+margin_bottom = 39.0
+custom_constants/margin_right = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer" index="0"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 68.0
+margin_bottom = 34.0
+
+[node name="attack" type="HBoxContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer" index="0"]
+visible = false
+margin_right = 161.0
+margin_bottom = 45.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/attack" index="0"]
+margin_right = 45.0
+margin_bottom = 45.0
+
+[node name="TextureRect" type="TextureRect" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/attack/MarginContainer" index="0"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 35, 35 )
+texture = ExtResource( 5 )
+stretch_mode = 1
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/attack" index="1"]
+margin_left = 53.0
+margin_top = 5.0
+margin_right = 161.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 35 )
+text = "Attack"
+valign = 1
+
+[node name="throw" type="HBoxContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer" index="1"]
+visible = false
+margin_right = 143.0
+margin_bottom = 45.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/throw" index="0"]
+margin_right = 45.0
+margin_bottom = 45.0
+
+[node name="TextureRect" type="TextureRect" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/throw/MarginContainer" index="0"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 35, 35 )
+texture = ExtResource( 3 )
+stretch_mode = 1
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/throw" index="1"]
+margin_left = 53.0
+margin_top = 5.0
+margin_right = 143.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 35 )
+text = "Throw"
+valign = 1
+
+[node name="reach" type="HBoxContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer" index="2"]
+visible = false
+margin_right = 143.0
+margin_bottom = 45.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/reach" index="0"]
+margin_right = 45.0
+margin_bottom = 45.0
+
+[node name="TextureRect" type="TextureRect" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/reach/MarginContainer" index="0"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 35, 35 )
+texture = ExtResource( 3 )
+stretch_mode = 1
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/reach" index="1"]
+margin_left = 53.0
+margin_top = 5.0
+margin_right = 143.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 35 )
+text = "Throw"
+valign = 1
+
+[node name="interact" type="HBoxContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer" index="3"]
+visible = false
+margin_right = 143.0
+margin_bottom = 45.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/interact" index="0"]
+margin_right = 45.0
+margin_bottom = 45.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/interact/MarginContainer" index="0"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/interact/MarginContainer/CenterContainer" index="0"]
+margin_right = 35.0
+margin_bottom = 35.0
+rect_min_size = Vector2( 35, 35 )
+texture = ExtResource( 4 )
+stretch_mode = 1
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/interact/MarginContainer/CenterContainer" index="1"]
+margin_left = 8.0
+margin_top = 4.0
+margin_right = 26.0
+margin_bottom = 31.0
+text = "F"
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Temporary Controls/MarginContainer/VBoxContainer/interact" index="1"]
+margin_left = 53.0
+margin_top = 5.0
+margin_right = 143.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 35 )
+text = "Throw"
+valign = 1
+
+[node name="Health Bar" type="ProgressBar" parent="Core/Third-Person Camera/UI" index="1"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -200.0
+margin_top = -50.0
+max_value = 15.0
+step = 1.0
+value = 15.0
+percent_visible = false
+
+[node name="Elevator Control" type="CenterContainer" parent="Core/Third-Person Camera/UI" index="2"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ColorRect" type="ColorRect" parent="Core/Third-Person Camera/UI/Elevator Control" index="0"]
+margin_right = 1920.0
+margin_bottom = 1080.0
+rect_min_size = Vector2( 1920, 1080 )
+color = Color( 0, 0, 0, 0.392157 )
+
+[node name="GridContainer" type="GridContainer" parent="Core/Third-Person Camera/UI/Elevator Control" index="1"]
+margin_left = 810.0
+margin_top = 230.0
+margin_right = 1110.0
+margin_bottom = 850.0
+custom_constants/vseparation = 30
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Elevator Control/GridContainer" index="0"]
+margin_right = 300.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 300, 100 )
+text = "Pick a floor:"
+align = 1
+valign = 1
+
+[node name="BEZOS Button" type="Button" parent="Core/Third-Person Camera/UI/Elevator Control/GridContainer" index="1"]
+margin_top = 130.0
+margin_right = 300.0
+margin_bottom = 230.0
+rect_min_size = Vector2( 300, 100 )
+disabled = true
+text = "B.E.Z.O.S."
+
+[node name="Kids Toys" type="Button" parent="Core/Third-Person Camera/UI/Elevator Control/GridContainer" index="2"]
+margin_top = 260.0
+margin_right = 300.0
+margin_bottom = 360.0
+rect_min_size = Vector2( 300, 100 )
+disabled = true
+text = "Toys & Games"
+
+[node name="Office Supplies" type="Button" parent="Core/Third-Person Camera/UI/Elevator Control/GridContainer" index="3"]
+margin_top = 390.0
+margin_right = 300.0
+margin_bottom = 490.0
+rect_min_size = Vector2( 300, 100 )
+text = "Office Supplies"
+
+[node name="Maintenance Button" type="Button" parent="Core/Third-Person Camera/UI/Elevator Control/GridContainer" index="4"]
+margin_top = 520.0
+margin_right = 300.0
+margin_bottom = 620.0
+rect_min_size = Vector2( 300, 100 )
+text = "Maintenance"
+
+[node name="Pause Menu" type="Control" parent="Core/Third-Person Camera/UI" index="3"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ColorRect" type="ColorRect" parent="Core/Third-Person Camera/UI/Pause Menu" index="0"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 0.392157 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Core/Third-Person Camera/UI/Pause Menu" index="1"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -150.0
+margin_top = -540.0
+margin_right = 150.0
+margin_bottom = 540.0
+alignment = 1
+
+[node name="Resume Game Button" type="Button" parent="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer" index="0"]
+margin_top = 397.0
+margin_right = 300.0
+margin_bottom = 457.0
+rect_min_size = Vector2( 0, 60 )
+text = "Resume Game"
+
+[node name="Options Button" type="Button" parent="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer" index="1"]
+margin_top = 472.0
+margin_right = 300.0
+margin_bottom = 532.0
+rect_min_size = Vector2( 0, 60 )
+text = "Options"
+
+[node name="Quit To Menu Button" type="Button" parent="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer" index="2"]
+margin_top = 547.0
+margin_right = 300.0
+margin_bottom = 607.0
+rect_min_size = Vector2( 0, 60 )
+text = "Quit To Menu"
+
+[node name="Quit To Desktop Button2" type="Button" parent="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer" index="3"]
+margin_top = 622.0
+margin_right = 300.0
+margin_bottom = 682.0
+rect_min_size = Vector2( 0, 60 )
+text = "Quit To Desktop"
+
+[node name="Item Pickup Area" type="Area" parent="Core" index="4"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Core/Item Pickup Area" index="0"]
+shape = SubResource( 1 )
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Elevator Control/GridContainer/BEZOS Button" to="Core/Third-Person Camera/UI" method="_on_BEZOS_Button_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Elevator Control/GridContainer/Kids Toys" to="Core/Third-Person Camera/UI" method="_on_Kids_Toys_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Elevator Control/GridContainer/Office Supplies" to="Core/Third-Person Camera/UI" method="_on_Office_Supplies_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Elevator Control/GridContainer/Maintenance Button" to="Core/Third-Person Camera/UI" method="_on_Maintenance_Button_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Resume Game Button" to="Core/Third-Person Camera/UI" method="_on_Resume_Game_Button_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Quit To Menu Button" to="Core/Third-Person Camera/UI" method="_on_Quit_To_Menu_Button_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Quit To Desktop Button2" to="Core/Third-Person Camera/UI" method="_on_Quit_Game_Button_pressed"]
+[connection signal="body_entered" from="Core/Right Arm Root/Pickup Area" to="." method="_on_Pickup_Area_body_entered"]
+[connection signal="body_exited" from="Core/Right Arm Root/Pickup Area" to="." method="_on_Pickup_Area_body_exited"]
+[connection signal="body_entered" from="Core/Item Pickup Area" to="." method="_on_Item_Pickup_Area_body_entered"]
+[connection signal="body_exited" from="Core/Item Pickup Area" to="." method="_on_Item_Pickup_Area_body_exited"]
