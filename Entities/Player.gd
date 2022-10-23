@@ -2,6 +2,8 @@ extends Robot
 
 class_name Player
 
+var first_load = true
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -12,7 +14,9 @@ func _ready():
 	elif Globals.save.game_state.player_health == -1337:
 		Globals.save.game_state.player_health = max_health
 	set_health(Globals.save.game_state.player_health)
-	$"Core/Third-Person Camera/UI/Dialogue".queue_message("testing the method")
+	yield(get_tree(), "idle_frame")
+	if first_load and Globals.root.name == "Maintenance" and not Globals.save.dialogue_progress.intro_dialogue:
+		tween.interpolate_property($"Core/Third-Person Camera/UI/Cover", "color:a", 255, 0, 3, Tween.TRANS_SINE, Tween.EASE_IN)
 
 
 var arms_out = false

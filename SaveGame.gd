@@ -20,6 +20,7 @@ export var version := 1
 # We directly reference the characters stats and inventory in the save game resource.
 # When saving this resource, they'll get saved alongside it.
 export var game_state: Resource = GameState.new()
+export var dialogue_progress: Resource = DialogueProgress.new()
 
 
 # The next three functions are just to keep the save API inside of the SaveGame resource.
