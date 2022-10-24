@@ -42,11 +42,13 @@ func _on_Kids_Toys_pressed():
 
 
 func _on_BEZOS_Button_pressed():
-	pass # Replace with function body.
+	$"Elevator Control".visible = false
+	yield(get_tree().create_timer(0.2), "timeout")
+	var _trash = get_tree().change_scene("res://Worlds/Boss Room.tscn")
 
 func show_elevator_controls():
 	$"Elevator Control/GridContainer/Kids Toys".disabled = !Globals.save.game_state.office_boss_beat
-	$"Elevator Control/GridContainer/Kids Toys".disabled = !Globals.save.game_state.kids_boss_beat
+	$"Elevator Control/GridContainer/BEZOS Button".disabled = !Globals.save.game_state.kids_boss_beat
 	$"Elevator Control".visible = true
 
 onready var player = get_node("../../..")

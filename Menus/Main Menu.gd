@@ -39,12 +39,14 @@ func switch_menu(to_node):
 
 
 func _on_Load_Game_pressed():
+	Globals.first_load = true
 	Globals.save = SaveGame.load_savegame()
 	var _trash = get_tree().change_scene("res://Worlds/Maintenance.tscn")
 
 
 # actually the game start
 func _on_Level_Select_pressed():
+	Globals.first_load = true
 	Globals.save = SaveGame.new()
 	var _trash = get_tree().change_scene("res://Worlds/Maintenance.tscn")
 

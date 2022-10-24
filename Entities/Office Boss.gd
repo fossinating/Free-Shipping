@@ -42,6 +42,16 @@ func _on_Focus_timeout():
 	$Firerate.stop()
 
 func die():
+	var keycard_scene = preload("res://Objects/Keycard.tscn")
+	var keycard = keycard_scene.instance()
+	keycard.keycard_type = "office"
+	yield(get_tree(), "idle_frame")
+	Globals.root.get_node("Objects").add_child(keycard)
+	keycard.global_transform = global_transform
+	keycard.global_transform.origin.y += 3
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	keycard.linear_velocity = Vector3(rng.randi_range(-5, 5), 5,rng.randi_range(-5, 5))
 	Globals.save.game_state.office_boss_beat = true
 	$Firerate.stop()
 	set_physics_process(false)

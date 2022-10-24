@@ -2,10 +2,10 @@ extends Robot
 
 class_name Player
 
-var first_load = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	Globals.player = self
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	set_lookaround(false)
 	activate_action(reach_action)
@@ -15,8 +15,24 @@ func _ready():
 		Globals.save.game_state.player_health = max_health
 	set_health(Globals.save.game_state.player_health)
 	yield(get_tree(), "idle_frame")
-	if first_load and Globals.root.name == "Maintenance" and not Globals.save.dialogue_progress.intro_dialogue:
-		tween.interpolate_property($"Core/Third-Person Camera/UI/Cover", "color:a", 255, 0, 3, Tween.TRANS_SINE, Tween.EASE_IN)
+	if Globals.first_load and Globals.root.name == "Maintenance":
+		$"Core/Third-Person Camera/UI/Cover".visible = true
+		Globals.first_load = false
+		global_transform = $"../../Spawn Location".global_transform
+		if Globals.save.dialogue_progress.intro_dialogue:
+			tween.interpolate_property(
+				$"Core/Third-Person Camera/UI/Cover", 
+				"color", 
+				$"Core/Third-Person Camera/UI/Cover".color, 
+				Color(0, 0, 0, 0), 
+				2, 
+				Tween.TRANS_SINE,
+				Tween.EASE_IN)
+			tween.start()
+		else:
+			$"Core/Third-Person Camera/UI/Cover".color.a = 1
+	else:
+		$"Core/Third-Person Camera/UI/Cover".color.a = 0
 
 
 var arms_out = false
@@ -238,3 +254,11 @@ func show_elevator_controls():
 
 func show_ui(ui):
 	get_node("Core/Third-Person Camera/UI/" + ui).visible = true
+
+var keycard_inventory = []
+func pickup_keycard(keycard):
+	keycard_inventory.append(keycard)
+	if keycard == "office":
+		Globals.save.game_state.office_boss_beat = true
+	if keycard == "kids":
+		Globals.save.game_state.kids_boss_beat = true

@@ -65,9 +65,11 @@ tracks/1/keys = {
 }
 
 [sub_resource type="CapsuleShape" id=1]
-height = 0.4
+radius = 2.0
+height = 1.8
 
 [node name="Laptop" instance=ExtResource( 1 )]
+melee_damage = 2
 
 [node name="CollisionShape" parent="." index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.1, -0.4 )
@@ -86,5 +88,5 @@ anims/Attack = SubResource( 4 )
 anims/RESET = SubResource( 5 )
 
 [node name="CollisionShape" parent="Attack Hitbox" index="0"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5 )
 shape = SubResource( 1 )
