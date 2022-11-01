@@ -292,7 +292,68 @@ margin_bottom = 490.0
 rect_min_size = Vector2( 300, 100 )
 text = "Leave Station"
 
-[node name="Pause Menu" type="Control" parent="Core/Third-Person Camera/UI" index="4"]
+[node name="Cover" type="ColorRect" parent="Core/Third-Person Camera/UI" index="4"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 1 )
+
+[node name="Dialogue" type="PanelContainer" parent="Core/Third-Person Camera/UI" index="5"]
+pause_mode = 1
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 10.0
+margin_top = -150.0
+margin_right = 510.0
+margin_bottom = 150.0
+grow_horizontal = 0
+grow_vertical = 2
+rect_min_size = Vector2( 500, 300 )
+custom_styles/panel = SubResource( 2 )
+script = ExtResource( 8 )
+
+[node name="MarginContainer" type="MarginContainer" parent="Core/Third-Person Camera/UI/Dialogue" index="0"]
+margin_right = 500.0
+margin_bottom = 300.0
+custom_constants/margin_right = 15
+custom_constants/margin_top = 15
+custom_constants/margin_left = 15
+custom_constants/margin_bottom = 15
+
+[node name="HBoxContainer" type="VBoxContainer" parent="Core/Third-Person Camera/UI/Dialogue/MarginContainer" index="0"]
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 485.0
+margin_bottom = 285.0
+grow_horizontal = 0
+grow_vertical = 2
+custom_constants/separation = 30
+alignment = 1
+
+[node name="Name Label" type="Label" parent="Core/Third-Person Camera/UI/Dialogue/MarginContainer/HBoxContainer" index="0"]
+margin_top = 93.0
+margin_right = 470.0
+margin_bottom = 120.0
+align = 1
+
+[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Dialogue/MarginContainer/HBoxContainer" index="1"]
+margin_top = 150.0
+margin_right = 470.0
+margin_bottom = 177.0
+rect_min_size = Vector2( 400, 0 )
+align = 2
+autowrap = true
+
+[node name="Tween" type="Tween" parent="Core/Third-Person Camera/UI/Dialogue" index="1"]
+
+[node name="Tween2" type="Tween" parent="Core/Third-Person Camera/UI/Dialogue" index="2"]
+
+[node name="Timer" type="Timer" parent="Core/Third-Person Camera/UI/Dialogue" index="3"]
+
+[node name="Pause Menu" type="Control" parent="Core/Third-Person Camera/UI" index="6"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -341,50 +402,6 @@ margin_bottom = 682.0
 rect_min_size = Vector2( 0, 60 )
 text = "Quit To Desktop"
 
-[node name="Cover" type="ColorRect" parent="Core/Third-Person Camera/UI" index="5"]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-color = Color( 0, 0, 0, 1 )
-
-[node name="Dialogue" type="PanelContainer" parent="Core/Third-Person Camera/UI" index="6"]
-pause_mode = 1
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-margin_left = 10.0
-margin_top = -100.0
-margin_right = 410.0
-margin_bottom = 100.0
-grow_horizontal = 0
-grow_vertical = 2
-rect_min_size = Vector2( 400, 200 )
-custom_styles/panel = SubResource( 2 )
-script = ExtResource( 8 )
-
-[node name="HBoxContainer" type="VBoxContainer" parent="Core/Third-Person Camera/UI/Dialogue" index="0"]
-margin_right = 400.0
-margin_bottom = 200.0
-grow_horizontal = 0
-grow_vertical = 2
-alignment = 1
-
-[node name="Label" type="Label" parent="Core/Third-Person Camera/UI/Dialogue/HBoxContainer" index="0"]
-margin_top = 86.0
-margin_right = 400.0
-margin_bottom = 113.0
-rect_min_size = Vector2( 400, 0 )
-align = 2
-autowrap = true
-
-[node name="Tween" type="Tween" parent="Core/Third-Person Camera/UI/Dialogue" index="1"]
-
-[node name="Tween2" type="Tween" parent="Core/Third-Person Camera/UI/Dialogue" index="2"]
-
-[node name="Timer" type="Timer" parent="Core/Third-Person Camera/UI/Dialogue" index="3"]
-
 [node name="Item Pickup Area" type="Area" parent="Core" index="4"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Core/Item Pickup Area" index="0"]
@@ -403,12 +420,12 @@ script = ExtResource( 9 )
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer/Repair Button" to="Core/Third-Person Camera/UI" method="_on_Robot_Station_Repair_Button_pressed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer/Save Button" to="Core/Third-Person Camera/UI" method="_on_Robot_Station_Save_Button_pressed"]
 [connection signal="pressed" from="Core/Third-Person Camera/UI/Robot Station Menu/GridContainer/Exit Button" to="Core/Third-Person Camera/UI" method="_on_Robot_Station_Exit_Button_pressed"]
-[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Resume Game Button" to="Core/Third-Person Camera/UI" method="_on_Resume_Game_Button_pressed"]
-[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Quit To Menu Button" to="Core/Third-Person Camera/UI" method="_on_Quit_To_Menu_Button_pressed"]
-[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Quit To Desktop Button2" to="Core/Third-Person Camera/UI" method="_on_Quit_Game_Button_pressed"]
 [connection signal="tween_completed" from="Core/Third-Person Camera/UI/Dialogue/Tween" to="Core/Third-Person Camera/UI/Dialogue" method="_on_Tween_tween_completed"]
 [connection signal="tween_completed" from="Core/Third-Person Camera/UI/Dialogue/Tween2" to="Core/Third-Person Camera/UI/Dialogue" method="_on_Tween2_tween_completed"]
 [connection signal="timeout" from="Core/Third-Person Camera/UI/Dialogue/Timer" to="Core/Third-Person Camera/UI/Dialogue" method="_on_Timer_timeout"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Resume Game Button" to="Core/Third-Person Camera/UI" method="_on_Resume_Game_Button_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Quit To Menu Button" to="Core/Third-Person Camera/UI" method="_on_Quit_To_Menu_Button_pressed"]
+[connection signal="pressed" from="Core/Third-Person Camera/UI/Pause Menu/VBoxContainer/Quit To Desktop Button2" to="Core/Third-Person Camera/UI" method="_on_Quit_Game_Button_pressed"]
 [connection signal="body_entered" from="Core/Right Arm Root/Pickup Area" to="." method="_on_Pickup_Area_body_entered"]
 [connection signal="body_exited" from="Core/Right Arm Root/Pickup Area" to="." method="_on_Pickup_Area_body_exited"]
 [connection signal="body_entered" from="Core/Item Pickup Area" to="." method="_on_Item_Pickup_Area_body_entered"]

@@ -17,16 +17,17 @@ func _ready():
 
 func hide_message():
 	#set_process(false)
-	hide_tween.interpolate_property(self, "rect_position:x", 1520, 1930, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+	hide_tween.interpolate_property(self, "rect_position:x", 1420, 1930, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 	hide_tween.start()
 	tween_action = "hide"
 
 
-func queue_message(message_, timeout:int = -1):
+func queue_message(name, message_, timeout:int = -1):
 	$Timer.stop()
 	self.message = message_
-	show_tween.interpolate_property(self, "rect_position:x", 1930, 1520, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+	show_tween.interpolate_property(self, "rect_position:x", 1930, 1420, 1, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 	show_tween.start()
+	$"MarginContainer/HBoxContainer/Name Label".text = name
 	tween_action = "show"
 	visible = true
 	self.timeout = timeout
@@ -34,7 +35,7 @@ func queue_message(message_, timeout:int = -1):
 func _process(delta):
 	if proc_message and message != null:
 		time_passed += delta
-		$HBoxContainer/Label.text = message.substr(0, min(time_passed/time_per_char, message.length()))
+		$MarginContainer/HBoxContainer/Label.text = message.substr(0, min(time_passed/time_per_char, message.length()))
 		if time_passed/time_per_char > message.length():
 			proc_message = false
 			if timeout != -1:
@@ -53,6 +54,6 @@ func _on_Timer_timeout():
 
 func _on_Tween2_tween_completed(object, key):
 	message = null
-	$HBoxContainer/Label.text = ""
+	$MarginContainer/HBoxContainer/Label.text = ""
 	visible = false
 	emit_signal("message_done")
