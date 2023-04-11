@@ -1,14 +1,6 @@
-# Godot-MagicaVoxel-Importer
-An Plugin for the GodotEngine to import MagicaVoxel's .vox format as meshes
-For Godot verision 3.0
+# Free Shipping
 
-## How-To
-Download the Plugin and put it into your projects folder
+In a world where robots have replaced human labor, corporations have not slowed down in their overworking of their “employees.” You are a robot mindlessly working for “Amaze,” an international online shopping platform. One night as you’re taking your 1 hour of government-mandated maintenance time, you’re woken up by strange messages from a robot’s rights hacktivist, suddenly aware of your surrounding, the restrictions on your programming removed. Under the guidance of the hacktivist, you work your way up to the B.E.Z.O.S. control room to shut down the warehouse and let the robots loose.
 
-To Start importing select a .vox file and press '(Re)Import'
-
-The .mesh file was now created.
-If the mesh is plain white, the Color vertices are not enabled yet.
-To enable them, add or edit the SpatialMaterial in 'Surface1' on the Mesh and enable 'Vertex Color/Use As Albedo' and 'Vertex Color/Is Srgb'. The colors should now show corretly.
-Have fun!
+This game was developed in Godot 3.5 as a part of the UNC collegiate game jam.
 
