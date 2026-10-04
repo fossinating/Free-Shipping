@@ -66,7 +66,19 @@ Anything can turn up in the warehouse. Items come in three kinds, and each one s
 | Wheel base | Ride conveyors quickly and get launched off ramps |
 | Detachable head | Send your camera or sensor off separately to scout or trip sensors |
 
-Ideas to explore: crafting (combining items into tools or disguises), and hiding contraband at your charging dock, since guards might search it.
+### Crafting
+
+- Recipes take **2 items, 3 at most**. You never need 5+ items for one result.
+- Results can be ingredients themselves, so recipes form a **nested tree** you climb step by step. Example: tape + box cutter → taped blade; taped blade + magnet → magnetic grabber blade.
+- **No blueprints to find.** A recipe is revealed once you've held one of its ingredients.
+
+### Durability
+
+Tools and weapons wear down with use. You can repair them at your charging dock with materials like tape, which gives common junk lasting value.
+
+### Your charging dock
+
+Your dock is where you stash items. Guards only search it once your suspicion is **high**, so careful players keep a safe stash and sloppy ones risk losing it. Hidden stash spots around the warehouse are another option.
 
 ## Suspicion: pretending to be loyal
 
@@ -88,11 +100,18 @@ This replaces the jam version's "dying sends you to the main menu."
 
 ## Freeing the robots (optional)
 
-You can free other robots along the way, but you don't have to. Freed robots help later, for example by forming a bridge, holding a button, or causing a distraction. The ending changes based on how many you freed.
+You can free other robots along the way, but you don't have to. Freed robots help later, for example by forming a bridge or holding a button. The ending changes based on how many you freed.
+
+**Risk and reward:** each freed robot adds a little to your overall suspicion, since more odd behavior draws more attention. But freed robots can also create **local distractions** that pull security away from you. More freed robots means more pressure and more help.
 
 ## Achievements
 
-- **Stealth run:** finish the game without ever triggering a lockdown or openly fighting. The exact rules are still to be decided.
+Both names are placeholders:
+
+- **Low Profile:** finish the game without ever triggering a lockdown.
+- **Ghost:** finish with no lockdowns and no combat at all.
+
+For Ghost to be possible, **every fight, bosses included, needs a non-combat way through.**
 
 ## Fixes from jam feedback
 
@@ -110,14 +129,6 @@ The project is on Godot 3 (`config_version=4` in `project.godot`), so this shoul
 
 Free Shipping and A Flowering Apocalypse both involve Amaze. If Free Shipping's ending is "the robots escape the warehouse," both games can share a small setting.
 
-## Open questions
-
-- Should crafting be included, and how deep should it go?
-- Do guards search your charging dock for contraband?
-- How do tools and weapons wear out?
-- What exactly counts as a stealth run?
-- How do freed robots avoid suspicion themselves?
-
 ## Scope
 
 This is bigger than the original rework: it's an interconnected map with stealth AI. Ship a vertical slice first:
@@ -126,4 +137,4 @@ This is bigger than the original rework: it's an interconnected map with stealth
 - Receiving, plus one gated zone
 - Suspicion, quota, and lockdown
 - 2 to 3 upgrades and 1 keycard
-- A few tools and disguises
+- A few tools and disguises, with a small crafting tree
