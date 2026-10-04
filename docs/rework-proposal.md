@@ -114,6 +114,13 @@ Anything can turn up in the warehouse. Items come in three kinds, and each one s
 | Wheel base | Ride conveyors quickly and get launched off ramps |
 | Detachable head | Send your camera or sensor off separately to scout or trip sensors |
 
+Upgrades are **found and crafted** from things around the warehouse, not handed out per zone. For example, magnetic hands could be a magnet from Electronics plus your grabber arms.
+
+To keep anyone from getting stuck at a door that needs an upgrade:
+
+- Each upgrade needs one **key part** that sits in a fixed, guaranteed spot (for example, the wheel base motor is always in Receiving).
+- The rest of the recipe uses **common items** you'll naturally pick up.
+
 ### Crafting
 
 - Recipes take **2 items, 3 at most**. You never need 5+ items for one result.
