@@ -226,3 +226,17 @@ This is bigger than the original rework: it's an interconnected map with stealth
 6. Get the level 2 card. The slice ends here.
 
 This covers every core system: control, quota, suspicion, lockdown, crafting, and one upgrade.
+
+### Build milestones
+
+Each milestone should be playable on its own.
+
+1. **Body:** movement, growing and shrinking, and extending arms in a test room. Get the feel right first, since it's what players loved.
+2. **Packages:** grab, carry, throw, and deliver to chutes. Add the quota counter.
+3. **Control mode:** lock inputs to the assigned task, then build the 3 shifts.
+4. **Suspicion:** the meter, cameras, coworkers, and what counts as suspicious.
+5. **Guards:** patrols, investigating, and lockdown, ending with hiding and blending back in.
+6. **Items:** inventory, the dock stash, durability, and crafting.
+7. **Story:** the accident, the maintenance bay, the radio, and Elle's dialogue.
+8. **Levels:** build out Fulfillment and Receiving, with keycards and the wheel base.
+9. **Polish:** saving, wipes, the evidence locker, and fixes from playtests.
