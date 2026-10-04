@@ -153,6 +153,7 @@ After the accident, a core part of the game is hiding that you have free will. T
    - **Aftermath:** suspicion drops, but only to a high level, so you're on thin ice. That zone also gets extra cameras or patrols for a while.
 2. **Wipe.** If you're caught, you're "re-imaged" at the maintenance bay. Elle's help restores your memory, and her dialogue changes with how often you've been wiped.
    - **Cost:** anything you're carrying is confiscated, so stashing at your dock matters. Body upgrades and clearance level are kept.
+   - **Evidence locker:** confiscated items go to an evidence locker in Security, and you can sneak in later to get them back. Security needs level 4, so items lost early stay out of reach for a long time. A smaller holding locker in each zone could fix that if it becomes a problem.
 
 This replaces the jam version's "dying sends you to the main menu."
 
