@@ -60,13 +60,27 @@ The maintenance robot sends you back to work. The static is faint in certain spo
 
 Instead of separate levels, the game takes place in a single warehouse you can explore freely, Metroidvania-style. Areas are gated by **keycards** (access levels) and by **body upgrades** (for example, you need magnetic hands to climb a certain shelf). Coming back to old areas with new abilities turns up new items.
 
-Possible zones (the old floor list, reworked as regions):
+The zones follow how goods actually move through a warehouse, which keeps it feeling organized. Item variety comes from that organization: each zone, and each Fulfillment department, has its own item pool.
 
-- **Receiving:** conveyors, and the rule that everything gets scanned.
-- **Toys:** the existing "Kids" warehouse, with bouncy goods and physics chaos.
-- **Office:** the existing "Office" boss area. Managers are watching, and the "productivity cameras" are everywhere.
-- **Fulfillment AI:** the algorithm rearranges the shelves in real time.
-- **B.E.Z.O.S. control room:** the highest access level.
+| Zone | What it is | Typical items |
+|---|---|---|
+| **Receiving** | Pallets of unopened stock arriving | Bulk basics: tape, straps, packing materials |
+| **Fulfillment** | The largest zone, split into departments by product type (e.g. Hardware, Electronics, Home, Toys) | Varies by department |
+| **Outgoing** | Packed boxes, labels, scanners, loading docks | Disguise items: fake labels, scanner spoofers |
+| **Security** | Cameras, guard bots, the keycard office | High-value gear, high risk |
+| **Returns** | The one messy zone: broken and random goods | Crafting scraps, oddities |
+| **Management** | Offices and server rooms above the warehouse floor, ending in the B.E.Z.O.S. control room | Endgame |
+
+Returns being chaotic in an otherwise orderly building is a deliberate contrast.
+
+### Progression
+
+1. **Early:** Receiving and Fulfillment.
+2. **Mid:** Returns and Outgoing.
+3. **Late:** Security, where you get the top keycard.
+4. **Finale:** Management.
+
+**Target length:** 3 to 5 hours, from the zones and departments, revisiting areas with new upgrades, and optional robot freeing. The jam version was a week of work. This one should feel like a full game.
 
 ### Keycards
 
