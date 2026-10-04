@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/work/package.gd" id="1_package"]
+
+[sub_resource type="PhysicsMaterial" id="Phys_cardboard"]
+friction = 0.9
+bounce = 0.05
+
+[sub_resource type="StandardMaterial3D" id="Mat_cardboard"]
+albedo_color = Color(0.72, 0.55, 0.36, 1)
+roughness = 0.95
+
+[sub_resource type="BoxMesh" id="Mesh_label"]
+size = Vector3(0.3, 0.01, 0.3)
+
+[node name="Package" type="RigidBody3D"]
+mass = 3.0
+physics_material_override = SubResource("Phys_cardboard")
+continuous_cd = true
+script = ExtResource("1_package")
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+material_override = SubResource("Mat_cardboard")
+
+[node name="Label" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_label")

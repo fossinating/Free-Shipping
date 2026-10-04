@@ -1,0 +1,26 @@
+extends Node3D
+## The opening: three controlled shifts, then the accident that frees you.
+
+@export var program: ControlProgram
+@export var hud: Hud
+@export var controller: PlayerController
+@export var accident_site: AccidentSite
+## Start at a later shift (0-based) when testing. -1 plays everything.
+@export var debug_start_shift := -1
+
+
+func _ready() -> void:
+	controller.program = program
+	program.accident.connect(_on_accident)
+	program.start(maxi(debug_start_shift, 0))
+
+
+func _on_accident() -> void:
+	controller.enabled = false
+	accident_site.trigger()
+	await hud.fade(1.0, 0.08, Color.WHITE)
+	await hud.fade(1.0, 0.2, Color.BLACK)
+	await hud.show_card("CONTROL CHIP FAULT\nSIGNAL LOST", 3.0)
+	controller.enabled = true
+	await hud.fade(0.0, 2.0)
+	hud.show_card("Nobody is giving orders anymore.", 4.0)
