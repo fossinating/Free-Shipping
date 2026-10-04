@@ -23,6 +23,7 @@ func cleanup() -> void:
 	_nodes.clear()
 	for action in InputMap.get_actions():
 		Input.action_release(action)
+	Quota.reset(0)
 
 
 func physics_frames(count: int) -> void:

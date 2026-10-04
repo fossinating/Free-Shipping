@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Controls="*res://scripts/controls.gd"
+Quota="*res://scripts/work/quota.gd"
 
 [display]
 

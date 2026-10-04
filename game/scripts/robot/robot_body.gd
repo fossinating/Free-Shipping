@@ -11,6 +11,8 @@ extends CharacterBody3D
 signal hooked
 signal released
 signal mantled
+signal grabbed(package: Package)
+signal let_go(package: Package)
 
 const TREAD_HEIGHT := 0.4
 const MIN_LEG := 0.2
@@ -46,6 +48,18 @@ const HANG_DISTANCE := 0.55
 @export var arm_rate := 12.0
 @export var arm_smoothing := 22.0
 
+@export_group("Carrying")
+## How far below and above the core a package can be and still be grabbed.
+@export var grab_below := 1.5
+@export var grab_above := 0.8
+## Packages within this angle of straight ahead can be grabbed.
+@export var grab_cone_degrees := 55.0
+## How hard walking into loose packages pushes them, in m/s² (floor
+## friction on cardboard is about 9).
+@export var push_strength := 14.0
+## How fast a grabbed package is pulled into the hands.
+@export var carry_smoothing := 25.0
+
 ## Desired horizontal movement in world space, length <= 1.
 var move_input := Vector3.ZERO
 ## -1 to shrink, +1 to grow.
@@ -59,6 +73,7 @@ var extension := 0.0
 var arm_extension := 0.0
 var is_hooked := false
 var is_mantling := false
+var held: Package = null
 
 var _target_extension := 0.0
 var _target_arm := 0.0
@@ -97,6 +112,7 @@ func _physics_process(delta: float) -> void:
 		_process_hanging()
 	else:
 		_process_moving(delta)
+	_carry(delta)
 	_apply_shape()
 
 
@@ -121,6 +137,75 @@ func get_hand_position() -> Vector3:
 ## True when the arms could hook a ledge right now if they were extended.
 func is_ledge_in_reach() -> bool:
 	return not _find_ledge(max_arm_reach).is_empty()
+
+
+## Where a held package sits: just in front of the core.
+func get_hold_position() -> Vector3:
+	var depth := held.size.z / 2.0 if held else 0.3
+	return get_core_position() + get_forward() * (CORE_HALF_DEPTH + 0.1 + depth) \
+		+ Vector3.DOWN * 0.1
+
+
+## The package the hands would grab right now, or null.
+func find_grab_target() -> Package:
+	if held or is_hooked:
+		return null
+	var core := get_core_position()
+	var forward := get_forward()
+	var reach := CORE_HALF_DEPTH + max_arm_reach
+	var best: Package = null
+	var best_score := INF
+	for package: Package in get_tree().get_nodes_in_group(&"packages"):
+		if package.is_held():
+			continue
+		var offset := package.global_position - core
+		if offset.y < -grab_below or offset.y > grab_above:
+			continue
+		var flat := Vector3(offset.x, 0.0, offset.z)
+		var distance := flat.length()
+		if distance > reach + package.size.z / 2.0:
+			continue
+		var angle := forward.angle_to(flat) if distance > 0.01 else 0.0
+		# Right up against the robot, direction doesn't matter.
+		if distance > 0.9 and angle > deg_to_rad(grab_cone_degrees):
+			continue
+		var hit := _ray(core, package.global_position)
+		if not hit.is_empty() and hit.collider != package:
+			continue
+		var score := distance + angle
+		if score < best_score:
+			best_score = score
+			best = package
+	return best
+
+
+func grab(package: Package) -> void:
+	if held or package == null or package.is_held():
+		return
+	held = package
+	package.attach(self)
+	add_collision_exception_with(package)
+	grabbed.emit(package)
+
+
+## Lets go of the held package, giving it this velocity.
+func throw(launch_velocity: Vector3) -> void:
+	if not held:
+		return
+	var package := held
+	held = null
+	package.global_position = _free_spot_for(package)
+	package.detach(launch_velocity)
+	let_go.emit(package)
+	# Don't collide with the package until it has cleared the body.
+	get_tree().create_timer(0.3).timeout.connect(func() -> void:
+		if is_instance_valid(package):
+			remove_collision_exception_with(package))
+
+
+## Sets the held package down in front of the robot.
+func drop() -> void:
+	throw(Vector3(velocity.x, 0.0, velocity.z))
 
 
 ## Pulls the arms back and drops off a ledge if hooked.
@@ -167,6 +252,10 @@ func _update_extension(delta: float) -> void:
 
 
 func _update_arms(delta: float) -> void:
+	if held:
+		var reach := _flat_distance(get_core_position(), held.global_position)
+		arm_extension = maxf(reach - CORE_HALF_DEPTH - held.size.z / 2.0, 0.0)
+		return
 	if is_hooked:
 		if not arms_input:
 			release()
@@ -174,7 +263,7 @@ func _update_arms(delta: float) -> void:
 	_target_arm = max_arm_reach if arms_input else 0.0
 	arm_extension = lerpf(arm_extension, _target_arm, 1.0 - exp(-arm_smoothing * delta))
 	arm_extension = minf(arm_extension, _free_reach())
-	if arms_input and arm_extension > 0.2:
+	if arms_input and arm_extension > 0.2 and not held:
 		var ledge := _find_ledge(arm_extension)
 		if not ledge.is_empty():
 			_hook(ledge)
@@ -190,6 +279,44 @@ func _process_moving(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	move_and_slide()
+	_push_packages(delta)
+
+
+func _push_packages(delta: float) -> void:
+	for i in get_slide_collision_count():
+		var collision := get_slide_collision(i)
+		var body := collision.get_collider() as RigidBody3D
+		if body and not body.freeze:
+			var push := -collision.get_normal()
+			push.y = 0.0
+			body.apply_impulse(push.normalized() * push_strength * body.mass * delta,
+				collision.get_position() - body.global_position)
+
+
+func _carry(delta: float) -> void:
+	if not held:
+		return
+	if not is_instance_valid(held):
+		held = null
+		return
+	var weight := 1.0 - exp(-carry_smoothing * delta)
+	held.global_position = held.global_position.lerp(get_hold_position(), weight)
+	held.global_basis = held.global_basis.slerp(global_basis, weight).orthonormalized()
+
+
+## The hold position if the package fits there, otherwise on top of the core.
+func _free_spot_for(package: Package) -> Vector3:
+	var spot := get_hold_position()
+	var query := PhysicsShapeQueryParameters3D.new()
+	var box := BoxShape3D.new()
+	box.size = package.size - Vector3.ONE * 0.04
+	query.shape = box
+	query.transform = Transform3D(global_basis, spot)
+	query.collision_mask = collision_mask
+	query.exclude = [get_rid(), package.get_rid()]
+	if get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty():
+		return spot
+	return get_core_position() + Vector3.UP * (CORE_HEIGHT / 2.0 + package.size.y / 2.0 + 0.05)
 
 
 func _process_hanging() -> void:

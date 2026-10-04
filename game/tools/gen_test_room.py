@@ -21,6 +21,18 @@ BOXES = [
     ("VentTop", (-11, 3.8, 6), (2, 4.4, 0.5), "wall"),
     # A pillar with a button only a fully grown robot can reach.
     ("ButtonPillar", (8, 3, 6.5), (1, 6, 1), "wall"),
+    # A railing to throw packages over into the sorting chutes.
+    ("Railing", (14, 0.75, 14), (8, 1.5, 0.3), "wall"),
+]
+
+# name, scene/script key, position, extra properties
+INSTANCES = [
+    ("Incoming", "spawner", (12, 0, 4), {}),
+    ("AnyChute", "chute", (16, 0, 4), {}),
+    ("SortingIncoming", "spawner", (14, 0, 10),
+     {"destinations": 'Array[StringName]([&"red", &"blue"])'}),
+    ("RedChute", "chute", (12, 0, 17), {"accepts": '&"red"'}),
+    ("BlueChute", "chute", (16, 0, 17), {"accepts": '&"blue"'}),
 ]
 
 LABELS = [
@@ -28,6 +40,8 @@ LABELS = [
     ("ShelfSign", (5, 4.8, -6.9), "Grow (E) until your core\nis level with the top"),
     ("VentSign", (-11, 2.4, 5.6), "Shrink (Q) to fit"),
     ("ButtonSign", (8, 1.5, 5.9), "Grow to press the button"),
+    ("ChuteSign", (14, 2.5, 4), "Grab a package (Click / F)\nand set it in the chute"),
+    ("SortSign", (14, 2.5, 13.6), "Hold Click / F to aim, release to throw.\nMatch the chute color"),
 ]
 
 COLORS = {
@@ -44,6 +58,8 @@ def main():
         '[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]',
         '[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2_hud"]',
         '[ext_resource type="PackedScene" path="res://scenes/world/push_button.tscn" id="3_button"]',
+        '[ext_resource type="PackedScene" path="res://scenes/work/chute.tscn" id="4_chute"]',
+        '[ext_resource type="Script" path="res://scripts/work/package_spawner.gd" id="5_spawner"]',
     ]
     subs = []
     for name, rgb in COLORS.items():
@@ -82,6 +98,17 @@ def main():
     # Button on the pillar's -Z face, at a height only a tall robot reaches.
     out.append('[node name="HighButton" parent="Geometry" instance=ExtResource("3_button")]\n'
                "transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8, 5, 6)\n")
+    out.append('[node name="Work" type="Node3D" parent="."]\n')
+    for name, kind, (x, y, z), props in INSTANCES:
+        if kind == "chute":
+            header = f'[node name="{name}" parent="Work" instance=ExtResource("4_chute")]'
+        else:
+            header = f'[node name="{name}" type="Marker3D" parent="Work"]'
+        lines = [header, f"transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, {y}, {z})"]
+        if kind == "spawner":
+            lines.append('script = ExtResource("5_spawner")')
+        lines += [f"{key} = {value}" for key, value in props.items()]
+        out.append("\n".join(lines) + "\n")
     out.append('[node name="Player" parent="." instance=ExtResource("1_player")]\n'
                "transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2)\n")
     out.append('[node name="HUD" parent="." node_paths=PackedStringArray("controller") '

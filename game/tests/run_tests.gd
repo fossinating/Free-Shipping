@@ -1,19 +1,21 @@
-extends SceneTree
-## Headless test runner:
-##   godot --headless --path game -s res://tests/run_tests.gd [-- filter]
+extends Node
+## Headless test runner. Run the scene, not the script, so autoloads load:
+##   godot --headless --path game res://tests/run_tests.tscn -- [filter]
 ## Exits non-zero if any test fails.
 
+## Give up if the whole suite takes longer than this (a test hung).
+const TIMEOUT := 600.0
 
-func _initialize() -> void:
+
+func _ready() -> void:
+	get_tree().create_timer(TIMEOUT).timeout.connect(func() -> void:
+		print("\nTIMED OUT")
+		get_tree().quit(2))
 	_run.call_deferred()
 
 
 func _run() -> void:
-	# Autoloads are not loaded for -s scripts, so register them by hand.
-	var controls: Node = load("res://scripts/controls.gd").new()
-	controls.name = "Controls"
-	root.add_child(controls)
-
+	var tree := get_tree()
 	var filter := ""
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0:
@@ -30,10 +32,10 @@ func _run() -> void:
 			if not name.begins_with("test_") or (filter != "" and not name.contains(filter)):
 				continue
 			var test: TestCase = script.new()
-			test.tree = self
+			test.tree = tree
 			await test.call(name)
 			test.cleanup()
-			await physics_frame
+			await tree.physics_frame
 			if test.failures.is_empty():
 				passed += 1
 				print("  ok    %s.%s" % [file.get_basename(), name])
@@ -43,4 +45,4 @@ func _run() -> void:
 				for failure in test.failures:
 					print("          " + failure)
 	print("\n%d passed, %d failed" % [passed, failed])
-	quit(1 if failed > 0 else 0)
+	tree.quit(1 if failed > 0 else 0)

@@ -1,10 +1,14 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2_hud"]
 
 [ext_resource type="PackedScene" path="res://scenes/world/push_button.tscn" id="3_button"]
+
+[ext_resource type="PackedScene" path="res://scenes/work/chute.tscn" id="4_chute"]
+
+[ext_resource type="Script" path="res://scripts/work/package_spawner.gd" id="5_spawner"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_floor"]
 albedo_color = Color(0.32, 0.33, 0.35, 1)
@@ -127,6 +131,12 @@ use_collision = true
 size = Vector3(1, 6, 1)
 material = SubResource("Mat_wall")
 
+[node name="Railing" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.75, 14)
+use_collision = true
+size = Vector3(8, 1.5, 0.3)
+material = SubResource("Mat_wall")
+
 [node name="CrateSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.2, -4.9)
 pixel_size = 0.01
@@ -161,8 +171,48 @@ text = "Grow to press the button"
 font_size = 40
 outline_size = 10
 
+[node name="ChuteSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.5, 4)
+pixel_size = 0.01
+billboard = 1
+text = "Grab a package (Click / F)
+and set it in the chute"
+font_size = 40
+outline_size = 10
+
+[node name="SortSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.5, 13.6)
+pixel_size = 0.01
+billboard = 1
+text = "Hold Click / F to aim, release to throw.
+Match the chute color"
+font_size = 40
+outline_size = 10
+
 [node name="HighButton" parent="Geometry" instance=ExtResource("3_button")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8, 5, 6)
+
+[node name="Work" type="Node3D" parent="."]
+
+[node name="Incoming" type="Marker3D" parent="Work"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 4)
+script = ExtResource("5_spawner")
+
+[node name="AnyChute" parent="Work" instance=ExtResource("4_chute")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 4)
+
+[node name="SortingIncoming" type="Marker3D" parent="Work"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 10)
+script = ExtResource("5_spawner")
+destinations = Array[StringName]([&"red", &"blue"])
+
+[node name="RedChute" parent="Work" instance=ExtResource("4_chute")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 17)
+accepts = &"red"
+
+[node name="BlueChute" parent="Work" instance=ExtResource("4_chute")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 17)
+accepts = &"blue"
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2)
