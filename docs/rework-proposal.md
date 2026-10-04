@@ -30,6 +30,32 @@ The 4.25 for creativity was the highest single raw score across all of fossinati
 4. **Elle.** The signal leads to Elle, an outside hacktivist who becomes your contact.
 5. **The goal.** Reach the top and shut down B.E.Z.O.S.'s control over all the robots.
 
+No humans appear on screen. The warehouse is run entirely by robots, and Elle is only a voice or a signal.
+
+## The opening
+
+The goal is to teach the controls and make the player *feel* controlled, without dragging. It's three short shifts, about 3 to 4 minutes each.
+
+**Under control:** the player can't step outside the assigned task. Inputs only work in ways the company allows, so there's no wandering off. This keeps players on track and makes the loss of free will tangible, which makes the freedom afterward hit harder.
+
+| Shift | Teaches |
+|---|---|
+| 1 | Move, grab, carry, deliver. The quota counter is introduced |
+| 2 | Grow and shrink to reach high shelves and elevator buttons |
+| 3 | Extend arms and throw packages into sorting chutes across a gap (an "efficiency" policy). Something feels off. Then the accident |
+
+### The accident
+
+A leaking roof drips onto exposed wiring next to a "repair ticket pending" sign that's clearly months old. Your task route goes straight through the puddle. You can't refuse, so you walk in, and the shock fries your control chip. The company's own negligence frees you.
+
+### The maintenance bay
+
+You wake on the repair table, able to move freely for the first time. A maintenance robot, still under control, runs diagnostics. You have to fake normal responses or your suspicion rises. This is the scripted, safe introduction to the suspicion meter. During diagnostics, your fried chip picks up faint static that nobody else can hear.
+
+### Back on the floor
+
+The maintenance robot sends you back to work. The static is faint in certain spots, so following it means straying from your route. That's your first real risk, and your first goal: find the source of the signal (Elle).
+
 ## The world: one interconnected warehouse
 
 Instead of separate levels, the game takes place in a single warehouse you can explore freely, Metroidvania-style. Areas are gated by **keycards** (access levels) and by **body upgrades** (for example, you need magnetic hands to climb a certain shelf). Coming back to old areas with new abilities turns up new items.
