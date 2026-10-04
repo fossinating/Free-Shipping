@@ -212,10 +212,17 @@ Free Shipping and A Flowering Apocalypse both involve Amaze. If Free Shipping's 
 
 ## Scope
 
-This is bigger than the original rework: it's an interconnected map with stealth AI. Ship a vertical slice first:
+This is bigger than the original rework: it's an interconnected map with stealth AI. Ship a vertical slice first.
 
-- The opening shifts, the accident, and the maintenance bay
-- Receiving, plus one gated zone
-- Suspicion, quota, and lockdown
-- 2 to 3 upgrades and 1 keycard
-- A few tools and disguises, with a small crafting tree
+### Vertical slice
+
+**Scope:** from the opening to getting the level 2 keycard, about 45 to 60 minutes of play.
+
+1. The three opening shifts and the accident.
+2. The maintenance bay, where you fake the diagnostics.
+3. Fulfillment, with 2 departments: Electronics and one more. You find Elle's radio here.
+4. Get the level 1 card, by fighting or sneaking.
+5. Receiving, which has the wheel base motor.
+6. Get the level 2 card. The slice ends here.
+
+This covers every core system: control, quota, suspicion, lockdown, crafting, and one upgrade.
