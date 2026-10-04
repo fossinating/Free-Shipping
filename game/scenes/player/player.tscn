@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/robot.tscn" id="1_robot"]
+[ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="2_controller"]
+[ext_resource type="Script" path="res://scripts/player/player_camera.gd" id="3_camera"]
+
+[node name="Player" instance=ExtResource("1_robot")]
+
+[node name="Controller" type="Node" parent="." node_paths=PackedStringArray("camera")]
+script = ExtResource("2_controller")
+camera = NodePath("../CameraRig")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("3_camera")
+
+[node name="Pivot" type="Node3D" parent="CameraRig"]
+
+[node name="SpringArm" type="SpringArm3D" parent="CameraRig/Pivot"]
+spring_length = 4.5
+margin = 0.2
+
+[node name="Camera" type="Camera3D" parent="CameraRig/Pivot/SpringArm"]
+current = true
+fov = 70.0
