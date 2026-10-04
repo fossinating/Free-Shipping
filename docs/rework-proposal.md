@@ -1,6 +1,6 @@
 # Free Shipping: Rework Proposal
 
-**Pitch:** a 3D puzzle-platformer about climbing a corporate warehouse with a robot body you can reshape. Drop the combat focus and build around the moment players loved.
+**Pitch:** a 3D stealth-action game about a warehouse robot that breaks free of its programming. You keep pretending to be a loyal worker while you explore the warehouse, collect parts and gear, and work your way up to shut down the company's control over every robot.
 
 ## Background: jam results
 
@@ -18,16 +18,45 @@ The 4.25 for creativity was the highest single raw score across all of fossinati
 ## What to keep
 
 - Climbing by growing and shrinking (Q/E) and extending your arms. It's the one mechanic in the jam version that's truly this game's own.
+- Fighting with whatever you find in the warehouse.
 - The satire: Amaze, the B.E.Z.O.S. control room, the hacktivist Elle, and the 1-hour maintenance break.
-- The maintenance floor where you save and repair.
+- The maintenance bay, where you save and repair.
 
-## Genre change
+## Story setup
 
-It's currently listed as "Action" with two boss rooms. The rework shifts it to about 70% puzzle-platforming and 30% set pieces. The body mechanics are what players liked. The combat, where you bump boxes away before you can grab them, is where the frustration was.
+1. **Under control.** The game opens with you still working for the company. These scripted shifts teach the controls through real warehouse tasks.
+2. **The accident.** A workplace accident glitches you free, and you wake up in the maintenance bay. That room becomes your hub for the rest of the game.
+3. **Alone.** At first nobody knows you're free. Your first goal is to track down a strange signal somewhere in the warehouse.
+4. **Elle.** The signal leads to Elle, an outside hacktivist who becomes your contact.
+5. **The goal.** Reach the top and shut down B.E.Z.O.S.'s control over all the robots.
 
-## Body mechanics, expanded
+## The world: one interconnected warehouse
 
-You unlock body parts from other robots as the story goes on:
+Instead of separate levels, the game takes place in a single warehouse you can explore freely, Metroidvania-style. Areas are gated by **keycards** (access levels) and by **body upgrades** (for example, you need magnetic hands to climb a certain shelf). Coming back to old areas with new abilities turns up new items.
+
+Possible zones (the old floor list, reworked as regions):
+
+- **Receiving:** conveyors, and the rule that everything gets scanned.
+- **Toys:** the existing "Kids" warehouse, with bouncy goods and physics chaos.
+- **Office:** the existing "Office" boss area. Managers are watching, and the "productivity cameras" are everywhere.
+- **Fulfillment AI:** the algorithm rearranges the shelves in real time.
+- **B.E.Z.O.S. control room:** the highest access level.
+
+### Keycards
+
+Each keycard is a choice. You can **fight** for it (fast and loud) or **sneak** to get it (slow and quiet). Promotions were rejected as a progression system because they reward being a good robot for most of the game.
+
+## Items
+
+Anything can turn up in the warehouse. Items come in three kinds, and each one supports a different way to play:
+
+| Kind | Examples | Role |
+|---|---|---|
+| **Upgrades** (permanent) | Magnetic hands, wheel base, detachable head | Open new areas and new ways to move |
+| **Tools and weapons** | Box cutter, tape gun, thrown packages | Loud. Effective, but they raise suspicion |
+| **Disguises** | Fake ID tag, scanner spoofer | Quiet. Help you keep up the act |
+
+### Body upgrades
 
 | Part | What it does |
 |---|---|
@@ -35,38 +64,43 @@ You unlock body parts from other robots as the story goes on:
 | Extending arms *(start)* | Grab, carry and throw packages. Hang from shelves |
 | Magnetic hands | Climb metal shelving and pull crates toward you |
 | Wheel base | Ride conveyors quickly and get launched off ramps |
-| Detachable head | Send your camera or sensor off separately to scout or trip sensors, as in Portal's co-op or Cogmind |
+| Detachable head | Send your camera or sensor off separately to scout or trip sensors |
 
-Every floor's puzzles are built around combining parts you already have with one new part.
+Ideas to explore: crafting (combining items into tools or disguises), and hiding contraband at your charging dock, since guards might search it.
 
-## Structure: climbing the tower
+## Suspicion: pretending to be loyal
 
-Each floor is a department and adds one twist:
+After the accident, a core part of the game is hiding that you have free will. This is inspired by The Escapists' heat system.
 
-1. **Receiving:** conveyors, and the rule that everything gets scanned.
-2. **Toys:** the existing "Kids" warehouse, with bouncy goods and physics chaos.
-3. **Office:** the existing "Office" boss floor, which becomes a stealth puzzle about avoiding managers' "productivity cameras."
-4. **Fulfillment AI:** the algorithm rearranges the shelves in real time.
-5. **B.E.Z.O.S. control room.**
+**What raises suspicion:**
 
-## Stealth instead of health
+- Falling behind on your **work quota**. There's no strict schedule, but you're expected to keep up your deliveries.
+- Security **seeing you** off-task, fighting, carrying odd items, or somewhere you lack clearance for.
 
-Getting caught doesn't kill you. It sends you back to the last maintenance station, where your robot is "re-imaged." Elle's help restores your memory, and the dialogue changes with how often you've been wiped. This fixes the jam version's "dying sends you to the main menu" problem, and it fits the theme.
+**What lowers it:** doing your job, staying out of sight, and using disguise items (for example, a scanner spoofer that fakes deliveries you never made).
 
-## Bosses become puzzles
+**When it maxes out:**
 
-Each department head is beaten using the environment. For example, you redirect a conveyor so it buries a manager bot in returns.
+1. **Lockdown.** Security hunts you. Hide, escape, or fight your way out.
+2. **Wipe.** If you're caught, you're "re-imaged" at the maintenance bay. Elle's help restores your memory, and her dialogue changes with how often you've been wiped.
 
-## Freeing the robots
+This replaces the jam version's "dying sends you to the main menu."
 
-Throughout each floor, other robots can be freed if you solve an optional puzzle. Freed robots help later, for example by forming a bridge or holding a button. The ending changes based on how many you freed. This is the player's reason to explore.
+## Freeing the robots (optional)
+
+You can free other robots along the way, but you don't have to. Freed robots help later, for example by forming a bridge, holding a button, or causing a distraction. The ending changes based on how many you freed.
+
+## Achievements
+
+- **Stealth run:** finish the game without ever triggering a lockdown or openly fighting. The exact rules are still to be decided.
 
 ## Fixes from jam feedback
 
 - Faster grow/shrink and arm extension, with a smooth ease so it's still precise.
 - A larger magnetic pickup radius, and a preview of the throw arc.
+- Combat should be physics-based (throwing and swinging found items), not bumping boxes away before you can grab them.
 - The dialogue system shouldn't break when the player skips ahead. Queue lines and allow interrupts.
-- Show a prompt for the two things that had to be explained in the jam comments: grow to reach elevator buttons, and return to the maintenance floor to save.
+- Show a prompt for the two things that had to be explained in the jam comments: grow to reach elevator buttons, and return to the maintenance bay to save.
 
 ## Technical
 
@@ -76,6 +110,20 @@ The project is on Godot 3 (`config_version=4` in `project.godot`), so this shoul
 
 Free Shipping and A Flowering Apocalypse both involve Amaze. If Free Shipping's ending is "the robots escape the warehouse," both games can share a small setting.
 
+## Open questions
+
+- Should crafting be included, and how deep should it go?
+- Do guards search your charging dock for contraband?
+- How do tools and weapons wear out?
+- What exactly counts as a stealth run?
+- How do freed robots avoid suspicion themselves?
+
 ## Scope
 
-Larger than the Disruptive Dungeons rework, because it's level-designed rather than generated. Ship a vertical slice first: Receiving plus Toys, 3 body parts and 1 puzzle boss.
+This is bigger than the original rework: it's an interconnected map with stealth AI. Ship a vertical slice first:
+
+- The opening shifts, the accident, and the maintenance bay
+- Receiving, plus one gated zone
+- Suspicion, quota, and lockdown
+- 2 to 3 upgrades and 1 keycard
+- A few tools and disguises
