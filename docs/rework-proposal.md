@@ -77,16 +77,22 @@ Returns being chaotic in an otherwise orderly building is a deliberate contrast.
 
 ### Progression
 
-1. **Early:** Receiving and Fulfillment.
-2. **Mid:** Returns and Outgoing.
-3. **Late:** Security, where you get the top keycard.
-4. **Finale:** Management.
+Access uses **tiered clearance**, like a real company badge. Each zone holds the keycard for the next one, and you can fight or sneak to get each card. Some doors can require a clearance level *and* a body upgrade.
+
+| Level | Opens | Where you get it |
+|---|---|---|
+| **0** (default) | Fulfillment | You start with it. Your shifts and Elle's radio are here |
+| **1** | Receiving | Fulfillment |
+| **2** | Returns | Receiving |
+| **3** | Outgoing | Returns |
+| **4** | Security | Outgoing |
+| **5** | Management | Security |
 
 **Target length:** 3 to 5 hours, from the zones and departments, revisiting areas with new upgrades, and optional robot freeing. The jam version was a week of work. This one should feel like a full game.
 
 ### Keycards
 
-Each keycard is a choice. You can **fight** for it (fast and loud) or **sneak** to get it (slow and quiet). Promotions were rejected as a progression system because they reward being a good robot for most of the game.
+Each keycard is a choice. You can **fight** for it (fast and loud) or **sneak** to get it (slow and quiet). See Progression above for the clearance levels. Promotions were rejected as a progression system because they reward being a good robot for most of the game.
 
 ## Items
 
