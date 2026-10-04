@@ -56,6 +56,8 @@ You wake on the repair table, able to move freely for the first time. A maintena
 
 The maintenance robot sends you back to work. The static is faint in certain spots, so following it means straying from your route. That's your first real risk, and your first goal: find the source of the signal (Elle).
 
+The source is a radio on a shelf in **Fulfillment's Electronics department**, just off your normal work route. It's a short first sneak of about 5 to 10 minutes. That keeps the "alone" stretch without stalling the early game.
+
 ## The world: one interconnected warehouse
 
 Instead of separate levels, the game takes place in a single warehouse you can explore freely, Metroidvania-style. Areas are gated by **keycards** (access levels) and by **body upgrades** (for example, you need magnetic hands to climb a certain shelf). Coming back to old areas with new abilities turns up new items.
