@@ -153,6 +153,28 @@ After the accident, a core part of the game is hiding that you have free will. T
 
 This replaces the jam version's "dying sends you to the main menu."
 
+## Security
+
+### What's watching
+
+| Watcher | Behavior |
+|---|---|
+| **Cameras** | Fixed or sweeping. Raise suspicion but can't chase |
+| **Guard bots** | Patrol and investigate. Lead the chase during lockdowns |
+| **Scanners** | Checkpoints at zone doors. Check your badge and what you're carrying |
+| **Coworker bots** | Robots still under control. Don't hunt you, but report anything odd. They're also the robots you can free |
+
+### Detection
+
+You're a worker, so **being seen is fine. What you're doing when you're seen is what matters.**
+
+- **Fine:** walking, carrying normal stock, working in zones your badge allows.
+- **Suspicious:** being somewhere above your clearance, holding contraband or a weapon, running, climbing or growing in odd spots, fighting.
+
+Watchers differ: cameras only see what's in their view, guard bots also hear noise, and coworkers only notice really obvious things.
+
+**Under review:** falling behind on quota makes every watcher more sensitive, and a guard bot may come check on you. Catching up on quota clears it.
+
 ## Freeing the robots (optional)
 
 You can free other robots along the way, but you don't have to. Freed robots help later, for example by forming a bridge or holding a button. The ending changes based on how many you freed.
