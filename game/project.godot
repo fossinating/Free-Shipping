@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 
 Controls="*res://scripts/controls.gd"
 Quota="*res://scripts/work/quota.gd"
+GameState="*res://scripts/game_state.gd"
+Suspicion="*res://scripts/suspicion/suspicion.gd"
 
 [display]
 

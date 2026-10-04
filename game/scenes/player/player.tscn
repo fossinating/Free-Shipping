@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://scripts/player/player_camera.gd" id="3_camera"]
 [ext_resource type="Script" path="res://scripts/work/throw_arc.gd" id="4_arc"]
 
-[node name="Player" instance=ExtResource("1_robot")]
+[node name="Player" groups=["player"] instance=ExtResource("1_robot")]
 
 [node name="Controller" type="Node" parent="." node_paths=PackedStringArray("camera", "throw_arc")]
 script = ExtResource("2_controller")

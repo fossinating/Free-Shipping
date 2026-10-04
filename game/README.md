@@ -6,7 +6,9 @@ story can be reused, but none of its code is.
 
 Open this `game/` folder in Godot 4.6. The main scene is the opening
 (`scenes/levels/opening.tscn`): three controlled shifts and the accident.
-The sandbox for movement and packages is `scenes/world/test_room.tscn`.
+The sandbox for movement and packages is `scenes/world/test_room.tscn`,
+and the one for suspicion (cameras, coworkers, zones) is
+`scenes/levels/stealth_test.tscn`.
 
 ## Controls
 
@@ -34,8 +36,11 @@ hook it, then shrink to pull yourself up.
   nodes whose `ShiftStep` children are the assigned tasks; while a step is
   active the player's input is filtered to what that step allows (route
   corridor, height, arms, throwing, which packages).
+- `scripts/suspicion/`: the `Suspicion` meter (autoload), `Offenses`
+  (what counts as suspicious), `Zone`s (clearance and where resizing is
+  normal), and `Watcher`s used by security cameras and coworker eyes.
 - Blockout scenes are generated from tables by `tools/gen_test_room.py`
-  and `tools/gen_opening.py` (helpers in `tools/blockout.py`). Edit the
+  and `tools/gen_opening.py` and `tools/gen_stealth_test.py` (helpers in `tools/blockout.py`). Edit the
   table, then rerun the script. Set `debug_start_shift` on the opening's
   root to skip to a later shift.
 

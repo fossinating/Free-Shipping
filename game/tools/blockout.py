@@ -110,6 +110,10 @@ class Scene:
         self._add_node(f'[node name="{name}" parent="{parent}"{_node_paths(node_paths)} '
                        f'instance={res}]', props)
 
+    def override(self, name, parent, props, node_paths=None):
+        """Sets properties on a node that came from an instanced scene."""
+        self._add_node(f'[node name="{name}" parent="{parent}"{_node_paths(node_paths)}]', props)
+
     def scripted(self, name, kind, script_path, parent=".", props=None, pos=None, yaw=0.0,
                  node_paths=None):
         props = {"script": self.ext_resource("Script", script_path), **(props or {})}

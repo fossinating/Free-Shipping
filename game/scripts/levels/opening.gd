@@ -1,6 +1,9 @@
 extends Node3D
 ## The opening: three controlled shifts, then the accident that frees you.
 
+## After the accident, a delivery is still expected about this often.
+const FREE_DELIVERY_INTERVAL := 90.0
+
 @export var program: ControlProgram
 @export var hud: Hud
 @export var controller: PlayerController
@@ -10,6 +13,7 @@ extends Node3D
 
 
 func _ready() -> void:
+	Suspicion.enabled = false
 	controller.program = program
 	program.accident.connect(_on_accident)
 	program.start(maxi(debug_start_shift, 0))
@@ -24,3 +28,8 @@ func _on_accident() -> void:
 	controller.enabled = true
 	await hud.fade(0.0, 2.0)
 	hud.show_card("Nobody is giving orders anymore.", 4.0)
+	# From here on you have to pass as a loyal worker.
+	Quota.reset(0)
+	Quota.expected_interval = FREE_DELIVERY_INTERVAL
+	Suspicion.reset()
+	Suspicion.enabled = true

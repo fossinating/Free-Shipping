@@ -15,6 +15,9 @@ var _denied_time := 0.0
 @onready var _denied: Label = $Denied
 @onready var _card: Label = $Card
 @onready var _fade: ColorRect = $Fade
+@onready var _suspicion: Control = $Suspicion
+@onready var _meter: ProgressBar = $Suspicion/Meter
+@onready var _suspicion_status: Label = $Suspicion/Status
 
 
 func _ready() -> void:
@@ -39,6 +42,7 @@ func _process(delta: float) -> void:
 		_denied.visible = _denied_time > 0.0
 	if program and not program.active:
 		_objective.hide()
+	_update_suspicion()
 	if not controller:
 		return
 	var prompt := controller.get_prompt()
@@ -49,6 +53,25 @@ func _process(delta: float) -> void:
 		_quota.text = "Quota  %d / %d" % [Quota.delivered_count, Quota.target]
 	else:
 		_quota.text = "Delivered  %d" % Quota.delivered_count
+
+
+func _update_suspicion() -> void:
+	_suspicion.visible = Suspicion.enabled
+	if not Suspicion.enabled:
+		return
+	_meter.max_value = Suspicion.MAX
+	_meter.value = Suspicion.value
+	var fill := _meter.get_theme_stylebox("fill") as StyleBoxFlat
+	var t := Suspicion.value / Suspicion.MAX
+	fill.bg_color = Color(0.4, 0.85, 0.4).lerp(Color(1.0, 0.25, 0.2), t)
+	var status: PackedStringArray = []
+	if Suspicion.is_alarmed():
+		status.append("SEEN: " + Suspicion.last_reason)
+	elif Suspicion.is_watched():
+		status.append("Watched")
+	if Suspicion.is_under_review():
+		status.append("UNDER REVIEW: behind on deliveries")
+	_suspicion_status.text = "\n".join(status)
 
 
 func flash_denied(reason: String) -> void:

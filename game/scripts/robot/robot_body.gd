@@ -80,6 +80,9 @@ var arm_extension := 0.0
 var is_hooked := false
 var is_mantling := false
 var held: Package = null
+## When this robot last hit or was hit by something, in seconds since start.
+## Being seen fighting is suspicious.
+var last_fight_time := -INF
 
 var _target_extension := 0.0
 var _target_arm := 0.0

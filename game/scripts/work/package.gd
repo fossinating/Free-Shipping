@@ -18,6 +18,8 @@ const DESTINATION_COLORS := {
 		if is_node_ready():
 			_update_label()
 @export var size := Vector3(0.6, 0.45, 0.6)
+## Carrying this in plain sight is suspicious.
+@export var contraband := false
 
 var holder: Node3D = null
 ## What produced this package, such as a PackageSpawner. Tasks use it to
