@@ -149,7 +149,10 @@ After the accident, a core part of the game is hiding that you have free will. T
 **When it maxes out:**
 
 1. **Lockdown.** Security hunts you. Hide, escape, or fight your way out.
+   - **Ending it:** hide or blend back in (return to work somewhere normal). Lockdown ends once no guard has seen you for a while.
+   - **Aftermath:** suspicion drops, but only to a high level, so you're on thin ice. That zone also gets extra cameras or patrols for a while.
 2. **Wipe.** If you're caught, you're "re-imaged" at the maintenance bay. Elle's help restores your memory, and her dialogue changes with how often you've been wiped.
+   - **Cost:** anything you're carrying is confiscated, so stashing at your dock matters. Body upgrades and clearance level are kept.
 
 This replaces the jam version's "dying sends you to the main menu."
 
