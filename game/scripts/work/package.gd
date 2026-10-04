@@ -20,6 +20,9 @@ const DESTINATION_COLORS := {
 @export var size := Vector3(0.6, 0.45, 0.6)
 
 var holder: Node3D = null
+## What produced this package, such as a PackageSpawner. Tasks use it to
+## tell which packages belong to them.
+var source: Node = null
 
 @onready var _shape: CollisionShape3D = $Shape
 @onready var _mesh: MeshInstance3D = $Mesh

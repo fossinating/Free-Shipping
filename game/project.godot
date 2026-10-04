@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Free Shipping"
 config/description="A warehouse robot breaks free of its programming."
-run/main_scene="res://scenes/world/test_room.tscn"
+run/main_scene="res://scenes/levels/opening.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 

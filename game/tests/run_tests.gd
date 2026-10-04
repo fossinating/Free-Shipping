@@ -8,9 +8,14 @@ const TIMEOUT := 600.0
 
 
 func _ready() -> void:
-	get_tree().create_timer(TIMEOUT).timeout.connect(func() -> void:
+	var watchdog := Timer.new()
+	watchdog.wait_time = TIMEOUT
+	watchdog.one_shot = true
+	watchdog.autostart = true
+	watchdog.timeout.connect(func() -> void:
 		print("\nTIMED OUT")
 		get_tree().quit(2))
+	add_child(watchdog)
 	_run.call_deferred()
 
 

@@ -49,6 +49,9 @@ const HANG_DISTANCE := 0.55
 @export var arm_smoothing := 22.0
 
 @export_group("Carrying")
+## Grab reach past the front of the core with the arms in. Extending the
+## arms reaches up to max_arm_reach instead.
+@export var short_grab_reach := 0.9
 ## How far below and above the core a package can be and still be grabbed.
 @export var grab_below := 1.5
 @export var grab_above := 0.8
@@ -68,6 +71,9 @@ var extension_input := 0.0
 var arms_input := false
 ## Yaw the body turns toward. Ignored while hooked.
 var facing_yaw := 0.0
+## Highest torso extension currently allowed. Control mode lowers this to
+## keep robots at company standard height; the torso shrinks to obey it.
+var extension_limit := INF
 
 var extension := 0.0
 var arm_extension := 0.0
@@ -146,13 +152,14 @@ func get_hold_position() -> Vector3:
 		+ Vector3.DOWN * 0.1
 
 
-## The package the hands would grab right now, or null.
-func find_grab_target() -> Package:
+## The package the hands would grab right now, or null. Pass a reach to
+## ask about a different arm length than the current one.
+func find_grab_target(arm_reach := -1.0) -> Package:
 	if held or is_hooked:
 		return null
 	var core := get_core_position()
 	var forward := get_forward()
-	var reach := CORE_HALF_DEPTH + max_arm_reach
+	var reach := CORE_HALF_DEPTH + (arm_reach if arm_reach >= 0.0 else get_grab_reach())
 	var best: Package = null
 	var best_score := INF
 	for package: Package in get_tree().get_nodes_in_group(&"packages"):
@@ -179,6 +186,11 @@ func find_grab_target() -> Package:
 	return best
 
 
+## How far past the core the hands can grab right now.
+func get_grab_reach() -> float:
+	return max_arm_reach if arms_input else short_grab_reach
+
+
 func grab(package: Package) -> void:
 	if held or package == null or package.is_held():
 		return
@@ -198,9 +210,12 @@ func throw(launch_velocity: Vector3) -> void:
 	package.detach(launch_velocity)
 	let_go.emit(package)
 	# Don't collide with the package until it has cleared the body.
-	get_tree().create_timer(0.3).timeout.connect(func() -> void:
-		if is_instance_valid(package):
-			remove_collision_exception_with(package))
+	get_tree().create_timer(0.3).timeout.connect(_end_collision_exception.bind(package))
+
+
+func _end_collision_exception(package: Variant) -> void:
+	if is_instance_valid(package):
+		remove_collision_exception_with(package)
 
 
 ## Sets the held package down in front of the robot.
@@ -228,8 +243,8 @@ func _update_facing(delta: float) -> void:
 
 
 func _update_extension(delta: float) -> void:
-	_target_extension = clampf(
-		_target_extension + extension_input * extension_rate * delta, 0.0, max_extension)
+	_target_extension = clampf(_target_extension + extension_input * extension_rate * delta,
+		0.0, minf(max_extension, extension_limit))
 	var next := lerpf(extension, _target_extension, 1.0 - exp(-extension_smoothing * delta))
 	if absf(next - _target_extension) < 0.001:
 		next = _target_extension

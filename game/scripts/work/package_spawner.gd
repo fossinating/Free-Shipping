@@ -17,8 +17,9 @@ var _spawned := 0
 
 
 func _ready() -> void:
+	# Start with a row along the spawner's X axis.
 	for i in stock:
-		_spawn(Vector3((i % 2) * 0.9 - 0.45, 0.3, (i / 2) * 0.9))
+		_spawn(global_basis.x * (i - (stock - 1) / 2.0) * 0.9 + Vector3.UP * 0.3)
 
 
 func _physics_process(delta: float) -> void:
@@ -27,7 +28,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_timer = interval
 	if _count_nearby() < stock:
-		_spawn(Vector3(randf_range(-0.4, 0.4), 1.0, randf_range(-0.4, 0.4)))
+		_spawn(global_basis.x * randf_range(-0.5, 0.5) + Vector3.UP * 0.8)
 
 
 func _count_nearby() -> int:
@@ -43,6 +44,9 @@ func _spawn(offset: Vector3) -> void:
 	var package: Package = PACKAGE_SCENE.instantiate()
 	if not destinations.is_empty():
 		package.destination = destinations[_spawned % destinations.size()]
+	package.source = self
 	_spawned += 1
-	package.position = global_position + offset
+	var parent := get_parent()
+	var spot := global_position + offset
+	package.position = (parent as Node3D).to_local(spot) if parent is Node3D else spot
 	get_parent().add_child.call_deferred(package)

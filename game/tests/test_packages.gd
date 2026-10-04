@@ -39,7 +39,7 @@ func _lob(from: Vector3, to: Vector3) -> Vector3:
 
 func test_grab_and_carry() -> void:
 	var robot := await _setup(Vector3(-10, 0.05, -12))
-	var package := _package(Vector3(-10, 0.3, -14))
+	var package := _package(Vector3(-10, 0.3, -13.3))
 	await seconds(0.3)
 	check(robot.find_grab_target() == package, "the package in front should be the grab target")
 	robot.grab(package)
@@ -61,9 +61,19 @@ func test_grab_range() -> void:
 	check(robot.find_grab_target() == null, "packages behind or far away can't be grabbed")
 	behind.queue_free()
 	far.queue_free()
-	_package(Vector3(-10.8, 0.3, -13.6))
+	_package(Vector3(-10.6, 0.3, -13.2))
 	await seconds(0.3)
 	check(robot.find_grab_target() != null, "a package off to the side but in reach can be grabbed")
+
+
+func test_extending_arms_reaches_further() -> void:
+	var robot := await _setup(Vector3(-10, 0.05, -12))
+	var package := _package(Vector3(-10, 0.3, -14.2))
+	await seconds(0.3)
+	check(robot.find_grab_target() == null, "2.2 m away is out of reach with arms in")
+	robot.arms_input = true
+	await seconds(0.3)
+	check(robot.find_grab_target() == package, "extending the arms reaches it")
 
 
 func test_tall_robot_cannot_reach_floor() -> void:
