@@ -1,0 +1,6 @@
+# Godot 4 cache and exports
+.godot/
+/android/
+# The Web preset is kept on purpose (no credentials in it).
+!export_presets.cfg
+*.translation

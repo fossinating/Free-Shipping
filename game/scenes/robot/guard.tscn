@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/robot.tscn" id="1_robot"]
+[ext_resource type="Script" path="res://scripts/robot/guard_brain.gd" id="2_brain"]
+[ext_resource type="Script" path="res://scripts/suspicion/watcher.gd" id="3_watcher"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_guard"]
+albedo_color = Color(0.75, 0.15, 0.15, 1)
+roughness = 0.5
+
+[node name="Guard" instance=ExtResource("1_robot")]
+move_speed = 6.3
+start_extension = 0.8
+
+[node name="Casing" parent="Visual/Core" index="0"]
+material_override = SubResource("Mat_guard")
+
+[node name="Eyes" type="Node3D" parent="Visual/Core" index="5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
+script = ExtResource("3_watcher")
+fov_degrees = 90.0
+view_range = 12.0
+sensitivity = 6.0
+
+[node name="Agent" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.6
+target_desired_distance = 0.8
+radius = 0.6
+
+[node name="Brain" type="Node" parent="."]
+script = ExtResource("2_brain")
+
+[node name="Badge" type="Label3D" parent="Visual/Core"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+pixel_size = 0.006
+billboard = 1
+modulate = Color(1, 0.3, 0.25, 1)
+text = "SECURITY"
+font_size = 40
+outline_size = 10
