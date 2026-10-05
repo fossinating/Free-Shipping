@@ -123,7 +123,8 @@ func get_alert_multiplier(position: Vector3) -> float:
 
 ## Hidden, or doing something a loyal worker would do.
 func is_blending_in(robot: RobotBody) -> bool:
-	return HidingSpot.is_hidden(robot) or (robot.held != null and not robot.held.contraband)
+	return HidingSpot.is_hidden(robot) or (robot.held != null and robot.held.is_stock()
+		and not Inventory.shows_contraband(robot))
 
 
 func _player() -> RobotBody:

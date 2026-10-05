@@ -1,5 +1,6 @@
 extends Node3D
-## Sandbox for suspicion: cameras, coworkers, zones, and a work station.
+## Sandbox level script (stealth_test and item_test): turns suspicion on,
+## expects a delivery every minute, and handles lockdowns and being caught.
 
 const DELIVERY_INTERVAL := 60.0
 

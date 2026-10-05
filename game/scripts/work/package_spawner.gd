@@ -34,7 +34,7 @@ func _physics_process(delta: float) -> void:
 func _count_nearby() -> int:
 	var count := 0
 	for package: Package in get_tree().get_nodes_in_group(&"packages"):
-		if not package.is_held() \
+		if not package.is_held() and package is not Item \
 				and package.global_position.distance_to(global_position) < radius:
 			count += 1
 	return count

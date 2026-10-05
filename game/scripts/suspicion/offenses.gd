@@ -36,15 +36,16 @@ static func evaluate(robot: RobotBody) -> Dictionary:
 	var found := {}
 	var zones := Zone.zones_at(robot)
 	var resizing_ok := false
+	var clearance := GameState.clearance + Inventory.clearance_bonus(robot)
 	for zone in zones:
-		if zone.required_clearance > GameState.clearance:
+		if zone.required_clearance > clearance:
 			found[OFF_LIMITS] = SEVERITY[OFF_LIMITS]
 		resizing_ok = resizing_ok or zone.allow_resize
 	if robot.is_hooked or robot.is_mantling:
 		found[CLIMBING] = SEVERITY[CLIMBING]
 	if robot.extension > NORMAL_EXTENSION and not resizing_ok:
 		found[ODD_HEIGHT] = SEVERITY[ODD_HEIGHT]
-	if robot.held and robot.held.contraband:
+	if Inventory.shows_contraband(robot):
 		found[CONTRABAND] = SEVERITY[CONTRABAND]
 	if Time.get_ticks_msec() / 1000.0 - robot.last_fight_time < FIGHT_MEMORY:
 		found[FIGHTING] = SEVERITY[FIGHTING]

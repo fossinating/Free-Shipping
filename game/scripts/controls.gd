@@ -11,12 +11,17 @@ const KEYS := {
 	"shrink": [KEY_Q],
 	"extend_arms": [KEY_SHIFT],
 	"interact": [KEY_F],
+	"stow": [KEY_R],
+	"cycle_item": [KEY_TAB],
+	"use_item": [KEY_V],
+	"open_dock": [KEY_C],
 	"pause": [KEY_ESCAPE],
 }
 
 const MOUSE_BUTTONS := {
 	"extend_arms": [MOUSE_BUTTON_RIGHT],
 	"interact": [MOUSE_BUTTON_LEFT],
+	"use_item": [MOUSE_BUTTON_MIDDLE],
 }
 
 

@@ -1,7 +1,7 @@
 class_name Chute
 extends Node3D
 ## A sorting chute. Packages dropped or thrown in are delivered; packages
-## meant for another chute get spat back out. The intake reaches a little
+## meant for another chute, and items, get spat back out. The intake reaches a little
 ## above the rim so packages set down at the edge still go in.
 
 signal received(package: Package)
@@ -22,6 +22,8 @@ func _ready() -> void:
 
 
 func takes(package: Package) -> bool:
+	if package is Item:
+		return false
 	return accepts == &"" or package.destination == &"" or package.destination == accepts
 
 
@@ -35,6 +37,7 @@ func _on_body_entered(body: Node3D) -> void:
 		package.queue_free()
 	else:
 		rejected.emit(package)
-		Quota.record_missort(package)
+		if package is not Item:
+			Quota.record_missort(package)
 		package.linear_velocity = Vector3.ZERO
 		package.apply_central_impulse(global_basis * reject_impulse * package.mass)

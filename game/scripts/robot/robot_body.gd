@@ -83,6 +83,8 @@ var held: Package = null
 ## When this robot last hit or was hit by something, in seconds since start.
 ## Being seen fighting is suspicious.
 var last_fight_time := -INF
+## Seconds left before a knocked-back robot can move again.
+var stun_time := 0.0
 
 var _target_extension := 0.0
 var _target_arm := 0.0
@@ -101,6 +103,7 @@ var _query_boxes := {}
 
 
 func _ready() -> void:
+	add_to_group(&"robots")
 	# Each robot resizes its own leg, so it needs its own shape.
 	_leg_shape.shape = _leg_shape.shape.duplicate()
 	for shape_node: CollisionShape3D in [_treads_shape, _leg_shape, _core_shape]:
@@ -114,6 +117,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if is_mantling:
 		return
+	stun_time = maxf(0.0, stun_time - delta)
 	_update_facing(delta)
 	_update_extension(delta)
 	_update_arms(delta)
@@ -210,7 +214,7 @@ func throw(launch_velocity: Vector3) -> void:
 	var package := held
 	held = null
 	package.global_position = _free_spot_for(package)
-	package.detach(launch_velocity)
+	package.detach(launch_velocity, self)
 	let_go.emit(package)
 	# Don't collide with the package until it has cleared the body.
 	get_tree().create_timer(0.3).timeout.connect(_end_collision_exception.bind(package))
@@ -224,6 +228,20 @@ func _end_collision_exception(package: Variant) -> void:
 ## Sets the held package down in front of the robot.
 func drop() -> void:
 	throw(Vector3(velocity.x, 0.0, velocity.z))
+
+
+func is_stunned() -> bool:
+	return stun_time > 0.0
+
+
+## Hit by something: lets go of whatever it holds, gets shoved by `push`
+## (m/s, horizontal) and can't move for `stun_seconds`.
+func knock_back(push: Vector3, stun_seconds: float) -> void:
+	release()
+	if held:
+		drop()
+	velocity = Vector3(push.x, 3.0, push.z)
+	stun_time = maxf(stun_time, stun_seconds)
 
 
 ## Pulls the arms back and drops off a ledge if hooked.
@@ -240,7 +258,7 @@ func _core_offset(ext: float) -> float:
 
 
 func _update_facing(delta: float) -> void:
-	if is_hooked:
+	if is_hooked or is_stunned():
 		return
 	rotation.y = lerp_angle(rotation.y, facing_yaw, 1.0 - exp(-turn_speed * delta))
 
@@ -290,7 +308,7 @@ func _update_arms(delta: float) -> void:
 func _process_moving(delta: float) -> void:
 	var height_t := extension / max_extension if max_extension > 0.0 else 0.0
 	var speed := move_speed * lerpf(1.0, tall_speed_factor, height_t)
-	var target := move_input.limit_length(1.0) * speed
+	var target := Vector3.ZERO if is_stunned() else move_input.limit_length(1.0) * speed
 	var accel := acceleration if is_on_floor() else air_acceleration
 	velocity.x = move_toward(velocity.x, target.x, accel * delta)
 	velocity.z = move_toward(velocity.z, target.z, accel * delta)

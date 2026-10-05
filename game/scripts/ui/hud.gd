@@ -1,12 +1,14 @@
 class_name Hud
 extends CanvasLayer
-## Control hints, context prompts, the quota, and control mode's task
-## readout, denials and shift cards.
+## Control hints, context prompts, the quota, control mode's task readout,
+## denials and shift cards, the inventory, and the dock panel.
 
 @export var controller: PlayerController
 @export var program: ControlProgram
 
 var _denied_time := 0.0
+var _notice_time := 0.0
+var _dock_panel: DockPanel
 
 @onready var _prompt: Label = $Prompt
 @onready var _status: Label = $Status
@@ -19,12 +21,27 @@ var _denied_time := 0.0
 @onready var _meter: ProgressBar = $Suspicion/Meter
 @onready var _suspicion_status: Label = $Suspicion/Status
 @onready var _lockdown: Label = $Lockdown
+@onready var _inventory: Label = $Inventory
+@onready var _notice: Label = $Notice
 
 
 func _ready() -> void:
 	_denied.hide()
 	_card.hide()
 	_objective.hide()
+	_notice.hide()
+	_dock_panel = DockPanel.new()
+	add_child(_dock_panel)
+	if controller:
+		controller.notice.connect(show_notice)
+	GameState.recipe_revealed.connect(func(recipe: int) -> void:
+		var text := "New recipe: " + ItemCatalog.describe_recipe(recipe)
+		# Several recipes revealed at once stack up.
+		if _notice_time > 0.0 and _notice.text.begins_with("New recipe"):
+			text = _notice.text + "\n" + text
+		show_notice(text))
+	GameState.upgrade_installed.connect(func(id: StringName) -> void:
+		show_card("UPGRADE INSTALLED\n" + ItemCatalog.name_of(id), 2.0))
 	if program:
 		program.denied.connect(flash_denied)
 		program.step_started.connect(_on_step_started)
@@ -41,11 +58,16 @@ func _process(delta: float) -> void:
 		_denied_time -= delta
 		_denied.modulate.a = clampf(_denied_time / 0.4, 0.0, 1.0)
 		_denied.visible = _denied_time > 0.0
+	if _notice_time > 0.0:
+		_notice_time -= delta
+		_notice.modulate.a = clampf(_notice_time / 0.5, 0.0, 1.0)
+		_notice.visible = _notice_time > 0.0
 	if program and not program.active:
 		_objective.hide()
 	_update_suspicion()
 	if not controller:
 		return
+	_update_items()
 	var prompt := controller.get_prompt()
 	_prompt.text = prompt
 	_prompt.visible = prompt != ""
@@ -82,6 +104,37 @@ func _update_suspicion() -> void:
 		_lockdown.modulate.a = pulse
 		_lockdown.text = "LOCKDOWN  %d%%\nHide, or blend back in by carrying stock" \
 			% roundi(Security.get_lockdown_progress() * 100.0)
+
+
+func _update_items() -> void:
+	var dock := controller.open_dock
+	if dock != _dock_panel.dock:
+		if dock:
+			_dock_panel.open(dock, controller.inventory)
+		else:
+			_dock_panel.close()
+	var inventory := controller.inventory
+	_inventory.visible = inventory != null and not (program and program.active)
+	if not _inventory.visible:
+		return
+	var lines: PackedStringArray = ["INVENTORY  (Tab to cycle)"]
+	for i in inventory.slots.size():
+		var state := inventory.slots[i]
+		var text := state.get_label() if state else "—"
+		var marker := "▶ " if i == inventory.selected else "   "
+		if state and i == inventory.selected and state.is_contraband():
+			text += "  [VISIBLE]"
+		lines.append("%s%d  %s" % [marker, i + 1, text])
+	if inventory.selected < 0:
+		lines.append("▶ Holstered")
+	_inventory.text = "\n".join(lines)
+
+
+## A short line above the prompt that fades out.
+func show_notice(text: String) -> void:
+	_notice.text = text
+	_notice.show()
+	_notice_time = 2.5
 
 
 func flash_denied(reason: String) -> void:

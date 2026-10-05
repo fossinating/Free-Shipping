@@ -23,8 +23,14 @@ const DESTINATION_COLORS := {
 ## Hitting something faster than this (m/s) makes a noise guards hear.
 @export var loud_impact_speed := 5.0
 @export var noise_radius := 10.0
+## Thrown into a robot faster than this (m/s), it knocks them back.
+@export var hurt_speed := 5.5
+## Seconds a robot hit by this is stunned.
+@export var hurt_stun := 0.8
 
 var holder: Node3D = null
+## Who threw this, until it first hits something.
+var thrown_by: RobotBody = null
 # Speed before this frame's collisions resolved, for impact noise.
 var _speed_before_contact := 0.0
 ## What produced this package, such as a PackageSpawner. Tasks use it to
@@ -55,6 +61,11 @@ func is_held() -> bool:
 	return holder != null
 
 
+## Normal stock a loyal worker would carry. Carrying it helps blend in.
+func is_stock() -> bool:
+	return not contraband
+
+
 ## Picked up: stop simulating and stop colliding until let go.
 func attach(by: Node3D) -> void:
 	holder = by
@@ -63,8 +74,9 @@ func attach(by: Node3D) -> void:
 	collision_mask = 0
 
 
-func detach(launch_velocity: Vector3) -> void:
+func detach(launch_velocity: Vector3, by: RobotBody = null) -> void:
 	holder = null
+	thrown_by = by
 	freeze = false
 	collision_layer = 1
 	collision_mask = 1
@@ -82,6 +94,16 @@ func _physics_process(_delta: float) -> void:
 	_speed_before_contact = linear_velocity.length()
 
 
-func _on_body_entered(_body: Node) -> void:
-	if maxf(_speed_before_contact, linear_velocity.length()) > loud_impact_speed:
+func _on_body_entered(body: Node) -> void:
+	var speed := maxf(_speed_before_contact, linear_velocity.length())
+	if speed > loud_impact_speed:
 		Security.make_noise(global_position, noise_radius)
+	var robot := body as RobotBody
+	if robot and robot != thrown_by and thrown_by != null and speed > hurt_speed:
+		_hurt(robot, speed)
+	thrown_by = null
+
+
+## Hit a robot hard enough to knock it back.
+func _hurt(robot: RobotBody, speed: float) -> void:
+	Combat.hit(thrown_by, robot, linear_velocity, minf(speed * 0.6, 8.0), hurt_stun)

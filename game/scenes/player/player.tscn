@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/robot/robot.tscn" id="1_robot"]
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="2_controller"]
 [ext_resource type="Script" path="res://scripts/player/player_camera.gd" id="3_camera"]
 [ext_resource type="Script" path="res://scripts/work/throw_arc.gd" id="4_arc"]
+[ext_resource type="Script" path="res://scripts/items/inventory.gd" id="5_inventory"]
 
 [node name="Player" groups=["player"] instance=ExtResource("1_robot")]
 
@@ -27,3 +28,6 @@ fov = 70.0
 
 [node name="ThrowArc" type="MeshInstance3D" parent="."]
 script = ExtResource("4_arc")
+
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("5_inventory")

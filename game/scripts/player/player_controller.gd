@@ -1,6 +1,10 @@
 class_name PlayerController
 extends Node
-## Turns player input into intent for the robot body it is attached to.
+## Turns player input into intent for the robot body it is attached to,
+## and drives its inventory and charging dock.
+
+## Something happened worth a short line on the HUD.
+signal notice(text: String)
 
 ## Presses shorter than this set a package down instead of throwing it.
 const TAP_TIME := 0.18
@@ -27,21 +31,33 @@ var enabled := true:
 			_charging = false
 			throw_arc.hide()
 
+## The dock whose panel is open, or null. Movement stops while it's open.
+var open_dock: ChargingDock = null:
+	set(value):
+		open_dock = value
+		robot.move_input = Vector3.ZERO
+		robot.extension_input = 0.0
+		robot.arms_input = false
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if value else Input.MOUSE_MODE_CAPTURED
+
 var _charging := false
 var _charge := 0.0
 
 @onready var robot: RobotBody = get_parent()
+@onready var inventory: Inventory = Inventory.of(robot)
 
 
 func _ready() -> void:
 	camera.target = robot
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	if inventory:
+		inventory.message.connect(notice.emit)
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif event is InputEventMouseButton and event.pressed \
+	elif event is InputEventMouseButton and event.pressed and open_dock == null \
 			and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		get_viewport().set_input_as_handled()
@@ -49,6 +65,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if not enabled:
+		return
+	if open_dock:
+		if Input.is_action_just_pressed("open_dock") or Input.is_action_just_pressed("pause") \
+				or not open_dock.is_in_reach(robot):
+			open_dock = null
 		return
 	var input := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var move := Vector3(input.x, 0.0, input.y).rotated(Vector3.UP, camera.yaw)
@@ -64,6 +85,27 @@ func _physics_process(delta: float) -> void:
 	robot.arms_input = arms
 	robot.facing_yaw = camera.yaw
 	_update_hands(delta)
+	if inventory and not _controlled():
+		_update_items()
+
+
+func _update_items() -> void:
+	if Input.is_action_just_pressed("cycle_item"):
+		inventory.cycle()
+	if Input.is_action_just_pressed("stow"):
+		if robot.held:
+			_charging = false
+			inventory.stow_held()
+		elif inventory.get_equipped():
+			inventory.take_out()
+	if Input.is_action_just_pressed("use_item"):
+		var text := inventory.use_equipped()
+		if text != "":
+			notice.emit(text)
+	if Input.is_action_just_pressed("open_dock"):
+		var dock := ChargingDock.find_near(robot)
+		if dock:
+			open_dock = dock
 
 
 func _update_hands(delta: float) -> void:
@@ -107,6 +149,8 @@ func get_throw_velocity() -> Vector3:
 
 ## Short hint for whatever the player can do right now, or "" for none.
 func get_prompt() -> String:
+	if open_dock:
+		return ""
 	if robot.is_hooked:
 		if robot.extension > 0.01:
 			return "Hold Q to shrink and pull yourself up"
@@ -114,9 +158,13 @@ func get_prompt() -> String:
 	if robot.held:
 		if _charging and _charge >= TAP_TIME and (not _controlled() or program.allows_throw()):
 			return "Release to throw"
+		if robot.held is Item and inventory and not _controlled():
+			return "R to stow  ·  Click / F to set down, hold to throw"
 		return "Click / F to set down, hold to aim and throw"
 	if robot.find_grab_target():
 		return "Click / F to grab"
+	if inventory and not _controlled() and ChargingDock.find_near(robot):
+		return "C to open your dock"
 	if not robot.arms_input and robot.find_grab_target(robot.max_arm_reach):
 		return "Hold Shift / Right Mouse to reach further"
 	if robot.is_ledge_in_reach():

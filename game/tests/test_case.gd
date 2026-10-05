@@ -27,6 +27,7 @@ func cleanup() -> void:
 	Quota.expected_interval = 0.0
 	Suspicion.reset()
 	Security.reset()
+	GameState.reset_items()
 
 
 func physics_frames(count: int) -> void:
