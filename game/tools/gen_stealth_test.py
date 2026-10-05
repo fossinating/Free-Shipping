@@ -2,7 +2,8 @@
 
 West: storage aisles where resizing is normal. North-east: a room that
 needs clearance 1, watched by a camera. A sweeping camera covers the main
-floor, and two coworkers patrol.
+floor, two coworkers and two guards patrol, and box stacks in the south
+corners are hiding spots.
 """
 
 from blockout import Scene
@@ -12,6 +13,8 @@ SPAWNER = "res://scripts/work/package_spawner.gd"
 CAMERA = "res://scenes/suspicion/security_camera.tscn"
 COWORKER = "res://scenes/robot/coworker.tscn"
 ZONE = "res://scripts/suspicion/zone.gd"
+HIDING = "res://scripts/suspicion/hiding_spot.gd"
+GUARD = "res://scenes/robot/guard.tscn"
 
 GEOMETRY = [
     ("Floor", (0, -0.5, 0), (40, 1, 40), "floor"),
@@ -27,6 +30,11 @@ GEOMETRY = [
     ("OfficeWallSouthA", (8, 2.5, -6), (4, 5, 0.4), "wall"),
     ("OfficeWallSouthB", (16.5, 2.5, -6), (7, 5, 0.4), "wall"),
     ("OfficeDesk", (16, 0.5, -15), (3, 1, 1.5), "crate"),
+    # Box stacks with a gap to hide in (south-west and south-east corners).
+    ("HideStackWestA", (-17, 1.5, 17), (4, 3, 1), "crate"),
+    ("HideStackWestB", (-18.5, 1.5, 14.5), (1, 3, 4), "crate"),
+    ("HideStackEastA", (17, 1.5, 17), (4, 3, 1), "crate"),
+    ("HideStackEastB", (18.5, 1.5, 14.5), (1, 3, 4), "crate"),
     # Cover on the main floor.
     ("CrateA", (-3, 0.75, -4), (2, 1.5, 2), "crate"),
     ("CrateB", (5, 0.75, 1), (1.5, 1.5, 1.5), "crate"),
@@ -36,15 +44,18 @@ LABELS = [
     ("StorageSign", (-12.5, 4.8, 6.5), "STORAGE AISLES\nResizing is normal here"),
     ("OfficeSign", (11.5, 4.2, -5.6), "SECURITY OFFICE\nCLEARANCE 1"),
     ("WorkSign", (0, 2.6, 8), "Deliveries lower suspicion"),
+    ("HideSign", (-16.5, 3.6, 14.5), "Shrink all the way down to hide"),
 ]
 
 
 def main():
     s = Scene("StealthTest")
-    s.root("res://scripts/levels/stealth_test.gd", node_paths=["hud"],
-           props={"hud": 'NodePath("HUD")'})
+    s.root("res://scripts/levels/stealth_test.gd", node_paths=["hud", "player", "respawn"],
+           props={"hud": 'NodePath("HUD")', "player": 'NodePath("Player")',
+                  "respawn": 'NodePath("Respawn")'})
     s.environment()
-    s.node("Geometry", "Node3D")
+    s.navigation()
+    s.node("Geometry", "Node3D", groups=["navigation_geometry"])
     for name, center, size, material in GEOMETRY:
         s.box(name, center, size, material, parent="Geometry")
     for name, pos, text in LABELS:
@@ -61,6 +72,11 @@ def main():
         props = {"zone_name": f'"{name}"', **props}
         s.scripted(name, "Area3D", ZONE, "Zones", props=props, pos=center)
         shape = s.sub_resource("BoxShape3D", f"Shape_{name}", {"size": f"Vector3{size}"})
+        s.node("Shape", "CollisionShape3D", f"Zones/{name}", {"shape": shape})
+
+    for name, center in [("HideWest", (-17, 1, 14.5)), ("HideEast", (17, 1, 14.5))]:
+        s.scripted(name, "Area3D", HIDING, "Zones", pos=center)
+        shape = s.sub_resource("BoxShape3D", f"Shape_{name}", {"size": "Vector3(2.6, 2, 2.6)"})
         s.node("Shape", "CollisionShape3D", f"Zones/{name}", {"shape": shape})
 
     s.node("Security", "Node3D")
@@ -85,6 +101,20 @@ def main():
         s.override("Brain", f"Coworkers/{name}",
                    {"route": f'NodePath("../../{name}Route")'}, node_paths=["route"])
 
+    s.node("Guards", "Node3D")
+    guards = [
+        ("FloorGuard", (-8, 0.05, -12), [(-8, 0, -12), (2, 0, -12), (2, 0, 0), (-8, 0, 0)]),
+        ("OfficeGuard", (12, 0.05, -9), [(12, 0, -9), (12, 0, -16), (8, 0, -16)]),
+    ]
+    for name, start, points in guards:
+        s.node(f"{name}Route", "Node3D", "Guards")
+        for i, point in enumerate(points):
+            s.node(f"Point{i + 1}", "Marker3D", f"Guards/{name}Route", pos=point)
+        s.instance(name, GUARD, "Guards", pos=start)
+        s.override("Brain", f"Guards/{name}",
+                   {"route": f'NodePath("../../{name}Route")'}, node_paths=["route"])
+
+    s.node("Respawn", "Marker3D", pos=(0, 0.05, 15))
     s.instance("Player", "res://scenes/player/player.tscn", pos=(0, 0.05, 15))
     s.instance("HUD", "res://scenes/ui/hud.tscn", node_paths=["controller"],
                props={"controller": 'NodePath("../Player/Controller")'})

@@ -18,6 +18,7 @@ var _denied_time := 0.0
 @onready var _suspicion: Control = $Suspicion
 @onready var _meter: ProgressBar = $Suspicion/Meter
 @onready var _suspicion_status: Label = $Suspicion/Status
+@onready var _lockdown: Label = $Lockdown
 
 
 func _ready() -> void:
@@ -71,7 +72,16 @@ func _update_suspicion() -> void:
 		status.append("Watched")
 	if Suspicion.is_under_review():
 		status.append("UNDER REVIEW: behind on deliveries")
+	var player := controller.robot if controller else null
+	if player and HidingSpot.is_hidden(player):
+		status.append("Hidden")
 	_suspicion_status.text = "\n".join(status)
+	_lockdown.visible = Security.lockdown
+	if Security.lockdown:
+		var pulse := 0.6 + 0.4 * sin(Time.get_ticks_msec() / 150.0)
+		_lockdown.modulate.a = pulse
+		_lockdown.text = "LOCKDOWN  %d%%\nHide, or blend back in by carrying stock" \
+			% roundi(Security.get_lockdown_progress() * 100.0)
 
 
 func flash_denied(reason: String) -> void:

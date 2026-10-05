@@ -46,19 +46,22 @@ func _physics_process(delta: float) -> void:
 		alarmed = now_alarmed
 		alarm_changed.emit(alarmed)
 	Suspicion.report(self, sees_target, alarmed)
+	if sees_target and Security.lockdown:
+		Security.report_sighting(target.global_position)
 	if not alarmed:
 		return
 	var reason := Offenses.describe(current_offenses)
 	if report_amount > 0.0:
 		if _cooldown <= 0.0:
 			_cooldown = report_cooldown
-			Suspicion.add(report_amount, reason)
+			Suspicion.add(report_amount * Security.get_alert_multiplier(global_position), reason)
 			reported.emit(current_offenses)
 	else:
 		var severity := 0.0
 		for offense in current_offenses:
 			severity += current_offenses[offense]
-		Suspicion.add(severity * sensitivity * delta, reason)
+		Suspicion.add(severity * sensitivity * delta
+			* Security.get_alert_multiplier(global_position), reason)
 
 
 ## Whether the robot's core or treads are in view and not blocked.
@@ -72,6 +75,9 @@ func can_see(robot: RobotBody) -> bool:
 		exclude.append(owner_body.get_rid())
 	if robot.held:
 		exclude.append(robot.held.get_rid())
+	if HidingSpot.is_hidden(robot) \
+			and eye.distance_to(robot.global_position) > HidingSpot.SPOT_DISTANCE:
+		return false
 	for point: Vector3 in [robot.get_core_position(), robot.global_position + Vector3.UP * 0.3]:
 		var offset := point - eye
 		if offset.length() > view_range:

@@ -20,8 +20,13 @@ const DESTINATION_COLORS := {
 @export var size := Vector3(0.6, 0.45, 0.6)
 ## Carrying this in plain sight is suspicious.
 @export var contraband := false
+## Hitting something faster than this (m/s) makes a noise guards hear.
+@export var loud_impact_speed := 5.0
+@export var noise_radius := 10.0
 
 var holder: Node3D = null
+# Speed before this frame's collisions resolved, for impact noise.
+var _speed_before_contact := 0.0
 ## What produced this package, such as a PackageSpawner. Tasks use it to
 ## tell which packages belong to them.
 var source: Node = null
@@ -41,6 +46,9 @@ func _ready() -> void:
 	_mesh.mesh = mesh
 	_label.position.y = size.y / 2.0 + 0.005
 	_update_label()
+	contact_monitor = true
+	max_contacts_reported = 1
+	body_entered.connect(_on_body_entered)
 
 
 func is_held() -> bool:
@@ -68,3 +76,12 @@ func _update_label() -> void:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = DESTINATION_COLORS.get(destination, Color.WHITE)
 	_label.material_override = material
+
+
+func _physics_process(_delta: float) -> void:
+	_speed_before_contact = linear_velocity.length()
+
+
+func _on_body_entered(_body: Node) -> void:
+	if maxf(_speed_before_contact, linear_velocity.length()) > loud_impact_speed:
+		Security.make_noise(global_position, noise_radius)

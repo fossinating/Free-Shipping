@@ -67,6 +67,13 @@ func add(amount: float, reason := "") -> void:
 		maxed.emit()
 
 
+## Sets the meter directly, re-arming `maxed` if it drops below the top.
+func set_value(new_value: float) -> void:
+	_set_value(clampf(new_value, 0.0, MAX))
+	if value < MAX:
+		_maxed = false
+
+
 func relieve(amount: float) -> void:
 	if enabled:
 		_set_value(maxf(floor_value, value - amount))

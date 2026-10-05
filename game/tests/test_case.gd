@@ -24,6 +24,9 @@ func cleanup() -> void:
 	for action in InputMap.get_actions():
 		Input.action_release(action)
 	Quota.reset(0)
+	Quota.expected_interval = 0.0
+	Suspicion.reset()
+	Security.reset()
 
 
 func physics_frames(count: int) -> void:

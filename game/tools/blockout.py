@@ -94,12 +94,31 @@ class Scene:
         lines = [header] + [f"{k} = {v}" for k, v in props.items()]
         self.nodes.append("\n".join(lines))
 
-    def node(self, name, kind, parent=".", props=None, pos=None, yaw=0.0, node_paths=None):
+    def node(self, name, kind, parent=".", props=None, pos=None, yaw=0.0, node_paths=None,
+             groups=None):
         props = dict(props or {})
         if pos is not None:
             props = {"transform": transform(pos, yaw), **props}
+        group_list = ""
+        if groups:
+            group_list = " groups=[" + ", ".join(f'"{g}"' for g in groups) + "]"
         self._add_node(f'[node name="{name}" type="{kind}" parent="{parent}"'
-                       f'{_node_paths(node_paths)}]', props)
+                       f'{_node_paths(node_paths)}{group_list}]', props)
+
+    def navigation(self, geometry_group="navigation_geometry"):
+        """A region that bakes a navmesh at startup from static colliders
+        under nodes in `geometry_group`."""
+        mesh = self.sub_resource("NavigationMesh", "NavMesh", {
+            "geometry_parsed_geometry_type": "1",
+            "geometry_source_geometry_mode": "1",
+            "geometry_source_group_name": f'&"{geometry_group}"',
+            "agent_height": "2.0",
+            "agent_radius": "0.5",
+            "agent_max_climb": "0.25",
+        })
+        self.scripted("Navigation", "NavigationRegion3D",
+                      "res://scripts/world/level_navigation.gd",
+                      props={"navigation_mesh": mesh})
 
     def instance(self, name, scene_path, parent=".", props=None, pos=None, yaw=0.0,
                  node_paths=None):

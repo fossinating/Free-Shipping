@@ -23,3 +23,25 @@ static func zones_at(body: Node3D) -> Array[Zone]:
 		if zone.overlaps_body(body):
 			found.append(zone)
 	return found
+
+
+## Whether a point is inside this zone's box shapes.
+func contains_point(point: Vector3) -> bool:
+	for child in get_children():
+		var shape_node := child as CollisionShape3D
+		if shape_node and shape_node.shape is BoxShape3D:
+			var local := shape_node.global_transform.affine_inverse() * point
+			var half := (shape_node.shape as BoxShape3D).size / 2.0
+			if absf(local.x) <= half.x and absf(local.y) <= half.y and absf(local.z) <= half.z:
+				return true
+	return false
+
+
+func get_volume() -> float:
+	var volume := 0.0
+	for child in get_children():
+		var shape_node := child as CollisionShape3D
+		if shape_node and shape_node.shape is BoxShape3D:
+			var size := (shape_node.shape as BoxShape3D).size
+			volume += size.x * size.y * size.z
+	return volume
