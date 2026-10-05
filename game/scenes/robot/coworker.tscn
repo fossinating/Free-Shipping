@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/robot.tscn" id="1_robot"]
+[ext_resource type="Script" path="res://scripts/robot/coworker_brain.gd" id="2_brain"]
+[ext_resource type="Script" path="res://scripts/suspicion/watcher.gd" id="3_watcher"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_coworker"]
+albedo_color = Color(0.45, 0.55, 0.65, 1)
+roughness = 0.6
+
+[node name="Coworker" instance=ExtResource("1_robot")]
+
+[node name="Casing" parent="Visual/Core" index="0"]
+material_override = SubResource("Mat_coworker")
+
+[node name="Brain" type="Node" parent="."]
+script = ExtResource("2_brain")
+
+[node name="Eyes" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -0.3)
+script = ExtResource("3_watcher")
+fov_degrees = 110.0
+view_range = 7.0
+min_severity = 2.5
+report_amount = 20.0
+report_cooldown = 10.0
+
+[node name="Alert" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+pixel_size = 0.01
+billboard = 1
+modulate = Color(1, 0.3, 0.2, 1)
+text = "!
+Reporting irregularity"
+font_size = 48
+outline_size = 12

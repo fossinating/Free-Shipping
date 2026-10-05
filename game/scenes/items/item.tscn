@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item.gd" id="1_item"]
+
+[sub_resource type="PhysicsMaterial" id="Phys_item"]
+friction = 0.8
+bounce = 0.1
+
+[sub_resource type="BoxMesh" id="Mesh_label"]
+size = Vector3(0.1, 0.01, 0.1)
+
+[node name="Item" type="RigidBody3D"]
+mass = 1.0
+physics_material_override = SubResource("Phys_item")
+continuous_cd = true
+script = ExtResource("1_item")
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+
+[node name="Label" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_label")
+
+[node name="Tag" type="Label3D" parent="."]
+pixel_size = 0.004
+billboard = 1
+modulate = Color(1, 0.95, 0.7, 1)
+text = "Item"
+font_size = 40
+outline_size = 10
