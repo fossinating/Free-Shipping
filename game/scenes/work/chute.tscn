@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/work/chute.gd" id="1_chute"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_bin"]
+albedo_color = Color(0.3, 0.32, 0.35, 1)
+metallic = 0.4
+roughness = 0.6
+
+[sub_resource type="BoxShape3D" id="Shape_intake"]
+size = Vector3(1.6, 1.2, 1.6)
+
+[sub_resource type="BoxMesh" id="Mesh_rim"]
+size = Vector3(1.7, 0.08, 1.7)
+
+[node name="Chute" type="Node3D"]
+script = ExtResource("1_chute")
+
+[node name="Bin" type="CSGCombiner3D" parent="."]
+use_collision = true
+
+[node name="Outer" type="CSGBox3D" parent="Bin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+size = Vector3(1.6, 0.9, 1.6)
+material = SubResource("Mat_bin")
+
+[node name="Hollow" type="CSGBox3D" parent="Bin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+operation = 2
+size = Vector3(1.3, 1.3, 1.3)
+material = SubResource("Mat_bin")
+
+[node name="Rim" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.92, 0)
+mesh = SubResource("Mesh_rim")
+
+[node name="Intake" type="Area3D" parent="."]
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="Intake"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+shape = SubResource("Shape_intake")

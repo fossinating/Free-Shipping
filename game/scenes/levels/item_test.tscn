@@ -1,0 +1,338 @@
+[gd_scene load_steps=24 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/stealth_test.gd" id="1_stealth_test"]
+
+[ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="2_level_navigation"]
+
+[ext_resource type="Script" path="res://scripts/suspicion/zone.gd" id="3_zone"]
+
+[ext_resource type="PackedScene" path="res://scenes/suspicion/security_camera.tscn" id="4_security_camera"]
+
+[ext_resource type="PackedScene" path="res://scenes/items/item.tscn" id="5_item"]
+
+[ext_resource type="PackedScene" path="res://scenes/items/charging_dock.tscn" id="6_charging_dock"]
+
+[ext_resource type="Script" path="res://scripts/work/package_spawner.gd" id="7_package_spawner"]
+
+[ext_resource type="PackedScene" path="res://scenes/work/chute.tscn" id="8_chute"]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/coworker.tscn" id="9_coworker"]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/guard.tscn" id="10_guard"]
+
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="11_player"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="12_hud"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
+sky_top_color = Color(0.35, 0.45, 0.6, 1)
+sky_horizon_color = Color(0.6, 0.62, 0.66, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 2
+ambient_light_color = Color(0.55, 0.57, 0.6, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 2
+
+[sub_resource type="NavigationMesh" id="NavMesh"]
+geometry_parsed_geometry_type = 1
+geometry_source_geometry_mode = 1
+geometry_source_group_name = &"navigation_geometry"
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.25
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.32, 0.33, 0.35, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_wall"]
+albedo_color = Color(0.55, 0.58, 0.62, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_crate"]
+albedo_color = Color(0.62, 0.45, 0.27, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_shelf"]
+albedo_color = Color(0.25, 0.42, 0.7, 1)
+roughness = 0.85
+
+[sub_resource type="BoxShape3D" id="Shape_Fulfillment"]
+size = Vector3(32, 8, 28)
+
+[sub_resource type="BoxShape3D" id="Shape_Storage"]
+size = Vector3(6, 8, 8)
+
+[sub_resource type="BoxShape3D" id="Shape_Records"]
+size = Vector3(9, 5, 10)
+
+[node name="ItemTest" type="Node3D" node_paths=PackedStringArray("hud", "player", "respawn")]
+script = ExtResource("1_stealth_test")
+hud = NodePath("HUD")
+player = NodePath("Player")
+respawn = NodePath("Respawn")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 10, 0)
+light_energy = 0.8
+shadow_enabled = true
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+script = ExtResource("2_level_navigation")
+navigation_mesh = SubResource("NavMesh")
+
+[node name="Geometry" type="Node3D" parent="." groups=["navigation_geometry"]]
+
+[node name="Floor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, -0.5, 0.0)
+use_collision = true
+size = Vector3(32.0, 1.0, 28.0)
+material = SubResource("Mat_floor")
+
+[node name="WallNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 4.0, -14.5)
+use_collision = true
+size = Vector3(34.0, 8.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="WallSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 4.0, 14.5)
+use_collision = true
+size = Vector3(34.0, 8.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="WallWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -16.5, 4.0, 0.0)
+use_collision = true
+size = Vector3(1.0, 8.0, 28.0)
+material = SubResource("Mat_wall")
+
+[node name="WallEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 16.5, 4.0, 0.0)
+use_collision = true
+size = Vector3(1.0, 8.0, 28.0)
+material = SubResource("Mat_wall")
+
+[node name="BenchWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -4.0, 0.5, 0.0)
+use_collision = true
+size = Vector3(4.0, 1.0, 1.2)
+material = SubResource("Mat_crate")
+
+[node name="BenchEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 0.5, 0.0)
+use_collision = true
+size = Vector3(4.0, 1.0, 1.2)
+material = SubResource("Mat_crate")
+
+[node name="TallShelf" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -13.0, 1.5, -11.0)
+use_collision = true
+size = Vector3(3.0, 3.0, 2.0)
+material = SubResource("Mat_shelf")
+
+[node name="RecordsWallWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 7.0, 2.5, -9.0)
+use_collision = true
+size = Vector3(0.4, 5.0, 10.0)
+material = SubResource("Mat_wall")
+
+[node name="RecordsWallSouthA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 9.0, 2.5, -4.0)
+use_collision = true
+size = Vector3(4.0, 5.0, 0.4)
+material = SubResource("Mat_wall")
+
+[node name="RecordsWallSouthB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 14.5, 2.5, -4.0)
+use_collision = true
+size = Vector3(3.0, 5.0, 0.4)
+material = SubResource("Mat_wall")
+
+[node name="RecordsDesk" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 12.0, 0.5, -11.0)
+use_collision = true
+size = Vector3(3.0, 1.0, 1.2)
+material = SubResource("Mat_crate")
+
+[node name="BenchSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -0.5, 2.4, 0.0)
+pixel_size = 0.01
+billboard = 1
+text = "WORKBENCHES
+Grab with F, stow with R"
+font_size = 40
+outline_size = 10
+
+[node name="RecordsSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 11.5, 4.2, -3.6)
+pixel_size = 0.01
+billboard = 1
+text = "RECORDS
+CLEARANCE 1"
+font_size = 40
+outline_size = 10
+
+[node name="ShelfSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -13.0, 4.2, -9.8)
+pixel_size = 0.01
+billboard = 1
+text = "Key part up top"
+font_size = 40
+outline_size = 10
+
+[node name="ChuteSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 8.0, 2.6, 9.0)
+pixel_size = 0.01
+billboard = 1
+text = "Deliveries lower suspicion"
+font_size = 40
+outline_size = 10
+
+[node name="Zones" type="Node3D" parent="."]
+
+[node name="Fulfillment" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 4.0, 0.0)
+script = ExtResource("3_zone")
+zone_name = "Fulfillment"
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/Fulfillment"]
+shape = SubResource("Shape_Fulfillment")
+
+[node name="Storage" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -13.0, 4.0, -10.0)
+script = ExtResource("3_zone")
+zone_name = "Storage"
+allow_resize = true
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/Storage"]
+shape = SubResource("Shape_Storage")
+
+[node name="Records" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 11.5, 2.5, -9.0)
+script = ExtResource("3_zone")
+zone_name = "Records"
+required_clearance = 1
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/Records"]
+shape = SubResource("Shape_Records")
+
+[node name="Security" type="Node3D" parent="."]
+
+[node name="BenchCamera" parent="Security" instance=ExtResource("4_security_camera")]
+transform = Transform3D(-1.0, 0, 0.0, 0, 1, 0, 0.0, 0, -1.0, 0.0, 6.0, -13.6)
+sweep_degrees = 70.0
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="Tape1" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -5.5, 1.1, 0.0)
+item_id = &"tape"
+
+[node name="Tape2" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -4.8, 1.1, 0.0)
+item_id = &"tape"
+
+[node name="Tape3" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -4.1, 1.1, 0.0)
+item_id = &"tape"
+
+[node name="BoxCutter" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -3.0, 1.1, 0.0)
+item_id = &"box_cutter"
+
+[node name="Magnet1" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 1.5, 1.1, 0.0)
+item_id = &"magnet"
+
+[node name="Magnet2" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 2.2, 1.1, 0.0)
+item_id = &"magnet"
+
+[node name="ScrapCircuit" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 1.1, 0.0)
+item_id = &"scrap_circuit"
+
+[node name="Spoofer" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.8, 1.1, 0.0)
+item_id = &"scanner_spoofer"
+
+[node name="FakeId" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 4.6, 1.1, 0.0)
+item_id = &"fake_id"
+
+[node name="Coil" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -13.0, 3.2, -11.0)
+item_id = &"electromagnet_coil"
+
+[node name="RecordsCutter" parent="Items" instance=ExtResource("5_item")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 12.0, 1.1, -11.0)
+item_id = &"box_cutter"
+
+[node name="Dock" parent="." instance=ExtResource("6_charging_dock")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -12.0, 0.0, 10.0)
+
+[node name="Work" type="Node3D" parent="."]
+
+[node name="Station" type="Marker3D" parent="Work"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 4.0, 0.0, 9.0)
+script = ExtResource("7_package_spawner")
+
+[node name="Chute" parent="Work" instance=ExtResource("8_chute")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 11.0, 0.0, 9.0)
+
+[node name="Coworkers" type="Node3D" parent="."]
+
+[node name="WorkerRoute" type="Node3D" parent="Coworkers"]
+
+[node name="Point1" type="Marker3D" parent="Coworkers/WorkerRoute"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 5.0, 0.0, 6.0)
+
+[node name="Point2" type="Marker3D" parent="Coworkers/WorkerRoute"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 11.0, 0.0, 6.0)
+
+[node name="Worker" parent="Coworkers" instance=ExtResource("9_coworker")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 5.0, 0.05, 6.0)
+
+[node name="Brain" parent="Coworkers/Worker" node_paths=PackedStringArray("route")]
+route = NodePath("../../WorkerRoute")
+
+[node name="Guards" type="Node3D" parent="."]
+
+[node name="FloorGuardRoute" type="Node3D" parent="Guards"]
+
+[node name="Point1" type="Marker3D" parent="Guards/FloorGuardRoute"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.0, -6.0)
+
+[node name="Point2" type="Marker3D" parent="Guards/FloorGuardRoute"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 4.0, 0.0, -6.0)
+
+[node name="Point3" type="Marker3D" parent="Guards/FloorGuardRoute"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 4.0, 0.0, 4.0)
+
+[node name="Point4" type="Marker3D" parent="Guards/FloorGuardRoute"]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.0, 4.0)
+
+[node name="FloorGuard" parent="Guards" instance=ExtResource("10_guard")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.05, -6.0)
+
+[node name="Brain" parent="Guards/FloorGuard" node_paths=PackedStringArray("route")]
+route = NodePath("../../FloorGuardRoute")
+
+[node name="Respawn" type="Marker3D" parent="."]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -12.0, 0.05, 8.0)
+
+[node name="Player" parent="." instance=ExtResource("11_player")]
+transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -12.0, 0.05, 8.0)
+
+[node name="HUD" parent="." node_paths=PackedStringArray("controller") instance=ExtResource("12_hud")]
+controller = NodePath("../Player/Controller")
