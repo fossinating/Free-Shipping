@@ -7,7 +7,11 @@ extends Node
 
 func _ready() -> void:
 	var args := OS.get_cmdline_user_args()
-	add_child(load(args[0]).instantiate())
+	var scene: Node = load(args[0]).instantiate()
+	# Levels with an intro start straight on the floor.
+	if "skip_intro" in scene:
+		scene.skip_intro = true
+	add_child(scene)
 	var wait := float(args[2]) if args.size() > 2 else 1.0
 	if args.size() > 4:
 		var camera := Camera3D.new()

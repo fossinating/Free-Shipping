@@ -86,6 +86,8 @@ func _process(delta: float) -> void:
 	_prompt.text = prompt
 	_prompt.visible = prompt != ""
 	_status.text = "Height %.1f m" % controller.robot.get_height()
+	if Suspicion.enabled:
+		_status.text += "  ·  Badge: clearance %d" % GameState.clearance
 	if Quota.target > 0:
 		_quota.text = "Quota  %d / %d" % [Quota.delivered_count, Quota.target]
 	else:
@@ -185,8 +187,8 @@ func show_notice(text: String) -> void:
 	_notice_time = 2.5
 
 
-func flash_denied(reason: String) -> void:
-	_denied.text = "ACTION DENIED\n" + reason
+func flash_denied(reason: String, title := "ACTION DENIED") -> void:
+	_denied.text = title + "\n" + reason
 	_denied.show()
 	_denied_time = 1.6
 

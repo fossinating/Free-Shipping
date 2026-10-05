@@ -18,10 +18,16 @@ const FLAG_DIAGNOSTICS_DONE := &"diagnostics_done"
 const FLAG_DIAGNOSTIC_ANOMALIES := &"diagnostic_anomalies"
 ## You found Elle's radio and heard her out.
 const FLAG_MET_ELLE := &"met_elle"
+## Elle told you where to find a level 1 keycard.
+const FLAG_KEYCARD_HINT := &"keycard_hint"
+## You got the level 2 keycard: the end of the vertical slice.
+const FLAG_SLICE_COMPLETE := &"slice_complete"
 
 ## Badge clearance. 0 opens Fulfillment; each zone holds the next card.
 var clearance := 0:
 	set(value):
+		if value == clearance:
+			return
 		clearance = value
 		clearance_changed.emit(value)
 ## Item ids you've ever held -> true.
@@ -57,6 +63,12 @@ func get_known_recipes() -> Array[int]:
 	return list
 
 
+## Swipes a keycard into your badge. Clearance never goes down.
+func grant_clearance(level: int) -> void:
+	if level > clearance:
+		clearance = level
+
+
 func install_upgrade(id: StringName) -> void:
 	if upgrades.has(id):
 		return
@@ -84,9 +96,10 @@ func has_flag(flag: StringName) -> bool:
 	return flags.has(flag) and flags[flag]
 
 
-## Forgets story progress (tests and new games).
+## Forgets story progress and clearance (tests and new games).
 func reset_story() -> void:
 	flags.clear()
+	clearance = 0
 
 
 ## Forgets item progress (tests and new games).

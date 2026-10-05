@@ -31,8 +31,10 @@ const DESTINATION_COLORS := {
 var holder: Node3D = null
 ## Who threw this, until it first hits something.
 var thrown_by: RobotBody = null
-# Speed before this frame's collisions resolved, for impact noise.
+# Speed before this frame's collisions resolved, for impact noise. Contact
+# signals can arrive a frame after the impact, so this covers two frames.
 var _speed_before_contact := 0.0
+var _last_frame_speed := 0.0
 ## What produced this package, such as a PackageSpawner. Tasks use it to
 ## tell which packages belong to them.
 var source: Node = null
@@ -82,6 +84,9 @@ func detach(launch_velocity: Vector3, by: RobotBody = null) -> void:
 	collision_mask = 1
 	linear_velocity = launch_velocity
 	angular_velocity = Vector3.ZERO
+	# A point-blank throw can hit before the next physics frame records it.
+	_speed_before_contact = launch_velocity.length()
+	_last_frame_speed = _speed_before_contact
 
 
 func _update_label() -> void:
@@ -91,7 +96,9 @@ func _update_label() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	_speed_before_contact = linear_velocity.length()
+	var speed := linear_velocity.length()
+	_speed_before_contact = maxf(speed, _last_frame_speed)
+	_last_frame_speed = speed
 
 
 func _on_body_entered(body: Node) -> void:

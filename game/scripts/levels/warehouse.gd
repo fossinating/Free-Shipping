@@ -1,9 +1,14 @@
 extends Node3D
-## The maintenance bay, your hub, and the slice of Fulfillment it opens
-## onto. After the accident you wake on the repair table and have to fake
-## your way through the diagnostics. Then the maintenance robot sends you
-## back to work, and the static only you can hear leads off your route to
-## Elle's radio in Electronics.
+## The warehouse, as far as the vertical slice goes: the maintenance bay
+## (your hub), Fulfillment with its Electronics and Hardware departments,
+## and Receiving behind a level 1 scanner.
+##
+## After the accident you wake on the repair table and fake your way
+## through the diagnostics. The maintenance robot sends you back to work,
+## and the static only you can hear leads off your route to Elle's radio in
+## Electronics. Elle points you at a level 1 keycard in Hardware; that
+## opens Receiving, which holds the wheel motor and the level 2 keycard.
+## Getting that card ends the slice.
 
 ## Outside of shifts, a delivery is expected about this often.
 const DELIVERY_INTERVAL := 90.0
@@ -16,6 +21,9 @@ const NOTICED_STATIC := 0.16
 ## How close you have to be for M-7 to shoo you out of the bay.
 const SHOO_DISTANCE := 2.5
 const SHOO_COOLDOWN := 30.0
+## After meeting Elle, she brings up keycards after this long even if you
+## never make that delivery.
+const HINT_DELAY := 60.0
 
 @export var hud: Hud
 @export var player: RobotBody
@@ -24,6 +32,8 @@ const SHOO_COOLDOWN := 30.0
 @export var receiver: SignalReceiver
 @export var radio: Radio
 @export var bay_door: Door
+## Walking into Hardware after meeting Elle gets you her keycard hint.
+@export var hardware_zone: Zone
 ## Where a caught robot ends up. Milestone 9 makes this a proper wipe.
 @export var respawn: Marker3D
 ## Start with the diagnostics already done (tests and playtests).
@@ -36,6 +46,7 @@ var on_the_floor := false
 var _heard := {}
 var _awaiting_delivery := false
 var _shoo_time := 0.0
+var _hint_time := HINT_DELAY
 
 
 func _ready() -> void:
@@ -49,9 +60,13 @@ func _ready() -> void:
 	Security.lockdown_ended.connect(_on_lockdown_ended)
 	Security.caught.connect(_on_caught)
 	Quota.delivered.connect(_on_delivered)
+	GameState.clearance_changed.connect(_on_clearance_changed)
 	radio.tuned_in.connect(_on_radio_tuned_in)
 	diagnostics.test_started.connect(_on_test_started)
 	diagnostics.finished.connect(_on_diagnostics_finished)
+	for checkpoint: ScannerCheckpoint in get_tree().get_nodes_in_group(&"checkpoints"):
+		if is_ancestor_of(checkpoint):
+			checkpoint.scanned.connect(_on_scanned.bind(checkpoint))
 	if skip_intro or GameState.has_flag(GameState.FLAG_DIAGNOSTICS_DONE):
 		_back_to_work(false)
 	else:
@@ -75,6 +90,10 @@ func _physics_process(delta: float) -> void:
 		_shoo_time = SHOO_COOLDOWN
 		Dialogue.play(&"bay_return")
 	if GameState.has_flag(GameState.FLAG_MET_ELLE):
+		if not GameState.has_flag(GameState.FLAG_KEYCARD_HINT):
+			_hint_time -= delta
+			if _hint_time <= 0.0 or (hardware_zone and hardware_zone.overlaps_body(player)):
+				_give_keycard_hint()
 		return
 	# Bits of Elle come through as you get closer.
 	var strength := receiver.get_raw_strength()
@@ -117,17 +136,33 @@ func _back_to_work(announce: bool) -> void:
 	_shoo_time = SHOO_COOLDOWN
 	bay_door.open()
 	receiver.ambient = 0.0
-	receiver.tracking = true
+	receiver.tracking = not GameState.has_flag(GameState.FLAG_MET_ELLE)
 	radio.listening = true
 	Quota.expected_interval = DELIVERY_INTERVAL
-	if GameState.has_flag(GameState.FLAG_MET_ELLE):
-		hud.show_objective("Keep up appearances: deliver packages from Station C to Chute C.")
-		return
-	hud.show_objective("Report to Station C and deliver to Chute C.\n"
-		+ "Something keeps hissing in the static...")
-	if announce:
+	_update_objective()
+	if announce and not GameState.has_flag(GameState.FLAG_MET_ELLE):
 		hud.show_notice("Your chip is picking up a signal. Stronger means closer.")
 		Dialogue.play(&"floor_announcement")
+
+
+## The objective for wherever the story is.
+func _update_objective() -> void:
+	if not GameState.has_flag(GameState.FLAG_MET_ELLE):
+		hud.show_objective("Report to Station C and deliver to Chute C.\n"
+			+ "Something keeps hissing in the static...")
+	elif GameState.clearance >= 2:
+		hud.show_objective("You've reached the end of the vertical slice.\n"
+			+ "Keep exploring as long as you like.")
+	elif GameState.clearance == 1:
+		hud.show_objective("Receiving is open. Find a level 2 keycard.\n"
+			+ "Keep an eye out for a wheel motor.")
+	elif _awaiting_delivery:
+		hud.show_objective("Get back on your route before anyone notices: deliver a package.")
+	elif GameState.has_flag(GameState.FLAG_KEYCARD_HINT):
+		hud.show_objective("Get a level 1 keycard in Hardware: off the supervisor,\n"
+			+ "or from his office through the vent.")
+	else:
+		hud.show_objective("Keep up appearances: deliver packages from Station C to Chute C.")
 
 
 func _hear_once(id: StringName) -> void:
@@ -142,17 +177,60 @@ func _on_radio_tuned_in() -> void:
 	receiver.tracking = false
 	hud.hide_objective()
 	hud.show_notice("Signal locked.")
+	_hint_time = HINT_DELAY
 	await Dialogue.play(&"elle_first_contact", true).wait()
 	_awaiting_delivery = true
-	hud.show_objective("Get back on your route before anyone notices: deliver a package.")
+	_update_objective()
 
 
 func _on_delivered(_package: Package) -> void:
 	if not _awaiting_delivery:
 		return
 	_awaiting_delivery = false
-	hud.show_objective("Keep up appearances: deliver packages from Station C to Chute C.")
 	Dialogue.play(&"elle_back_to_work")
+	_give_keycard_hint()
+
+
+func _give_keycard_hint() -> void:
+	if GameState.has_flag(GameState.FLAG_KEYCARD_HINT):
+		return
+	GameState.set_flag(GameState.FLAG_KEYCARD_HINT)
+	_awaiting_delivery = false
+	if GameState.clearance == 0:
+		Dialogue.play(&"elle_keycard_hint")
+	_update_objective()
+
+
+func _on_clearance_changed(level: int) -> void:
+	if level <= 0:
+		return
+	if level >= 2:
+		_end_slice()
+		return
+	hud.show_card("CLEARANCE %d\nYour badge now opens Receiving" % level, 3.0)
+	Dialogue.play(&"elle_receiving")
+	_update_objective()
+
+
+## The level 2 keycard: the end of the vertical slice. You can keep playing.
+func _end_slice() -> void:
+	if GameState.has_flag(GameState.FLAG_SLICE_COMPLETE):
+		return
+	GameState.set_flag(GameState.FLAG_SLICE_COMPLETE)
+	_update_objective()
+	Dialogue.play(&"elle_slice_end", true)
+	hud.show_card("LEVEL 2 KEYCARD\n\nEND OF THE VERTICAL SLICE\n"
+		+ "Thanks for playing. Returns comes next.", 8.0)
+
+
+func _on_scanned(granted: bool, contraband: bool, checkpoint: ScannerCheckpoint) -> void:
+	if not granted:
+		hud.flash_denied("%s requires clearance %d" % [checkpoint.place_name,
+			checkpoint.required_clearance], "ACCESS DENIED")
+	if contraband:
+		hud.show_notice("The scanner logged contraband. Stash it at your dock next time.")
+	elif granted:
+		hud.show_notice("Badge accepted: %s" % checkpoint.place_name)
 
 
 ## The maintenance robot keeps its eyes on you.

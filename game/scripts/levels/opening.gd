@@ -11,7 +11,7 @@ const FREE_DELIVERY_INTERVAL := 90.0
 ## Start at a later shift (0-based) when testing. -1 plays everything.
 @export var debug_start_shift := -1
 ## Where you wake up after the accident. Empty stays here, free to roam.
-@export_file("*.tscn") var next_level := "res://scenes/levels/maintenance_bay.tscn"
+@export_file("*.tscn") var next_level := "res://scenes/levels/warehouse.tscn"
 
 
 func _ready() -> void:

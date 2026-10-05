@@ -64,6 +64,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Installed upgrades change how the body moves.
+	robot.wheels = GameState.has_upgrade(&"wheel_base")
+	robot.magnetic_hands = GameState.has_upgrade(&"magnetic_hands")
 	if not enabled:
 		return
 	if open_dock:
@@ -152,6 +155,8 @@ func get_prompt() -> String:
 	if open_dock:
 		return ""
 	if robot.is_hooked:
+		if robot.is_clinging:
+			return "Hold E to climb the metal"
 		if robot.extension > 0.01:
 			return "Hold Q to shrink and pull yourself up"
 		return "Keep holding Q to climb up"
@@ -169,6 +174,8 @@ func get_prompt() -> String:
 		return "Hold Shift / Right Mouse to reach further"
 	if robot.is_ledge_in_reach():
 		return "Hold Shift / Right Mouse to grab the ledge"
+	if robot.magnetic_hands and robot.is_metal_in_reach():
+		return "Hold Shift / Right Mouse to stick to the metal"
 	return ""
 
 

@@ -7,12 +7,20 @@ extends CharacterBody3D
 ## Climbing: grow until your core is level with a ledge, extend your arms to
 ## hook it, then shrink. While hooked, shrinking pulls your treads up instead
 ## of lowering your core, and once fully shrunk you mantle onto the ledge.
+##
+## Body upgrades are switched on by whoever drives the body: `wheels` (the
+## wheel base: faster, rides conveyors fast, launches off ramps) and
+## `magnetic_hands` (cling to metal shelving at any height and climb it).
 
 signal hooked
 signal released
 signal mantled
 signal grabbed(package: Package)
 signal let_go(package: Package)
+## Took a blow (see knock_back).
+signal knocked_back
+## Left the ground off a ramp.
+signal launched
 
 const TREAD_HEIGHT := 0.4
 const MIN_LEG := 0.2
@@ -25,6 +33,8 @@ const LEDGE_ABOVE_CORE := 0.5
 const MANTLE_TIME := 0.22
 ## How close to the wall the body hangs, measured from its center.
 const HANG_DISTANCE := 0.55
+## Nodes in this group are metal: magnetic hands stick to them.
+const METAL_GROUP := &"metal"
 
 @export_group("Movement")
 @export var move_speed := 6.0
@@ -34,6 +44,12 @@ const HANG_DISTANCE := 0.55
 @export var air_acceleration := 8.0
 @export var gravity := 24.0
 @export var turn_speed := 14.0
+## With the wheel base, the body moves this much faster...
+@export var wheel_speed_factor := 1.5
+## ...and conveyors carry it this much faster than their belt speed.
+@export var wheel_belt_factor := 2.5
+## Magnetic hands climb metal this fast, in m/s.
+@export var magnetic_climb_speed := 2.5
 
 @export_group("Torso")
 @export var start_extension := 0.4
@@ -85,6 +101,14 @@ var held: Package = null
 var last_fight_time := -INF
 ## Seconds left before a knocked-back robot can move again.
 var stun_time := 0.0
+## The wheel base upgrade is installed.
+var wheels := false
+## The magnetic hands upgrade is installed.
+var magnetic_hands := false
+## Flying off a ramp: keeps its momentum until it lands.
+var is_launched := false
+## Hooked onto a metal face by magnetic hands, not onto a ledge.
+var is_clinging := false
 
 var _target_extension := 0.0
 var _target_arm := 0.0
@@ -92,6 +116,9 @@ var _hang_point := Vector3.ZERO
 var _hang_normal := Vector3.ZERO
 var _hang_core_y := 0.0
 var _query_boxes := {}
+## Set by conveyors each physics frame the body rides one.
+var _belt_velocity := Vector3.ZERO
+var _belt_frames := 0
 
 @onready var _treads_shape: CollisionShape3D = $TreadsShape
 @onready var _leg_shape: CollisionShape3D = $LegShape
@@ -150,6 +177,11 @@ func get_hand_position() -> Vector3:
 ## True when the arms could hook a ledge right now if they were extended.
 func is_ledge_in_reach() -> bool:
 	return not _find_ledge(max_arm_reach).is_empty()
+
+
+## True when magnetic hands could cling to metal in front right now.
+func is_metal_in_reach() -> bool:
+	return not _find_metal(max_arm_reach).is_empty()
 
 
 ## Where a held package sits: just in front of the core.
@@ -242,6 +274,23 @@ func knock_back(push: Vector3, stun_seconds: float) -> void:
 		drop()
 	velocity = Vector3(push.x, 3.0, push.z)
 	stun_time = maxf(stun_time, stun_seconds)
+	knocked_back.emit()
+
+
+## A conveyor under the body moves it along at `belt` (m/s) this frame.
+## Wheels ride it faster.
+func ride_belt(belt: Vector3) -> void:
+	_belt_velocity = belt * (wheel_belt_factor if wheels else 1.0)
+	_belt_frames = 2
+
+
+## Throws the body into the air at `launch_velocity` (a ramp). It keeps
+## that momentum until it lands.
+func launch(launch_velocity: Vector3) -> void:
+	release()
+	velocity = launch_velocity
+	is_launched = true
+	launched.emit()
 
 
 ## Pulls the arms back and drops off a ledge if hooked.
@@ -249,6 +298,7 @@ func release() -> void:
 	if not is_hooked:
 		return
 	is_hooked = false
+	is_clinging = false
 	_target_arm = 0.0
 	released.emit()
 
@@ -264,6 +314,9 @@ func _update_facing(delta: float) -> void:
 
 
 func _update_extension(delta: float) -> void:
+	if is_clinging and extension_input > 0.0:
+		# Growing while clinging to metal climbs instead (see _climb_metal).
+		return
 	_target_extension = clampf(_target_extension + extension_input * extension_rate * delta,
 		0.0, minf(max_extension, extension_limit))
 	var next := lerpf(extension, _target_extension, 1.0 - exp(-extension_smoothing * delta))
@@ -303,13 +356,30 @@ func _update_arms(delta: float) -> void:
 		var ledge := _find_ledge(arm_extension)
 		if not ledge.is_empty():
 			_hook(ledge)
+		elif magnetic_hands:
+			var metal := _find_metal(arm_extension)
+			if not metal.is_empty():
+				_hook(metal)
+				is_clinging = true
 
 
 func _process_moving(delta: float) -> void:
 	var height_t := extension / max_extension if max_extension > 0.0 else 0.0
 	var speed := move_speed * lerpf(1.0, tall_speed_factor, height_t)
+	if wheels:
+		speed *= wheel_speed_factor
 	var target := Vector3.ZERO if is_stunned() else move_input.limit_length(1.0) * speed
+	if _belt_frames > 0:
+		_belt_frames -= 1
+		if is_on_floor():
+			target += _belt_velocity
 	var accel := acceleration if is_on_floor() else air_acceleration
+	if is_launched:
+		if is_on_floor() and velocity.y <= 0.0:
+			is_launched = false
+		else:
+			# Ballistic: no braking in the air.
+			accel = 0.0
 	velocity.x = move_toward(velocity.x, target.x, accel * delta)
 	velocity.z = move_toward(velocity.z, target.z, accel * delta)
 	if not is_on_floor():
@@ -362,7 +432,9 @@ func _process_hanging() -> void:
 		release()
 		return
 	_reel_in()
-	if extension <= 0.001 and extension_input < 0.0:
+	if is_clinging:
+		_climb_metal()
+	if extension <= 0.001 and extension_input < 0.0 and not is_clinging:
 		_try_mantle()
 
 
@@ -414,6 +486,38 @@ func _finish_mantle() -> void:
 	_target_arm = 0.0
 	velocity = Vector3.ZERO
 	mantled.emit()
+
+
+## Magnetic hands on a metal face: growing climbs it. Once the top comes
+## within reach, the hands hook it like any ledge, so shrinking mantles.
+func _climb_metal() -> void:
+	var ledge := _find_ledge(max_arm_reach)
+	if not ledge.is_empty():
+		is_clinging = false
+		_hang_point = ledge.point
+		_hang_normal = ledge.normal
+		return
+	if extension_input <= 0.0:
+		return
+	var step := magnetic_climb_speed * get_physics_process_delta_time()
+	var next_pos := global_position + Vector3.UP * step
+	# Only while there's still metal in front of the hands.
+	if _fits(next_pos, extension) and not _find_metal(max_arm_reach, step).is_empty():
+		global_position = next_pos
+		_hang_core_y += step
+		_hang_point.y += step
+
+
+## A metal face in front of the hands, as a hook point at core height.
+func _find_metal(reach: float, lift := 0.0) -> Dictionary:
+	var core := get_core_position() + Vector3.UP * lift
+	var wall := _ray(core, core + get_forward() * (CORE_HALF_DEPTH + reach + HAND_SIZE))
+	if wall.is_empty() or absf(wall.normal.y) > 0.3:
+		return {}
+	var collider := wall.collider as Node
+	if collider == null or not collider.is_in_group(METAL_GROUP):
+		return {}
+	return {"point": wall.position, "normal": Vector3(wall.normal.x, 0.0, wall.normal.z).normalized()}
 
 
 ## How far the arms can reach before the hands touch something.

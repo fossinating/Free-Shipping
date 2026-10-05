@@ -17,6 +17,9 @@ COLORS = {
     "hazard": (0.9, 0.75, 0.15),
     "conveyor": (0.2, 0.22, 0.24),
     "door": (0.75, 0.3, 0.2),
+    "metal": (0.5, 0.55, 0.6),
+    "scanner": (0.15, 0.6, 0.65),
+    "office": (0.7, 0.68, 0.6),
 }
 
 
@@ -32,11 +35,19 @@ def vec3(v):
     return f"Vector3({fmt(float(v[0]))}, {fmt(float(v[1]))}, {fmt(float(v[2]))})"
 
 
-def transform(pos=(0, 0, 0), yaw_degrees=0.0):
+def transform(pos=(0, 0, 0), yaw_degrees=0.0, roll_degrees=0.0):
+    """Yaw turns about +Y; roll tilts about the local Z axis first (a ramp
+    rising toward local +X has a positive roll)."""
     c = math.cos(math.radians(yaw_degrees))
     s = math.sin(math.radians(yaw_degrees))
+    cr = math.cos(math.radians(roll_degrees))
+    sr = math.sin(math.radians(roll_degrees))
+    yaw = [[c, 0, s], [0, 1, 0], [-s, 0, c]]
+    roll = [[cr, -sr, 0], [sr, cr, 0], [0, 0, 1]]
+    rows = [[sum(yaw[i][k] * roll[k][j] for k in range(3)) for j in range(3)] for i in range(3)]
     r = lambda x: fmt(round(x, 4) + 0.0)
-    return (f"Transform3D({r(c)}, 0, {r(s)}, 0, 1, 0, {r(-s)}, 0, {r(c)}, "
+    basis = ", ".join(r(rows[i][j]) for i in range(3) for j in range(3))
+    return (f"Transform3D({basis}, "
             f"{fmt(float(pos[0]))}, {fmt(float(pos[1]))}, {fmt(float(pos[2]))})")
 
 
@@ -95,10 +106,10 @@ class Scene:
         self.nodes.append("\n".join(lines))
 
     def node(self, name, kind, parent=".", props=None, pos=None, yaw=0.0, node_paths=None,
-             groups=None):
+             groups=None, roll=0.0):
         props = dict(props or {})
         if pos is not None:
-            props = {"transform": transform(pos, yaw), **props}
+            props = {"transform": transform(pos, yaw, roll), **props}
         group_list = ""
         if groups:
             group_list = " groups=[" + ", ".join(f'"{g}"' for g in groups) + "]"
@@ -138,12 +149,12 @@ class Scene:
         props = {"script": self.ext_resource("Script", script_path), **(props or {})}
         self.node(name, kind, parent, props, pos, yaw, node_paths)
 
-    def box(self, name, center, size, material, parent="."):
+    def box(self, name, center, size, material, parent=".", groups=None, roll=0.0, yaw=0.0):
         self.node(name, "CSGBox3D", parent, {
             "use_collision": "true",
             "size": vec3(size),
             "material": self.material(material),
-        }, pos=center)
+        }, pos=center, groups=groups, roll=roll, yaw=yaw)
 
     def label(self, name, pos, text, parent=".", size=40):
         escaped = text.replace('"', '\\"')

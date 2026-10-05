@@ -2,7 +2,7 @@ extends TestCase
 ## Story: the dialogue queue, the maintenance bay's diagnostics, the signal
 ## meter, and finding Elle's radio.
 
-const BAY := "res://scenes/levels/maintenance_bay.tscn"
+const BAY := "res://scenes/levels/warehouse.tscn"
 const OPENING := "res://scenes/levels/opening.tscn"
 
 var level: Node3D
@@ -28,7 +28,7 @@ func _start(skip_intro: bool) -> void:
 
 ## Turns off everyone who could spot the player, for tests about the story.
 func _quiet_security() -> void:
-	for path in ["Security/ElectronicsCamera", "Guards/FloorGuard", "Coworkers/Restocker"]:
+	for path in ["Security", "Guards", "Coworkers"]:
 		level.get_node(path).process_mode = Node.PROCESS_MODE_DISABLED
 
 
@@ -170,7 +170,8 @@ func test_dialogue_data_is_valid() -> void:
 	var unknown := Dialogue.play(&"no_such_conversation")
 	check(unknown.done and not Dialogue.is_busy(), "an unknown id finishes at once")
 	var opening: Node = load(OPENING).instantiate()
-	check(ResourceLoader.exists(opening.next_level), "the accident leads to the maintenance bay")
+	check(opening.next_level == BAY and ResourceLoader.exists(opening.next_level),
+		"the accident leads to the warehouse (and its maintenance bay)")
 	opening.free()
 
 

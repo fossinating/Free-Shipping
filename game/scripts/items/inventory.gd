@@ -160,6 +160,19 @@ static func clearance_bonus(body: RobotBody) -> int:
 	return state.get_def().get("clearance_bonus", 0) if state else 0
 
 
+## Whether the robot carries contraband at all, even stowed away. Scanners
+## see through your casing; cameras don't.
+static func carries_contraband(body: RobotBody) -> bool:
+	if shows_contraband(body):
+		return true
+	var inventory := of(body)
+	if inventory:
+		for state in inventory.get_items():
+			if state.is_contraband():
+				return true
+	return false
+
+
 ## Whether the robot is showing contraband: holding it, or equipped.
 static func shows_contraband(body: RobotBody) -> bool:
 	if body.held and body.held.contraband:
@@ -203,8 +216,20 @@ func _use_disguise(state: ItemState) -> String:
 
 func _on_grabbed(package: Package) -> void:
 	var item := package as Item
-	if item:
-		GameState.note_held(item.state.id)
+	if item == null:
+		return
+	GameState.note_held(item.state.id)
+	var level := ItemCatalog.clearance_of(item.state.id)
+	if level > 0:
+		# Keycards go straight into your badge.
+		robot.held = null
+		robot.let_go.emit(item)
+		item.queue_free()
+		if level > GameState.clearance:
+			GameState.grant_clearance(level)
+			message.emit("Badge updated: clearance %d" % level)
+		else:
+			message.emit("Your badge already has clearance %d" % GameState.clearance)
 
 
 func _update_hand() -> void:

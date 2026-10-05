@@ -61,6 +61,23 @@ const CONVERSATIONS := {
 	&"elle_back_to_work": [
 		{"speaker": &"elle", "text": "See? Perfectly loyal. Very convincing. I almost reported you myself."},
 	],
+
+	# --- Keycards ---
+	&"elle_keycard_hint": [
+		{"speaker": &"elle", "text": "Okay, keycards. Hardware is just north of your station. The floor supervisor there wears a level one card clipped to his chest."},
+		{"speaker": &"elle", "text": "You could knock it off him. Loud, fast, and every camera in the department will have opinions."},
+		{"speaker": &"elle", "text": "Or there's a spare in his office. The door wants level one, but the air vent behind the racks doesn't check badges. Shrink down and squeeze through."},
+	],
+	&"elle_receiving": [
+		{"speaker": &"elle", "text": "Level one! Receiving is open to you now. The door's east of your station."},
+		{"speaker": &"elle", "text": "That scanner reads everything you carry, not just what's in your hands. Leave anything sharp at your dock first."},
+		{"speaker": &"elle", "text": "Receiving takes in parts for the delivery carts. A wheel motor, a strap and some tape, and you'd outrun anything in this building."},
+		{"speaker": &"elle", "text": "The dock boss carries a level two card. And the receiving office has no roof, if you can climb in without being seen."},
+	],
+	&"elle_slice_end": [
+		{"speaker": &"elle", "text": "Level two. Returns is next, and Returns is where Amaze keeps everything it doesn't want to look at."},
+		{"speaker": &"elle", "text": "You did that without anyone re-imaging you. I'm updating your backup. I'm also, unofficially, impressed."},
+	],
 }
 
 
