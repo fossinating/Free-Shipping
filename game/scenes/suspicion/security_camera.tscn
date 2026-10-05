@@ -1,0 +1,48 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/suspicion/security_camera.gd" id="1_camera"]
+[ext_resource type="Script" path="res://scripts/suspicion/watcher.gd" id="2_watcher"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_body"]
+albedo_color = Color(0.85, 0.86, 0.88, 1)
+
+[sub_resource type="BoxMesh" id="Mesh_body"]
+material = SubResource("Mat_body")
+size = Vector3(0.3, 0.3, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="Mat_lens"]
+albedo_color = Color(0.05, 0.05, 0.08, 1)
+emission_enabled = true
+emission = Color(0.8, 0.1, 0.1, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="CylinderMesh" id="Mesh_lens"]
+material = SubResource("Mat_lens")
+top_radius = 0.1
+bottom_radius = 0.1
+height = 0.08
+
+[node name="SecurityCamera" type="Node3D"]
+script = ExtResource("1_camera")
+
+[node name="Head" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Head"]
+mesh = SubResource("Mesh_body")
+
+[node name="Lens" type="MeshInstance3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, -0.32)
+mesh = SubResource("Mesh_lens")
+
+[node name="Watcher" type="Node3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 0.866, 0.5, 0, -0.5, 0.866, 0, 0, -0.4)
+script = ExtResource("2_watcher")
+fov_degrees = 60.0
+view_range = 16.0
+
+[node name="Light" type="SpotLight3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 0.866, 0.5, 0, -0.5, 0.866, 0, 0, -0.4)
+light_energy = 6.0
+shadow_enabled = true
+spot_attenuation = 0.5
+spot_angle_attenuation = 0.3
