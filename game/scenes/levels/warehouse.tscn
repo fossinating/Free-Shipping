@@ -1,0 +1,1266 @@
+[gd_scene load_steps=61 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/warehouse.gd" id="1_warehouse"]
+
+[ext_resource type="Script" path="res://scripts/world/level_navigation.gd" id="2_level_navigation"]
+
+[ext_resource type="Script" path="res://scripts/world/door.gd" id="3_door"]
+
+[ext_resource type="Script" path="res://scripts/world/scanner_checkpoint.gd" id="4_scanner_checkpoint"]
+
+[ext_resource type="Script" path="res://scripts/world/conveyor.gd" id="5_conveyor"]
+
+[ext_resource type="Script" path="res://scripts/world/launch_ramp.gd" id="6_launch_ramp"]
+
+[ext_resource type="Script" path="res://scripts/suspicion/zone.gd" id="7_zone"]
+
+[ext_resource type="PackedScene" path="res://scenes/suspicion/security_camera.tscn" id="8_security_camera"]
+
+[ext_resource type="PackedScene" path="res://scenes/items/charging_dock.tscn" id="9_charging_dock"]
+
+[ext_resource type="PackedScene" path="res://scenes/story/radio.tscn" id="10_radio"]
+
+[ext_resource type="PackedScene" path="res://scenes/items/item.tscn" id="11_item"]
+
+[ext_resource type="Script" path="res://scripts/items/item_spot.gd" id="12_item_spot"]
+
+[ext_resource type="Script" path="res://scripts/work/package_spawner.gd" id="13_package_spawner"]
+
+[ext_resource type="PackedScene" path="res://scenes/work/chute.tscn" id="14_chute"]
+
+[ext_resource type="PackedScene" path="res://scenes/work/package.tscn" id="15_package"]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/coworker.tscn" id="16_coworker"]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/guard.tscn" id="17_guard"]
+
+[ext_resource type="Script" path="res://scripts/items/keycard_carrier.gd" id="18_keycard_carrier"]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/robot.tscn" id="19_robot"]
+
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="20_player"]
+
+[ext_resource type="Script" path="res://scripts/story/signal_receiver.gd" id="21_signal_receiver"]
+
+[ext_resource type="Script" path="res://scripts/story/diagnostics.gd" id="22_diagnostics"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="23_hud"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
+sky_top_color = Color(0.35, 0.45, 0.6, 1)
+sky_horizon_color = Color(0.6, 0.62, 0.66, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 2
+ambient_light_color = Color(0.55, 0.57, 0.6, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 2
+
+[sub_resource type="NavigationMesh" id="NavMesh"]
+geometry_parsed_geometry_type = 1
+geometry_source_geometry_mode = 1
+geometry_source_group_name = &"navigation_geometry"
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.25
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.32, 0.33, 0.35, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_wall"]
+albedo_color = Color(0.55, 0.58, 0.62, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_crate"]
+albedo_color = Color(0.62, 0.45, 0.27, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_scanner"]
+albedo_color = Color(0.15, 0.6, 0.65, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_shelf"]
+albedo_color = Color(0.25, 0.42, 0.7, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_office"]
+albedo_color = Color(0.7, 0.68, 0.6, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_conveyor"]
+albedo_color = Color(0.2, 0.22, 0.24, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_hazard"]
+albedo_color = Color(0.9, 0.75, 0.15, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_metal"]
+albedo_color = Color(0.5, 0.55, 0.6, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_door"]
+albedo_color = Color(0.75, 0.3, 0.2, 1)
+roughness = 0.85
+
+[sub_resource type="BoxShape3D" id="Shape_BayDoor"]
+size = Vector3(3, 3.2, 0.3)
+
+[sub_resource type="BoxMesh" id="Mesh_BayDoor"]
+size = Vector3(3, 3.2, 0.3)
+material = SubResource("Mat_door")
+
+[sub_resource type="BoxShape3D" id="Shape_ReceivingGate"]
+size = Vector3(3, 3.2, 0.3)
+
+[sub_resource type="BoxMesh" id="Mesh_ReceivingGate"]
+size = Vector3(3, 3.2, 0.3)
+material = SubResource("Mat_door")
+
+[sub_resource type="BoxShape3D" id="Shape_SupervisorDoor"]
+size = Vector3(2, 3, 0.3)
+
+[sub_resource type="BoxMesh" id="Mesh_SupervisorDoor"]
+size = Vector3(2, 3, 0.3)
+material = SubResource("Mat_door")
+
+[sub_resource type="BoxShape3D" id="Shape_RecOfficeDoor"]
+size = Vector3(2, 3, 0.3)
+
+[sub_resource type="BoxMesh" id="Mesh_RecOfficeDoor"]
+size = Vector3(2, 3, 0.3)
+material = SubResource("Mat_door")
+
+[sub_resource type="BoxShape3D" id="Shape_ReceivingScanner"]
+size = Vector3(7, 3, 2.8)
+
+[sub_resource type="BoxShape3D" id="Shape_SupervisorReader"]
+size = Vector3(2, 3, 5)
+
+[sub_resource type="BoxShape3D" id="Shape_RecOfficeReader"]
+size = Vector3(5, 3, 2)
+
+[sub_resource type="BoxShape3D" id="Shape_HardwareConveyor"]
+size = Vector3(2.5, 1, 9)
+
+[sub_resource type="BoxShape3D" id="Shape_UnloadConveyor"]
+size = Vector3(2, 1, 22)
+
+[sub_resource type="BoxShape3D" id="Shape_PitRamp"]
+size = Vector3(2.5, 1.6, 1.2)
+
+[sub_resource type="BoxShape3D" id="Shape_Fulfillment"]
+size = Vector3(40, 8, 28)
+
+[sub_resource type="BoxShape3D" id="Shape_MaintenanceBay"]
+size = Vector3(16, 6, 16)
+
+[sub_resource type="BoxShape3D" id="Shape_Electronics"]
+size = Vector3(8, 8, 10)
+
+[sub_resource type="BoxShape3D" id="Shape_Hardware"]
+size = Vector3(40, 14, 26)
+
+[sub_resource type="BoxShape3D" id="Shape_HardwareAisle"]
+size = Vector3(12, 8, 3.8)
+
+[sub_resource type="BoxShape3D" id="Shape_SupervisorOffice"]
+size = Vector3(9, 3.5, 8)
+
+[sub_resource type="BoxShape3D" id="Shape_Receiving"]
+size = Vector3(32, 8, 28)
+
+[sub_resource type="BoxShape3D" id="Shape_ReceivingOffice"]
+size = Vector3(10, 3, 8)
+
+[sub_resource type="StandardMaterial3D" id="Mat_maintenance"]
+albedo_color = Color(0.85, 0.85, 0.3, 1)
+roughness = 0.6
+
+[node name="Warehouse" type="Node3D" node_paths=PackedStringArray("hud", "player", "maintenance_bot", "diagnostics", "receiver", "radio", "bay_door", "hardware_zone", "respawn")]
+script = ExtResource("1_warehouse")
+hud = NodePath("HUD")
+player = NodePath("Player")
+maintenance_bot = NodePath("MaintenanceBot")
+diagnostics = NodePath("Diagnostics")
+receiver = NodePath("SignalReceiver")
+radio = NodePath("Radio")
+bay_door = NodePath("Geometry/BayDoor")
+hardware_zone = NodePath("Zones/Hardware")
+respawn = NodePath("Respawn")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 10, 0)
+light_energy = 0.8
+shadow_enabled = true
+
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+script = ExtResource("2_level_navigation")
+navigation_mesh = SubResource("NavMesh")
+
+[node name="Geometry" type="Node3D" parent="." groups=["navigation_geometry"]]
+
+[node name="BayFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, -0.5, 0.0)
+use_collision = true
+size = Vector3(16.0, 1.0, 16.0)
+material = SubResource("Mat_floor")
+
+[node name="BayWallNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 2.5, -8.5)
+use_collision = true
+size = Vector3(17.0, 5.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="BayWallSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 2.5, 8.5)
+use_collision = true
+size = Vector3(17.0, 5.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="BayWallWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -28.5, 2.5, 0.0)
+use_collision = true
+size = Vector3(1.0, 5.0, 18.0)
+material = SubResource("Mat_wall")
+
+[node name="DividerNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -12.0, 4.0, -7.75)
+use_collision = true
+size = Vector3(0.6, 8.0, 12.5)
+material = SubResource("Mat_wall")
+
+[node name="DividerSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -12.0, 4.0, 7.75)
+use_collision = true
+size = Vector3(0.6, 8.0, 12.5)
+material = SubResource("Mat_wall")
+
+[node name="DividerLintel" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -12.0, 5.6, 0.0)
+use_collision = true
+size = Vector3(0.6, 4.8, 3.0)
+material = SubResource("Mat_wall")
+
+[node name="RepairTable" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -22.0, 0.4, 0.0)
+use_collision = true
+size = Vector3(2.2, 0.8, 3.0)
+material = SubResource("Mat_crate")
+
+[node name="FloorMain" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, -0.5, 0.0)
+use_collision = true
+size = Vector3(40.0, 1.0, 28.0)
+material = SubResource("Mat_floor")
+
+[node name="WallSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 4.0, 14.5)
+use_collision = true
+size = Vector3(41.0, 8.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="WallNorthWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -10.25, 4.0, -14.5)
+use_collision = true
+size = Vector3(4.5, 8.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="WallNorthEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 19.25, 4.0, -14.5)
+use_collision = true
+size = Vector3(18.5, 8.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="WallNorthLintel" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 6.5, -14.5)
+use_collision = true
+size = Vector3(18.0, 3.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="WallEastNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 28.5, 4.0, -4.75)
+use_collision = true
+size = Vector3(1.0, 8.0, 20.5)
+material = SubResource("Mat_wall")
+
+[node name="WallEastSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 28.5, 4.0, 11.75)
+use_collision = true
+size = Vector3(1.0, 8.0, 6.5)
+material = SubResource("Mat_wall")
+
+[node name="WallEastLintel" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 28.5, 5.6, 7.0)
+use_collision = true
+size = Vector3(1.0, 4.8, 3.0)
+material = SubResource("Mat_wall")
+
+[node name="ScannerPostNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 26.8, 1.6, 5.25)
+use_collision = true
+size = Vector3(0.4, 3.2, 0.5)
+material = SubResource("Mat_scanner")
+
+[node name="ScannerPostSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 26.8, 1.6, 8.75)
+use_collision = true
+size = Vector3(0.4, 3.2, 0.5)
+material = SubResource("Mat_scanner")
+
+[node name="ScannerBar" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 26.8, 3.35, 7.0)
+use_collision = true
+size = Vector3(0.4, 0.3, 4.0)
+material = SubResource("Mat_scanner")
+
+[node name="ShelfA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 15.0, 1.5, -8.5)
+use_collision = true
+size = Vector3(1.2, 3.0, 8.0)
+material = SubResource("Mat_shelf")
+
+[node name="ShelfB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 19.5, 1.5, -8.5)
+use_collision = true
+size = Vector3(1.2, 3.0, 8.0)
+material = SubResource("Mat_shelf")
+
+[node name="ReturnsRack" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 26.6, 1.4, -10.0)
+use_collision = true
+size = Vector3(1.6, 2.8, 4.0)
+material = SubResource("Mat_shelf")
+
+[node name="CrateA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 2.0, 0.75, -6.0)
+use_collision = true
+size = Vector3(2.0, 1.5, 2.0)
+material = SubResource("Mat_crate")
+
+[node name="CrateB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 0.6, 1.0)
+use_collision = true
+size = Vector3(1.4, 1.2, 1.4)
+material = SubResource("Mat_crate")
+
+[node name="CrateC" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 22.0, 0.75, 3.0)
+use_collision = true
+size = Vector3(2.0, 1.5, 2.0)
+material = SubResource("Mat_crate")
+
+[node name="HardwareFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 2.5, -3.0, -27.0)
+use_collision = true
+size = Vector3(29.0, 6.0, 26.0)
+material = SubResource("Mat_floor")
+
+[node name="HardwareFloorEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 22.5, -3.0, -19.5)
+use_collision = true
+size = Vector3(11.0, 6.0, 11.0)
+material = SubResource("Mat_floor")
+
+[node name="PitFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 22.5, -5.5, -32.5)
+use_collision = true
+size = Vector3(11.0, 1.0, 15.0)
+material = SubResource("Mat_floor")
+
+[node name="HardwareWallNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 1.0, -40.5)
+use_collision = true
+size = Vector3(41.0, 14.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="HardwareWallWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -12.5, 4.0, -27.0)
+use_collision = true
+size = Vector3(1.0, 8.0, 27.0)
+material = SubResource("Mat_wall")
+
+[node name="HardwareWallEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 28.5, 1.0, -27.5)
+use_collision = true
+size = Vector3(1.0, 14.0, 27.0)
+material = SubResource("Mat_wall")
+
+[node name="RackA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 1.5, -21.0)
+use_collision = true
+size = Vector3(12.0, 3.0, 1.2)
+material = SubResource("Mat_shelf")
+
+[node name="RackB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 1.5, -26.0)
+use_collision = true
+size = Vector3(12.0, 3.0, 1.2)
+material = SubResource("Mat_shelf")
+
+[node name="ToolBench" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 0.5, -17.0)
+use_collision = true
+size = Vector3(2.0, 1.0, 1.0)
+material = SubResource("Mat_crate")
+
+[node name="HardwareCrate" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 0.5, -20.0)
+use_collision = true
+size = Vector3(1.4, 1.0, 1.4)
+material = SubResource("Mat_crate")
+
+[node name="OfficeEastNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -3.0, 1.75, -39.6)
+use_collision = true
+size = Vector3(0.4, 3.5, 0.8)
+material = SubResource("Mat_office")
+
+[node name="OfficeEastSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -3.0, 1.75, -34.8)
+use_collision = true
+size = Vector3(0.4, 3.5, 5.6)
+material = SubResource("Mat_office")
+
+[node name="OfficeVentTop" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -3.0, 2.55, -38.4)
+use_collision = true
+size = Vector3(0.4, 1.9, 1.6)
+material = SubResource("Mat_office")
+
+[node name="OfficeSouthWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -10.25, 1.75, -32.0)
+use_collision = true
+size = Vector3(3.5, 3.5, 0.4)
+material = SubResource("Mat_office")
+
+[node name="OfficeSouthEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.85, 1.75, -32.0)
+use_collision = true
+size = Vector3(3.3, 3.5, 0.4)
+material = SubResource("Mat_office")
+
+[node name="OfficeLintel" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -7.5, 3.25, -32.0)
+use_collision = true
+size = Vector3(2.0, 0.5, 0.4)
+material = SubResource("Mat_office")
+
+[node name="OfficeRoof" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -7.4, 3.65, -35.9)
+use_collision = true
+size = Vector3(9.2, 0.3, 8.2)
+material = SubResource("Mat_office")
+
+[node name="OfficeDesk" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.5, 0.5, -37.5)
+use_collision = true
+size = Vector3(2.4, 1.0, 1.2)
+material = SubResource("Mat_crate")
+
+[node name="LumberRack" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.6, 1.5, -36.5)
+use_collision = true
+size = Vector3(1.2, 3.0, 7.0)
+material = SubResource("Mat_shelf")
+
+[node name="ConveyorBelt" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 9.5, -0.09, -32.0)
+use_collision = true
+size = Vector3(9.0, 0.2, 2.5)
+material = SubResource("Mat_conveyor")
+
+[node name="Ramp" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(0.9285, -0.3714, 0.0, 0.3714, 0.9285, 0.0, 0.0, 0.0, 1.0, 15.5743, 0.4143, -32.0)
+use_collision = true
+size = Vector3(3.6, 0.4, 2.5)
+material = SubResource("Mat_hazard")
+
+[node name="Island" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 24.25, -1.25, -32.5)
+use_collision = true
+size = Vector3(7.5, 7.5, 7.0)
+material = SubResource("Mat_crate")
+
+[node name="ReceivingFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 44.25, -0.5, 0.0)
+use_collision = true
+size = Vector3(32.5, 1.0, 28.0)
+material = SubResource("Mat_floor")
+
+[node name="ReceivingWallNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 44.5, 4.0, -14.5)
+use_collision = true
+size = Vector3(33.0, 8.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="ReceivingWallSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 44.5, 4.0, 14.5)
+use_collision = true
+size = Vector3(33.0, 8.0, 1.0)
+material = SubResource("Mat_wall")
+
+[node name="ReceivingWallEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 60.5, 4.0, 0.0)
+use_collision = true
+size = Vector3(1.0, 8.0, 30.0)
+material = SubResource("Mat_wall")
+
+[node name="PalletA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 0.6, -11.0)
+use_collision = true
+size = Vector3(1.6, 1.2, 1.6)
+material = SubResource("Mat_crate")
+
+[node name="PalletB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 37.0, 0.6, -11.0)
+use_collision = true
+size = Vector3(1.6, 1.2, 1.6)
+material = SubResource("Mat_crate")
+
+[node name="PalletC" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 41.0, 1.2, -11.0)
+use_collision = true
+size = Vector3(1.6, 2.4, 1.6)
+material = SubResource("Mat_crate")
+
+[node name="PalletD" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 45.0, 0.6, -11.0)
+use_collision = true
+size = Vector3(1.6, 1.2, 1.6)
+material = SubResource("Mat_crate")
+
+[node name="PalletE" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 1.2, -7.0)
+use_collision = true
+size = Vector3(1.6, 2.4, 1.6)
+material = SubResource("Mat_crate")
+
+[node name="PalletF" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 37.0, 0.6, -7.0)
+use_collision = true
+size = Vector3(1.6, 1.2, 1.6)
+material = SubResource("Mat_crate")
+
+[node name="PalletG" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 41.0, 0.6, -7.0)
+use_collision = true
+size = Vector3(1.6, 1.2, 1.6)
+material = SubResource("Mat_crate")
+
+[node name="PalletH" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 45.0, 0.6, -7.0)
+use_collision = true
+size = Vector3(1.6, 1.2, 1.6)
+material = SubResource("Mat_crate")
+
+[node name="PartsPallet" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 54.0, 0.6, -10.0)
+use_collision = true
+size = Vector3(2.0, 1.2, 2.0)
+material = SubResource("Mat_crate")
+
+[node name="MetalRack" type="CSGBox3D" parent="Geometry" groups=["metal"]]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 38.0, 3.75, 1.0)
+use_collision = true
+size = Vector3(5.0, 7.5, 1.5)
+material = SubResource("Mat_metal")
+
+[node name="RecOfficeNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 55.0, 1.5, -2.0)
+use_collision = true
+size = Vector3(10.0, 3.0, 0.4)
+material = SubResource("Mat_office")
+
+[node name="RecOfficeSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 55.0, 1.5, 6.0)
+use_collision = true
+size = Vector3(10.0, 3.0, 0.4)
+material = SubResource("Mat_office")
+
+[node name="RecOfficeWestNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 50.0, 1.5, -0.5)
+use_collision = true
+size = Vector3(0.4, 3.0, 3.0)
+material = SubResource("Mat_office")
+
+[node name="RecOfficeWestSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 50.0, 1.5, 4.5)
+use_collision = true
+size = Vector3(0.4, 3.0, 3.0)
+material = SubResource("Mat_office")
+
+[node name="RecOfficeDesk" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 56.0, 0.5, 2.0)
+use_collision = true
+size = Vector3(1.2, 1.0, 2.4)
+material = SubResource("Mat_crate")
+
+[node name="UnloadBelt" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 47.0, -0.09, 10.5)
+use_collision = true
+size = Vector3(22.0, 0.2, 2.0)
+material = SubResource("Mat_conveyor")
+
+[node name="UnloadStop" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 35.8, 0.4, 10.5)
+use_collision = true
+size = Vector3(0.4, 0.8, 2.0)
+material = SubResource("Mat_crate")
+
+[node name="DockDoor1" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 40.0, 2.0, 13.95)
+use_collision = true
+size = Vector3(3.0, 4.0, 0.1)
+material = SubResource("Mat_door")
+
+[node name="DockDoor2" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 48.0, 2.0, 13.95)
+use_collision = true
+size = Vector3(3.0, 4.0, 0.1)
+material = SubResource("Mat_door")
+
+[node name="DockDoor3" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 56.0, 2.0, 13.95)
+use_collision = true
+size = Vector3(3.0, 4.0, 0.1)
+material = SubResource("Mat_door")
+
+[node name="BaySign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 4.0, -7.9)
+pixel_size = 0.01
+billboard = 1
+text = "MAINTENANCE BAY
+Maintenance break: 1 hour per year"
+font_size = 32
+outline_size = 10
+
+[node name="TicketSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -11.6, 3.0, 3.4)
+pixel_size = 0.01
+billboard = 1
+text = "REPAIR TICKET #00412
+Roof leak, Corridor B
+Status: PENDING (214 days)"
+font_size = 32
+outline_size = 10
+
+[node name="StationSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 2.5, 11.0)
+pixel_size = 0.01
+billboard = 1
+text = "STATION C"
+font_size = 32
+outline_size = 10
+
+[node name="ChuteSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 10.0, 2.5, 11.0)
+pixel_size = 0.01
+billboard = 1
+text = "CHUTE C"
+font_size = 32
+outline_size = 10
+
+[node name="ElectronicsSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 17.0, 4.4, -3.4)
+pixel_size = 0.01
+billboard = 1
+text = "ELECTRONICS
+Resizing is normal in the aisles"
+font_size = 32
+outline_size = 10
+
+[node name="ReturnsSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 26.6, 3.9, -7.6)
+pixel_size = 0.01
+billboard = 1
+text = "RETURNS TO SHELF"
+font_size = 32
+outline_size = 10
+
+[node name="HardwareSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 4.4, -14.0)
+pixel_size = 0.01
+billboard = 1
+text = "HARDWARE"
+font_size = 32
+outline_size = 10
+
+[node name="OfficeSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -7.5, 4.3, -31.7)
+pixel_size = 0.01
+billboard = 1
+text = "FLOOR SUPERVISOR
+CLEARANCE 1"
+font_size = 32
+outline_size = 10
+
+[node name="VentSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -2.6, 1.9, -38.4)
+pixel_size = 0.01
+billboard = 1
+text = "AIR RETURN"
+font_size = 32
+outline_size = 10
+
+[node name="PitSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 17.5, 2.6, -24.5)
+pixel_size = 0.01
+billboard = 1
+text = "CAUTION: SORTING PIT
+No carts beyond this point"
+font_size = 32
+outline_size = 10
+
+[node name="IslandSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 24.0, 4.2, -32.5)
+pixel_size = 0.01
+billboard = 1
+text = "LOST & FOUND"
+font_size = 32
+outline_size = 10
+
+[node name="ReceivingSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 32.0, 4.4, 7.0)
+pixel_size = 0.01
+billboard = 1
+text = "RECEIVING"
+font_size = 32
+outline_size = 10
+
+[node name="PartsSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 54.0, 2.9, -10.0)
+pixel_size = 0.01
+billboard = 1
+text = "INBOUND PARTS
+Delivery cart motors"
+font_size = 32
+outline_size = 10
+
+[node name="RackSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 38.0, 2.6, 1.9)
+pixel_size = 0.01
+billboard = 1
+text = "OVERSTOCK
+Metal racking"
+font_size = 32
+outline_size = 10
+
+[node name="RecOfficeSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 49.7, 3.6, 2.0)
+pixel_size = 0.01
+billboard = 1
+text = "RECEIVING OFFICE
+CLEARANCE 2"
+font_size = 32
+outline_size = 10
+
+[node name="Dock1Sign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 40.0, 4.5, 13.6)
+pixel_size = 0.01
+billboard = 1
+text = "DOCK 1"
+font_size = 32
+outline_size = 10
+
+[node name="Dock2Sign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 48.0, 4.5, 13.6)
+pixel_size = 0.01
+billboard = 1
+text = "DOCK 2"
+font_size = 32
+outline_size = 10
+
+[node name="Dock3Sign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 56.0, 4.5, 13.6)
+pixel_size = 0.01
+billboard = 1
+text = "DOCK 3"
+font_size = 32
+outline_size = 10
+
+[node name="ScannerSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 26.8, 4.1, 7.0)
+pixel_size = 0.01
+billboard = 1
+text = "SCANNER
+RECEIVING: CLEARANCE 1"
+font_size = 32
+outline_size = 10
+
+[node name="BayDoor" type="AnimatableBody3D" parent="Geometry"]
+transform = Transform3D(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, -12.0, 1.6, 0.0)
+script = ExtResource("3_door")
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/BayDoor"]
+shape = SubResource("Shape_BayDoor")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/BayDoor"]
+mesh = SubResource("Mesh_BayDoor")
+
+[node name="ReceivingGate" type="AnimatableBody3D" parent="Geometry"]
+transform = Transform3D(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, 28.5, 1.6, 7.0)
+script = ExtResource("3_door")
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/ReceivingGate"]
+shape = SubResource("Shape_ReceivingGate")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/ReceivingGate"]
+mesh = SubResource("Mesh_ReceivingGate")
+
+[node name="SupervisorDoor" type="AnimatableBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -7.5, 1.5, -32.0)
+script = ExtResource("3_door")
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/SupervisorDoor"]
+shape = SubResource("Shape_SupervisorDoor")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/SupervisorDoor"]
+mesh = SubResource("Mesh_SupervisorDoor")
+
+[node name="RecOfficeDoor" type="AnimatableBody3D" parent="Geometry"]
+transform = Transform3D(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, 50.0, 1.5, 2.0)
+script = ExtResource("3_door")
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/RecOfficeDoor"]
+shape = SubResource("Shape_RecOfficeDoor")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/RecOfficeDoor"]
+mesh = SubResource("Mesh_RecOfficeDoor")
+
+[node name="Checkpoints" type="Node3D" parent="."]
+
+[node name="ReceivingScanner" type="Area3D" parent="Checkpoints" node_paths=PackedStringArray("door", "status_sign")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 28.5, 1.5, 7.0)
+script = ExtResource("4_scanner_checkpoint")
+door = NodePath("../../Geometry/ReceivingGate")
+required_clearance = 1
+place_name = "Receiving"
+check_contraband = true
+status_sign = NodePath("../../Geometry/ScannerSign")
+
+[node name="Shape" type="CollisionShape3D" parent="Checkpoints/ReceivingScanner"]
+shape = SubResource("Shape_ReceivingScanner")
+
+[node name="SupervisorReader" type="Area3D" parent="Checkpoints" node_paths=PackedStringArray("door", "status_sign")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -7.5, 1.5, -32.0)
+script = ExtResource("4_scanner_checkpoint")
+door = NodePath("../../Geometry/SupervisorDoor")
+required_clearance = 1
+place_name = "The supervisor's office"
+check_contraband = false
+status_sign = NodePath("../../Geometry/OfficeSign")
+
+[node name="Shape" type="CollisionShape3D" parent="Checkpoints/SupervisorReader"]
+shape = SubResource("Shape_SupervisorReader")
+
+[node name="RecOfficeReader" type="Area3D" parent="Checkpoints" node_paths=PackedStringArray("door", "status_sign")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 50.0, 1.5, 2.0)
+script = ExtResource("4_scanner_checkpoint")
+door = NodePath("../../Geometry/RecOfficeDoor")
+required_clearance = 2
+place_name = "The receiving office"
+check_contraband = false
+status_sign = NodePath("../../Geometry/RecOfficeSign")
+
+[node name="Shape" type="CollisionShape3D" parent="Checkpoints/RecOfficeReader"]
+shape = SubResource("Shape_RecOfficeReader")
+
+[node name="Conveyors" type="Node3D" parent="."]
+
+[node name="HardwareConveyor" type="Area3D" parent="Conveyors"]
+transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 9.5, 0.5, -32.0)
+script = ExtResource("5_conveyor")
+
+[node name="Shape" type="CollisionShape3D" parent="Conveyors/HardwareConveyor"]
+shape = SubResource("Shape_HardwareConveyor")
+
+[node name="UnloadConveyor" type="Area3D" parent="Conveyors"]
+transform = Transform3D(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, 47.0, 0.5, 10.5)
+script = ExtResource("5_conveyor")
+speed = 2.0
+
+[node name="Shape" type="CollisionShape3D" parent="Conveyors/UnloadConveyor"]
+shape = SubResource("Shape_UnloadConveyor")
+
+[node name="PitRamp" type="Area3D" parent="Conveyors"]
+transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 16.6, 1.6, -32.0)
+script = ExtResource("6_launch_ramp")
+
+[node name="Shape" type="CollisionShape3D" parent="Conveyors/PitRamp"]
+shape = SubResource("Shape_PitRamp")
+
+[node name="Zones" type="Node3D" parent="."]
+
+[node name="Fulfillment" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 4.0, 0.0)
+script = ExtResource("7_zone")
+zone_name = "Fulfillment"
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/Fulfillment"]
+shape = SubResource("Shape_Fulfillment")
+
+[node name="MaintenanceBay" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 3.0, 0.0)
+script = ExtResource("7_zone")
+zone_name = "Maintenance Bay"
+allow_resize = true
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/MaintenanceBay"]
+shape = SubResource("Shape_MaintenanceBay")
+
+[node name="Electronics" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 17.25, 4.0, -8.5)
+script = ExtResource("7_zone")
+zone_name = "Electronics aisles"
+allow_resize = true
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/Electronics"]
+shape = SubResource("Shape_Electronics")
+
+[node name="Hardware" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 1.0, -27.0)
+script = ExtResource("7_zone")
+zone_name = "Hardware"
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/Hardware"]
+shape = SubResource("Shape_Hardware")
+
+[node name="HardwareAisle" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 4.0, -23.5)
+script = ExtResource("7_zone")
+zone_name = "Hardware aisle"
+allow_resize = true
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/HardwareAisle"]
+shape = SubResource("Shape_HardwareAisle")
+
+[node name="SupervisorOffice" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -7.5, 1.75, -36.0)
+script = ExtResource("7_zone")
+zone_name = "Supervisor's office"
+required_clearance = 1
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/SupervisorOffice"]
+shape = SubResource("Shape_SupervisorOffice")
+
+[node name="Receiving" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 44.25, 4.0, 0.0)
+script = ExtResource("7_zone")
+zone_name = "Receiving"
+required_clearance = 1
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/Receiving"]
+shape = SubResource("Shape_Receiving")
+
+[node name="ReceivingOffice" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 55.0, 1.5, 2.0)
+script = ExtResource("7_zone")
+zone_name = "Receiving office"
+required_clearance = 2
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/ReceivingOffice"]
+shape = SubResource("Shape_ReceivingOffice")
+
+[node name="Security" type="Node3D" parent="."]
+
+[node name="ElectronicsCamera" parent="Security" instance=ExtResource("8_security_camera")]
+transform = Transform3D(-1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0, 22.0, 5.0, -13.6)
+sweep_degrees = 90.0
+
+[node name="HardwareCamera" parent="Security" instance=ExtResource("8_security_camera")]
+transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, -11.4, 5.5, -22.0)
+sweep_degrees = 90.0
+
+[node name="ReceivingCamera" parent="Security" instance=ExtResource("8_security_camera")]
+transform = Transform3D(-1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0, 40.0, 5.5, -13.6)
+sweep_degrees = 100.0
+
+[node name="Dock" parent="." instance=ExtResource("9_charging_dock")]
+transform = Transform3D(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, -26.0, 0.0, 6.0)
+
+[node name="Radio" parent="." instance=ExtResource("10_radio")]
+transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 26.1, 2.8, -10.0)
+
+[node name="Items" type="Node3D" parent="."]
+
+[node name="ToolBenchCutter" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 1.1, -17.0)
+item_id = &"box_cutter"
+
+[node name="OfficeKeycard" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -7.6, 1.08, -37.5)
+item_id = &"keycard_1"
+
+[node name="IslandCoil" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 25.0, 2.75, -32.5)
+item_id = &"electromagnet_coil"
+
+[node name="IslandWrench" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 23.0, 2.6, -31.0)
+item_id = &"wrench"
+
+[node name="WheelMotor" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 54.0, 1.4, -10.0)
+item_id = &"wheel_motor"
+
+[node name="PartsStrap" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 53.3, 1.3, -9.3)
+item_id = &"strap"
+
+[node name="PalletTape" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 41.0, 1.3, -7.0)
+item_id = &"tape"
+
+[node name="RecOfficeKeycard" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 55.6, 1.08, 2.0)
+item_id = &"keycard_2"
+
+[node name="OverstockId" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 37.0, 7.6, 1.0)
+item_id = &"fake_id"
+
+[node name="OverstockSpoofer" parent="Items" instance=ExtResource("11_item")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 39.0, 7.6, 1.0)
+item_id = &"scanner_spoofer"
+
+[node name="ElectronicsSpotA" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 15.0, 3.2, -6.0)
+script = ExtResource("12_item_spot")
+pool = &"electronics"
+
+[node name="ElectronicsSpotB" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 19.5, 3.2, -11.0)
+script = ExtResource("12_item_spot")
+pool = &"electronics"
+
+[node name="ElectronicsSpotC" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 17.3, 0.3, -12.5)
+script = ExtResource("12_item_spot")
+pool = &"electronics"
+
+[node name="HardwareSpotA" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.2, -21.0)
+script = ExtResource("12_item_spot")
+pool = &"hardware"
+
+[node name="HardwareSpotB" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 6.0, 3.2, -26.0)
+script = ExtResource("12_item_spot")
+pool = &"hardware"
+
+[node name="HardwareSpotC" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 1.2, -20.0)
+script = ExtResource("12_item_spot")
+pool = &"hardware"
+
+[node name="ReceivingSpotA" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 1.3, -11.0)
+script = ExtResource("12_item_spot")
+pool = &"receiving"
+
+[node name="ReceivingSpotB" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 37.0, 1.3, -7.0)
+script = ExtResource("12_item_spot")
+pool = &"receiving"
+
+[node name="ReceivingSpotC" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 45.0, 1.3, -11.0)
+script = ExtResource("12_item_spot")
+pool = &"receiving"
+
+[node name="ReceivingSpotD" type="Marker3D" parent="Items"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 41.0, 2.5, -11.0)
+script = ExtResource("12_item_spot")
+pool = &"receiving"
+
+[node name="Work" type="Node3D" parent="."]
+
+[node name="StationC" type="Marker3D" parent="Work"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 0.0, 9.0)
+script = ExtResource("13_package_spawner")
+
+[node name="ChuteC" parent="Work" instance=ExtResource("14_chute")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 10.0, 0.0, 9.0)
+
+[node name="Inbound1" parent="Work" instance=ExtResource("15_package")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 56.0, 0.4, 10.5)
+
+[node name="Inbound2" parent="Work" instance=ExtResource("15_package")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 52.0, 0.4, 10.5)
+
+[node name="Inbound3" parent="Work" instance=ExtResource("15_package")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 48.0, 0.4, 10.5)
+
+[node name="Coworkers" type="Node3D" parent="."]
+
+[node name="RestockerRoute" type="Node3D" parent="Coworkers"]
+
+[node name="Point1" type="Marker3D" parent="Coworkers/RestockerRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 13.0, 0.0, -2.0)
+
+[node name="Point2" type="Marker3D" parent="Coworkers/RestockerRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 23.0, 0.0, -2.0)
+
+[node name="Restocker" parent="Coworkers" instance=ExtResource("16_coworker")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 13.0, 0.05, -2.0)
+
+[node name="Brain" parent="Coworkers/Restocker" node_paths=PackedStringArray("route")]
+route = NodePath("../../RestockerRoute")
+
+[node name="HardwareStockerRoute" type="Node3D" parent="Coworkers"]
+
+[node name="Point1" type="Marker3D" parent="Coworkers/HardwareStockerRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -5.0, 0.0, -23.5)
+
+[node name="Point2" type="Marker3D" parent="Coworkers/HardwareStockerRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 10.0, 0.0, -23.5)
+
+[node name="HardwareStocker" parent="Coworkers" instance=ExtResource("16_coworker")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -5.0, 0.05, -23.5)
+
+[node name="Brain" parent="Coworkers/HardwareStocker" node_paths=PackedStringArray("route")]
+route = NodePath("../../HardwareStockerRoute")
+
+[node name="UnloaderRoute" type="Node3D" parent="Coworkers"]
+
+[node name="Point1" type="Marker3D" parent="Coworkers/UnloaderRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 38.0, 0.0, 8.0)
+
+[node name="Point2" type="Marker3D" parent="Coworkers/UnloaderRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 57.0, 0.0, 8.0)
+
+[node name="Unloader" parent="Coworkers" instance=ExtResource("16_coworker")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 38.0, 0.05, 8.0)
+
+[node name="Brain" parent="Coworkers/Unloader" node_paths=PackedStringArray("route")]
+route = NodePath("../../UnloaderRoute")
+
+[node name="Guards" type="Node3D" parent="."]
+
+[node name="FloorGuardRoute" type="Node3D" parent="Guards"]
+
+[node name="Point1" type="Marker3D" parent="Guards/FloorGuardRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 0.0, -5.0)
+
+[node name="Point2" type="Marker3D" parent="Guards/FloorGuardRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 10.0, 0.0, -5.0)
+
+[node name="Point3" type="Marker3D" parent="Guards/FloorGuardRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 10.0, 0.0, 4.0)
+
+[node name="Point4" type="Marker3D" parent="Guards/FloorGuardRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 0.0, 4.0)
+
+[node name="FloorGuard" parent="Guards" instance=ExtResource("17_guard")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 0.05, -5.0)
+
+[node name="Brain" parent="Guards/FloorGuard" node_paths=PackedStringArray("route")]
+route = NodePath("../../FloorGuardRoute")
+
+[node name="SupervisorRoute" type="Node3D" parent="Guards"]
+
+[node name="Point1" type="Marker3D" parent="Guards/SupervisorRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -6.0, 0.0, -18.0)
+
+[node name="Point2" type="Marker3D" parent="Guards/SupervisorRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 12.0, 0.0, -18.0)
+
+[node name="Point3" type="Marker3D" parent="Guards/SupervisorRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 12.0, 0.0, -29.0)
+
+[node name="Point4" type="Marker3D" parent="Guards/SupervisorRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -6.0, 0.0, -29.0)
+
+[node name="Supervisor" parent="Guards" instance=ExtResource("17_guard")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -6.0, 0.05, -18.0)
+
+[node name="Brain" parent="Guards/Supervisor" node_paths=PackedStringArray("route")]
+route = NodePath("../../SupervisorRoute")
+
+[node name="Keycard" type="Node" parent="Guards/Supervisor"]
+script = ExtResource("18_keycard_carrier")
+level = 1
+
+[node name="SupervisorTag" type="Label3D" parent="Guards/Supervisor"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.0, 0.0)
+pixel_size = 0.01
+billboard = 1
+text = "FLOOR SUPERVISOR"
+font_size = 28
+outline_size = 10
+
+[node name="DockBossRoute" type="Node3D" parent="Guards"]
+
+[node name="Point1" type="Marker3D" parent="Guards/DockBossRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 0.0, -2.0)
+
+[node name="Point2" type="Marker3D" parent="Guards/DockBossRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 46.0, 0.0, -2.0)
+
+[node name="Point3" type="Marker3D" parent="Guards/DockBossRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 46.0, 0.0, 6.0)
+
+[node name="Point4" type="Marker3D" parent="Guards/DockBossRoute"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 0.0, 6.0)
+
+[node name="DockBoss" parent="Guards" instance=ExtResource("17_guard")]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 0.05, -2.0)
+
+[node name="Brain" parent="Guards/DockBoss" node_paths=PackedStringArray("route")]
+route = NodePath("../../DockBossRoute")
+
+[node name="Keycard" type="Node" parent="Guards/DockBoss"]
+script = ExtResource("18_keycard_carrier")
+level = 2
+
+[node name="DockBossTag" type="Label3D" parent="Guards/DockBoss"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.0, 0.0)
+pixel_size = 0.01
+billboard = 1
+text = "DOCK BOSS"
+font_size = 28
+outline_size = 10
+
+[node name="MaintenanceBot" parent="." instance=ExtResource("19_robot")]
+transform = Transform3D(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, -19.5, 0.05, 0.0)
+
+[node name="Casing" parent="MaintenanceBot/Visual/Core"]
+material_override = SubResource("Mat_maintenance")
+
+[node name="BotTag" type="Label3D" parent="."]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -19.5, 2.6, 0.0)
+pixel_size = 0.01
+billboard = 1
+text = "M-7
+MAINTENANCE"
+font_size = 28
+outline_size = 10
+
+[node name="Respawn" type="Marker3D" parent="."]
+transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, -22.0, 0.85, 0.0)
+
+[node name="Player" parent="." instance=ExtResource("20_player")]
+transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, -22.0, 0.85, 0.0)
+
+[node name="SignalReceiver" type="Node" parent="." node_paths=PackedStringArray("robot")]
+script = ExtResource("21_signal_receiver")
+robot = NodePath("../Player")
+
+[node name="Diagnostics" type="Node" parent="." node_paths=PackedStringArray("robot", "hud")]
+script = ExtResource("22_diagnostics")
+robot = NodePath("../Player")
+hud = NodePath("../HUD")
+
+[node name="HUD" parent="." node_paths=PackedStringArray("controller", "receiver") instance=ExtResource("23_hud")]
+controller = NodePath("../Player/Controller")
+receiver = NodePath("../SignalReceiver")

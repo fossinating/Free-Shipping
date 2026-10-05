@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/robot/robot.tscn" id="1_robot"]
+[ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="2_controller"]
+[ext_resource type="Script" path="res://scripts/player/player_camera.gd" id="3_camera"]
+[ext_resource type="Script" path="res://scripts/work/throw_arc.gd" id="4_arc"]
+[ext_resource type="Script" path="res://scripts/items/inventory.gd" id="5_inventory"]
+
+[node name="Player" groups=["player"] instance=ExtResource("1_robot")]
+
+[node name="Controller" type="Node" parent="." node_paths=PackedStringArray("camera", "throw_arc")]
+script = ExtResource("2_controller")
+camera = NodePath("../CameraRig")
+throw_arc = NodePath("../ThrowArc")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("3_camera")
+
+[node name="Pivot" type="Node3D" parent="CameraRig"]
+
+[node name="SpringArm" type="SpringArm3D" parent="CameraRig/Pivot"]
+spring_length = 4.5
+margin = 0.2
+
+[node name="Camera" type="Camera3D" parent="CameraRig/Pivot/SpringArm"]
+current = true
+fov = 70.0
+
+[node name="ThrowArc" type="MeshInstance3D" parent="."]
+script = ExtResource("4_arc")
+
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("5_inventory")
