@@ -23,6 +23,9 @@ var enabled := false
 var value := 0.0
 ## Suspicion never decays below this (lockdown aftermath raises it).
 var floor_value := 0.0
+## Suspicion never rises above this. Scripted, safe moments (the
+## maintenance bay's diagnostics) lower it so they can't start a lockdown.
+var ceiling := MAX
 ## Most recent reason suspicion went up, for the HUD.
 var last_reason := ""
 
@@ -47,6 +50,7 @@ func _physics_process(delta: float) -> void:
 func reset() -> void:
 	value = 0.0
 	floor_value = 0.0
+	ceiling = MAX
 	last_reason = ""
 	_quiet_time = 0.0
 	_seen_by.clear()
@@ -61,7 +65,7 @@ func add(amount: float, reason := "") -> void:
 		return
 	_quiet_time = 0.0
 	last_reason = reason
-	_set_value(minf(MAX, value + amount * get_multiplier()))
+	_set_value(maxf(value, minf(ceiling, value + amount * get_multiplier())))
 	if value >= MAX and not _maxed:
 		_maxed = true
 		maxed.emit()

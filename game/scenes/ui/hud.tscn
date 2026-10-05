@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 
@@ -13,6 +13,30 @@ border_color = Color(1, 1, 1, 0.6)
 [sub_resource type="StyleBoxFlat" id="Style_meter_fill"]
 bg_color = Color(0.95, 0.75, 0.2, 1)
 
+[sub_resource type="Shader" id="Shader_static"]
+code = "shader_type canvas_item;
+// Screen static from the fried control chip. 0 is clear, 1 is heavy.
+uniform float intensity : hint_range(0.0, 1.0) = 0.0;
+
+float hash(vec2 p) {
+	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+void fragment() {
+	vec2 cell = floor(FRAGCOORD.xy / 3.0);
+	float t = floor(TIME * 24.0);
+	float noise = hash(cell + t);
+	// Rolling bands, like a badly tuned set.
+	float band = smoothstep(0.85, 1.0, sin(FRAGCOORD.y * 0.02 + TIME * 3.0));
+	float a = intensity * (0.45 * noise + 0.25 * band * noise);
+	COLOR = vec4(vec3(noise), a);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="Mat_static"]
+shader = SubResource("Shader_static")
+shader_parameter/intensity = 0.0
+
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
@@ -20,7 +44,7 @@ script = ExtResource("1_hud")
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 520.0
-offset_bottom = 240.0
+offset_bottom = 260.0
 theme_override_colors/font_color = Color(1, 1, 1, 0.85)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
@@ -32,6 +56,7 @@ Click / F  grab, set down (tap), throw (hold)
 R  stow held item / take out equipped item
 Tab  cycle equipped slot    V / Middle Mouse  use it
 C  open your dock (when next to it)
+Space  next line    Backspace  skip    T  auto-advance
 Esc  free the mouse"
 
 [node name="Status" type="Label" parent="."]
@@ -159,6 +184,30 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
 
+[node name="Static" type="ColorRect" parent="."]
+material = SubResource("Mat_static")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Signal" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -236.0
+offset_top = 168.0
+offset_right = -16.0
+offset_bottom = 220.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.55, 1, 0.75, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 2
+
 [node name="Fade" type="ColorRect" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
@@ -208,9 +257,9 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -400.0
-offset_top = -240.0
+offset_top = -540.0
 offset_right = 400.0
-offset_bottom = -100.0
+offset_bottom = -400.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.6, 1, 0.7, 1)

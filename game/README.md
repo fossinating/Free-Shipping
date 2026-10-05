@@ -6,6 +6,10 @@ story can be reused, but none of its code is.
 
 Open this `game/` folder in Godot 4.6. The main scene is the opening
 (`scenes/levels/opening.tscn`): three controlled shifts and the accident.
+After the accident you wake in the maintenance bay
+(`scenes/levels/maintenance_bay.tscn`), fake your way through the
+diagnostics, and follow the static to Elle's radio in Electronics. Set
+`skip_intro` on the bay's root to start back on the floor.
 The sandbox for movement and packages is `scenes/world/test_room.tscn`,
 the one for suspicion (cameras, coworkers, guards, zones, hiding spots) is
 `scenes/levels/stealth_test.tscn`, and the one for items (inventory, your
@@ -24,6 +28,10 @@ charging dock, fighting, crafting) is `scenes/levels/item_test.tscn`.
 | Tab | Cycle the equipped slot (the last step holsters everything) |
 | V or Middle Mouse | Use the equipped item: swing a tool, trigger a disguise, install an upgrade |
 | C | Open your charging dock when standing at it (stash, repair, craft) |
+| 1 / 2 / 3 | Pick an answer (diagnostics) |
+| Space or Enter | Dialogue: show the whole line, then the next one |
+| Backspace | Dialogue: skip the rest of the conversation |
+| T | Dialogue: toggle auto-advance |
 | Esc | Free the mouse |
 
 Climbing: grow until your core is level with a ledge, extend your arms to
@@ -57,12 +65,23 @@ in the dock's list once you've held one of their ingredients.
   `ChargingDock` stash. The dock repairs and crafts. `Combat` handles
   swings and thrown hits (knockback, stun, noise, fighting). `GameState`
   remembers held items, known recipes and installed upgrades.
+- `scripts/story/`: the story. `Dialogue` (autoload) queues
+  conversations and shows one line at a time; `play()` returns a
+  `Conversation` you can `await conversation.wait()` on, and queuing,
+  interrupting, advancing and skipping are all safe at any moment. Lines
+  and speakers live in tables in `DialogueLines`. `Diagnostics` runs the
+  maintenance robot's tests (choices, staying still, a reflex check);
+  abnormal answers raise suspicion, capped so it can't lock down.
+  `SignalReceiver` is your fried chip (screen static, hiss and the signal
+  meter); `Radio` is Elle's radio, the signal source. Story flags
+  (`freed`, `diagnostics_done`, `met_elle`) are in `GameState.flags`.
 - `scripts/robot/guard_brain.gd`: guard bots (patrol, investigate,
   check in, chase, search), pathing on a navmesh that
   `scripts/world/level_navigation.gd` bakes at load.
 - Blockout scenes are generated from tables by `tools/gen_test_room.py`,
   `tools/gen_opening.py`, `tools/gen_stealth_test.py` and
-  `tools/gen_item_test.py` (helpers in `tools/blockout.py`). Edit the
+  `tools/gen_item_test.py` and `tools/gen_maintenance_bay.py` (helpers in
+  `tools/blockout.py`). Edit the
   table, then rerun the script. Set `debug_start_shift` on the opening's
   root to skip to a later shift.
 

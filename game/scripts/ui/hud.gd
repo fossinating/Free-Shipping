@@ -1,14 +1,20 @@
 class_name Hud
 extends CanvasLayer
 ## Control hints, context prompts, the quota, control mode's task readout,
-## denials and shift cards, the inventory, and the dock panel.
+## denials and shift cards, the inventory, the dock panel, dialogue and
+## story objectives, and the signal meter and static from your fried chip.
 
 @export var controller: PlayerController
 @export var program: ControlProgram
+## Your fried control chip, once there is one.
+@export var receiver: SignalReceiver
 
 var _denied_time := 0.0
 var _notice_time := 0.0
 var _dock_panel: DockPanel
+var _dialogue_box: DialogueBox
+## A story objective (outside control mode) is showing.
+var _story_objective := false
 
 @onready var _prompt: Label = $Prompt
 @onready var _status: Label = $Status
@@ -23,6 +29,8 @@ var _dock_panel: DockPanel
 @onready var _lockdown: Label = $Lockdown
 @onready var _inventory: Label = $Inventory
 @onready var _notice: Label = $Notice
+@onready var _static: ColorRect = $Static
+@onready var _signal: Label = $Signal
 
 
 func _ready() -> void:
@@ -32,6 +40,11 @@ func _ready() -> void:
 	_notice.hide()
 	_dock_panel = DockPanel.new()
 	add_child(_dock_panel)
+	_dialogue_box = DialogueBox.new()
+	add_child(_dialogue_box)
+	# The fade covers everything but the cards.
+	move_child(_fade, -1)
+	move_child(_card, -1)
 	if controller:
 		controller.notice.connect(show_notice)
 	GameState.recipe_revealed.connect(func(recipe: int) -> void:
@@ -62,9 +75,10 @@ func _process(delta: float) -> void:
 		_notice_time -= delta
 		_notice.modulate.a = clampf(_notice_time / 0.5, 0.0, 1.0)
 		_notice.visible = _notice_time > 0.0
-	if program and not program.active:
+	if program and not program.active and not _story_objective:
 		_objective.hide()
 	_update_suspicion()
+	_update_signal()
 	if not controller:
 		return
 	_update_items()
@@ -128,6 +142,40 @@ func _update_items() -> void:
 	if inventory.selected < 0:
 		lines.append("▶ Holstered")
 	_inventory.text = "\n".join(lines)
+
+
+func _update_signal() -> void:
+	var level := receiver.get_static() if receiver else 0.0
+	(_static.material as ShaderMaterial).set_shader_parameter("intensity", level)
+	_static.visible = level > 0.001
+	_signal.visible = receiver != null and receiver.tracking
+	if _signal.visible:
+		var bars := receiver.get_bars()
+		var meter: PackedStringArray = []
+		for i in SignalReceiver.BARS:
+			meter.append("|" if i < bars else "·")
+		_signal.text = "SIGNAL  " + " ".join(meter)
+
+
+## A story objective at the top of the screen, until hide_objective().
+func show_objective(text: String) -> void:
+	_story_objective = true
+	_objective.text = "OBJECTIVE\n" + text
+	_objective.show()
+
+
+func hide_objective() -> void:
+	_story_objective = false
+	_objective.hide()
+
+
+## Answers (or a test's status) under the dialogue box.
+func show_choices(lines: PackedStringArray, highlight := false) -> void:
+	_dialogue_box.show_choices(lines, highlight)
+
+
+func hide_choices() -> void:
+	_dialogue_box.hide_choices()
 
 
 ## A short line above the prompt that fades out.

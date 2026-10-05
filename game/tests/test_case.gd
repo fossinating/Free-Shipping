@@ -28,6 +28,8 @@ func cleanup() -> void:
 	Suspicion.reset()
 	Security.reset()
 	GameState.reset_items()
+	GameState.reset_story()
+	Dialogue.reset()
 
 
 func physics_frames(count: int) -> void:

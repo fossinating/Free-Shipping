@@ -11,6 +11,8 @@ var robot: RobotBody
 func _start(first_shift := -1) -> void:
 	level = load(OPENING).instantiate()
 	level.debug_start_shift = first_shift
+	# Stay in this level after the accident instead of changing scenes.
+	level.next_level = ""
 	tree.root.add_child(level)
 	_nodes.append(level)
 	program = level.get_node("Program")
@@ -172,5 +174,7 @@ func test_shift_three_ends_in_accident() -> void:
 	check(not program.active, "control mode is over")
 	var controller: PlayerController = level.get_node("Player/Controller")
 	check(not controller.enabled, "controls are taken away during the shock")
-	await seconds(6.0)
+	await seconds(1.0)
+	check(GameState.has_flag(GameState.FLAG_FREED), "the shock frees you")
+	await seconds(5.0)
 	check(controller.enabled, "and come back afterwards")

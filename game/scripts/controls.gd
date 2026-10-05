@@ -15,6 +15,12 @@ const KEYS := {
 	"cycle_item": [KEY_TAB],
 	"use_item": [KEY_V],
 	"open_dock": [KEY_C],
+	"dialogue_advance": [KEY_SPACE, KEY_ENTER],
+	"dialogue_skip": [KEY_BACKSPACE],
+	"dialogue_auto": [KEY_T],
+	"choice_1": [KEY_1],
+	"choice_2": [KEY_2],
+	"choice_3": [KEY_3],
 	"pause": [KEY_ESCAPE],
 }
 

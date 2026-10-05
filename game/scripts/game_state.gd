@@ -1,12 +1,23 @@
 extends Node
 ## Progress that outlives a single level: clearance, installed upgrades,
-## and which items you've held and which recipes that revealed.
+## which items you've held and which recipes that revealed, and story flags.
 
 signal clearance_changed(level: int)
 ## Holding an ingredient for the first time revealed this recipe (an index
 ## into ItemCatalog.RECIPES).
 signal recipe_revealed(recipe: int)
 signal upgrade_installed(id: StringName)
+## A story flag changed (see the FLAG_ constants).
+signal flag_changed(flag: StringName, value: Variant)
+
+## The accident fried your control chip.
+const FLAG_FREED := &"freed"
+## You got through the maintenance bay's diagnostics.
+const FLAG_DIAGNOSTICS_DONE := &"diagnostics_done"
+## How many diagnostic answers were abnormal (an int).
+const FLAG_DIAGNOSTIC_ANOMALIES := &"diagnostic_anomalies"
+## You found Elle's radio and heard her out.
+const FLAG_MET_ELLE := &"met_elle"
 
 ## Badge clearance. 0 opens Fulfillment; each zone holds the next card.
 var clearance := 0:
@@ -19,6 +30,8 @@ var held_items := {}
 var known_recipes := {}
 ## Installed body upgrades (item ids) -> true. Kept through wipes.
 var upgrades := {}
+## Story progress: flag name -> value (usually true).
+var flags := {}
 
 
 ## Call whenever the player holds an item. Reveals the recipes that use it.
@@ -53,6 +66,27 @@ func install_upgrade(id: StringName) -> void:
 
 func has_upgrade(id: StringName) -> bool:
 	return upgrades.has(id)
+
+
+func set_flag(flag: StringName, value: Variant = true) -> void:
+	if flags.get(flag) == value:
+		return
+	flags[flag] = value
+	flag_changed.emit(flag, value)
+
+
+## A flag's value, or `default` if it was never set.
+func get_flag(flag: StringName, default: Variant = null) -> Variant:
+	return flags.get(flag, default)
+
+
+func has_flag(flag: StringName) -> bool:
+	return flags.has(flag) and flags[flag]
+
+
+## Forgets story progress (tests and new games).
+func reset_story() -> void:
+	flags.clear()
 
 
 ## Forgets item progress (tests and new games).

@@ -23,6 +23,7 @@ Quota="*res://scripts/work/quota.gd"
 GameState="*res://scripts/game_state.gd"
 Suspicion="*res://scripts/suspicion/suspicion.gd"
 Security="*res://scripts/suspicion/security.gd"
+Dialogue="*res://scripts/story/dialogue.gd"
 
 [display]
 
