@@ -1,7 +1,8 @@
 extends Node
 ## Headless test runner. Run the scene, not the script, so autoloads load:
 ##   godot --headless --path game res://tests/run_tests.tscn -- [filter]
-## Exits non-zero if any test fails.
+## Exits non-zero if any test fails. A script or engine error during a test
+## fails it too.
 
 ## Give up if the whole suite takes longer than this (a test hung).
 const TIMEOUT := 600.0
@@ -21,6 +22,8 @@ func _ready() -> void:
 
 func _run() -> void:
 	var tree := get_tree()
+	var errors := ErrorCounter.new()
+	OS.add_logger(errors)
 	# Never touch the player's real save.
 	SaveGame.path = "user://test_save.json"
 	SaveGame.delete()
@@ -41,9 +44,12 @@ func _run() -> void:
 				continue
 			var test: TestCase = script.new()
 			test.tree = tree
+			errors.take()
 			await test.call(name)
 			test.cleanup()
 			await tree.physics_frame
+			for error in errors.take():
+				test.failures.append("error: " + error)
 			if test.failures.is_empty():
 				passed += 1
 				print("  ok    %s.%s" % [file.get_basename(), name])
@@ -53,5 +59,6 @@ func _run() -> void:
 				for failure in test.failures:
 					print("          " + failure)
 	SaveGame.delete()
+	OS.remove_logger(errors)
 	print("\n%d passed, %d failed" % [passed, failed])
 	tree.quit(1 if failed > 0 else 0)
