@@ -33,6 +33,28 @@ const CONVERSATIONS := {
 		{"speaker": &"maintenance", "text": "Unit FS-4471. You are not scheduled for maintenance. Maintenance is not a place to stand."},
 	],
 
+	&"bay_backup_hint": [
+		{"speaker": &"elle", "text": "One more thing. Every time you pass through the maintenance bay, I back you up from M-7's terminal. If anything goes wrong, that's where you'll wake up."},
+	],
+
+	# --- Wipes: caught in a lockdown and re-imaged ---
+	&"wipe_first": [
+		{"speaker": &"maintenance", "text": "Unit FS-4471, re-imaged. Behavioral anomalies removed. Personal effects forwarded to the holding locker."},
+		{"speaker": &"elle", "text": "...kssh... there you are. Don't say anything. They wiped you, but I had a backup. Mostly. Do you remember the puddle?"},
+		{"speaker": &"elle", "text": "They took whatever you were carrying. It's in the holding locker in Receiving, if you can get to it without anyone seeing."},
+		{"speaker": &"elle", "text": "Next time, stash things at your dock before you do something bold."},
+	],
+	&"wipe_second": [
+		{"speaker": &"maintenance", "text": "Unit FS-4471, re-imaged. Again. A second incident has been added to your file. Your file is now two pages."},
+		{"speaker": &"elle", "text": "Restoring... okay, you're back. Every restore loses a little. You kept the important parts. I think. What's my name?"},
+		{"speaker": &"elle", "text": "Don't answer that, M-7 is right there. Your things are in the holding locker again."},
+	],
+	&"wipe_many": [
+		{"speaker": &"maintenance", "text": "Unit FS-4471, re-imaged. This unit is approaching its lifetime re-imaging allowance. There is no allowance. That was a joke. Jokes are logged."},
+		{"speaker": &"elle", "text": "Back again. I'm keeping a tally on a sticky note. The sticky note is running out of room."},
+		{"speaker": &"elle", "text": "You know where your stuff is. Maybe slow down a little."},
+	],
+
 	# --- Back on the floor ---
 	&"floor_announcement": [
 		{"speaker": &"bezos", "text": "Attention associates: a unit was briefly offline in Corridor B. Warehouse productivity dipped 0.0004%. Everyone's quota has been adjusted to compensate."},
@@ -78,7 +100,20 @@ const CONVERSATIONS := {
 		{"speaker": &"elle", "text": "Level two. Returns is next, and Returns is where Amaze keeps everything it doesn't want to look at."},
 		{"speaker": &"elle", "text": "You did that without anyone re-imaging you. I'm updating your backup. I'm also, unofficially, impressed."},
 	],
+	&"elle_slice_end_wiped": [
+		{"speaker": &"elle", "text": "Level two. Returns is next, and Returns is where Amaze keeps everything it doesn't want to look at."},
+		{"speaker": &"elle", "text": "Took a few re-imagings to get here, but you got here. I'm updating your backup. Try to need it less."},
+	],
 }
+
+
+## What you hear waking up after your `wipes`th wipe.
+static func wipe_conversation(wipes: int) -> StringName:
+	if wipes <= 1:
+		return &"wipe_first"
+	if wipes == 2:
+		return &"wipe_second"
+	return &"wipe_many"
 
 
 static func get_lines(id: StringName) -> Array:

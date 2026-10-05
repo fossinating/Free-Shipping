@@ -28,7 +28,10 @@ Layout (top-down, -Z is north):
   of unopened stock (tape, straps), the wheel motor on the inbound parts
   pallet, metal racking with overstock on top (magnetic hands), the
   unload conveyor and truck docks, the dock boss (a guard carrying the
-  level 2 card) and the roofless receiving office with a spare card.
+  level 2 card), the roofless receiving office with a spare card, and
+  the holding cage by the entrance where confiscated items wait in the
+  evidence locker (badge level 2, so going in is suspicious).
+- Walking into the bay saves the game.
 """
 
 import math
@@ -44,6 +47,7 @@ GUARD = "res://scenes/robot/guard.tscn"
 ROBOT = "res://scenes/robot/robot.tscn"
 ZONE = "res://scripts/suspicion/zone.gd"
 DOCK = "res://scenes/items/charging_dock.tscn"
+LOCKER = "res://scenes/items/evidence_locker.tscn"
 RADIO = "res://scenes/story/radio.tscn"
 ITEM = "res://scenes/items/item.tscn"
 ITEM_SPOT = "res://scripts/items/item_spot.gd"
@@ -156,6 +160,11 @@ GEOMETRY = [
     ("DockDoor1", (40, 2, 13.95), (3, 4, 0.1), "door"),
     ("DockDoor2", (48, 2, 13.95), (3, 4, 0.1), "door"),
     ("DockDoor3", (56, 2, 13.95), (3, 4, 0.1), "door"),
+    # The holding cage against the west wall, open at the north end of
+    # its east side. Low enough to climb over, too.
+    ("HoldingNorth", (30.45, 1, -4.5), (3.1, 2, 0.2), "office"),
+    ("HoldingSouth", (30.45, 1, 1.5), (3.1, 2, 0.2), "office"),
+    ("HoldingEast", (32, 1, -0.75), (0.2, 2, 4.5), "office"),
 ]
 
 LABELS = [
@@ -175,6 +184,8 @@ LABELS = [
     ("PartsSign", (54, 2.9, -10), "INBOUND PARTS\nDelivery cart motors"),
     ("RackSign", (38, 2.6, 1.9), "OVERSTOCK\nMetal racking"),
     ("RecOfficeSign", (49.7, 3.6, 2), "RECEIVING OFFICE\nCLEARANCE 2"),
+    ("HoldingSign", (32.3, 2.4, 0.9), "HOLDING\nCLEARANCE 2"),
+    ("BackupSign", (-12.6, 3.6, -2.2), "M-7 BACKUP TERMINAL\nWalk in to save"),
     ("Dock1Sign", (40, 4.5, 13.6), "DOCK 1"),
     ("Dock2Sign", (48, 4.5, 13.6), "DOCK 2"),
     ("Dock3Sign", (56, 4.5, 13.6), "DOCK 3"),
@@ -228,6 +239,8 @@ ZONES = [
     ("Receiving", (44.25, 4, 0), (32, 8, 28), {"required_clearance": "1"}),
     ("ReceivingOffice", (55, 1.5, 2), (10, 3, 8),
      {"zone_name": '"Receiving office"', "required_clearance": "2"}),
+    ("Holding", (30.45, 1.5, -1.5), (3.1, 3, 6),
+     {"zone_name": '"Holding cage"', "required_clearance": "2"}),
 ]
 
 
@@ -276,7 +289,7 @@ def main():
     s = Scene("Warehouse")
     s.root("res://scripts/levels/warehouse.gd", node_paths=[
         "hud", "player", "maintenance_bot", "diagnostics", "receiver", "radio", "bay_door",
-        "hardware_zone", "respawn"], props={
+        "hardware_zone", "respawn", "dock", "bay_zone"], props={
         "hud": 'NodePath("HUD")',
         "player": 'NodePath("Player")',
         "maintenance_bot": 'NodePath("MaintenanceBot")',
@@ -286,6 +299,8 @@ def main():
         "bay_door": 'NodePath("Geometry/BayDoor")',
         "hardware_zone": 'NodePath("Zones/Hardware")',
         "respawn": 'NodePath("Respawn")',
+        "dock": 'NodePath("Dock")',
+        "bay_zone": 'NodePath("Zones/MaintenanceBay")',
     })
     s.environment()
     s.navigation()
@@ -336,6 +351,7 @@ def main():
                props={"sweep_degrees": "100.0"})
 
     s.instance("Dock", DOCK, pos=(-26, 0, 6), yaw=90)
+    s.instance("EvidenceLocker", LOCKER, pos=(30, 0, -1.5), yaw=-90)
     # Elle's radio, on top of the returns rack, facing the aisle.
     s.instance("Radio", RADIO, pos=(26.1, 2.8, -10), yaw=-90)
 

@@ -1,15 +1,15 @@
 class_name ChargingDock
 extends Node3D
 ## Your charging dock: where you stash items, repair tools and craft.
-## The stash has no size limit. Guards only search it once suspicion is
-## high (milestone 9 sends them; `is_searchable` and `confiscate` are the
-## hooks for that).
+## The stash has no size limit. Security only searches it once suspicion
+## stays high (see Security.search_docks); what it finds goes to the
+## evidence locker.
 
 signal changed
 
 ## Robots within this distance of the dock can use it.
 @export var reach := 2.2
-## Suspicion at or above which guards would search this dock.
+## Suspicion at or above which security searches this dock.
 @export var search_suspicion := 80.0
 
 var stash: Array[ItemState] = []
@@ -104,7 +104,7 @@ func is_searchable() -> bool:
 
 ## Empties the stash and returns what was in it.
 func confiscate() -> Array[ItemState]:
-	var taken := stash.duplicate()
+	var taken: Array[ItemState] = stash.duplicate()
 	stash.clear()
 	changed.emit()
 	return taken

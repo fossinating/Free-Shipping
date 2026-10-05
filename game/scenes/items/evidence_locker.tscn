@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/evidence_locker.gd" id="1_locker"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_locker"]
+albedo_color = Color(0.3, 0.33, 0.38, 1)
+roughness = 0.5
+metallic = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_light"]
+albedo_color = Color(1, 0.3, 0.25, 1)
+emission_enabled = true
+emission = Color(1, 0.2, 0.15, 1)
+emission_energy_multiplier = 1.5
+
+[sub_resource type="BoxMesh" id="Mesh_locker"]
+size = Vector3(1.2, 2, 0.6)
+
+[sub_resource type="BoxMesh" id="Mesh_light"]
+size = Vector3(0.3, 0.1, 0.02)
+
+[sub_resource type="BoxShape3D" id="Shape_locker"]
+size = Vector3(1.2, 2, 0.6)
+
+[node name="EvidenceLocker" type="Node3D"]
+script = ExtResource("1_locker")
+
+[node name="Body" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.6)
+
+[node name="Shape" type="CollisionShape3D" parent="Body"]
+shape = SubResource("Shape_locker")
+
+[node name="Mesh" type="MeshInstance3D" parent="Body"]
+mesh = SubResource("Mesh_locker")
+material_override = SubResource("Mat_locker")
+
+[node name="Light" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.31)
+mesh = SubResource("Mesh_light")
+material_override = SubResource("Mat_light")
+
+[node name="Sign" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0.6)
+pixel_size = 0.006
+billboard = 1
+text = "HOLDING LOCKER"
+font_size = 40
+outline_size = 10

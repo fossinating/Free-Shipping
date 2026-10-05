@@ -4,8 +4,10 @@ The Godot 4.6 rebuild described in [`docs/rework-proposal.md`](../docs/rework-pr
 The jam version (Godot 3.5) still lives at the repository root; its art and
 story can be reused, but none of its code is.
 
-Open this `game/` folder in Godot 4.6. The main scene is the opening
-(`scenes/levels/opening.tscn`): three controlled shifts and the accident.
+Open this `game/` folder in Godot 4.6. The main scene is the title
+screen (`scenes/ui/title.tscn`): Continue from your save, or New Game,
+which starts the opening (`scenes/levels/opening.tscn`): three
+controlled shifts and the accident.
 After the accident you wake in the warehouse
 (`scenes/levels/warehouse.tscn`): one level holding the maintenance bay,
 Fulfillment (your work route, Electronics and Hardware) and Receiving.
@@ -14,12 +16,41 @@ in Electronics, get a level 1 keycard in Hardware (knock it off the floor
 supervisor, or crawl through the vent into his office), get through the
 scanner into Receiving, and get the level 2 keycard (off the dock boss,
 or by climbing into the roofless receiving office). That card ends the
-vertical slice. Set `skip_intro` on the warehouse's root to start back on
+vertical slice, and the end card shows how the achievements stand (Low
+Profile: no lockdowns; Ghost: no lockdowns and no fights you started). Set `skip_intro` on the warehouse's root to start back on
 the floor.
 The sandbox for movement and packages is `scenes/world/test_room.tscn`,
 the one for suspicion (cameras, coworkers, guards, zones, hiding spots) is
 `scenes/levels/stealth_test.tscn`, and the one for items (inventory, your
 charging dock, fighting, crafting) is `scenes/levels/item_test.tscn`.
+
+## Saving, wipes and the evidence locker
+
+Walking into the maintenance bay saves the game (not during a lockdown);
+the objective reminds you. The save (`user://save.json`) holds
+GameState (clearance, flags, recipes, upgrades, wipes, the evidence
+locker, achievement tracking), where you stood, your inventory, your
+dock's stash and the items lying around. A loaded game goes straight to
+the warehouse floor.
+
+Caught by a guard during a lockdown, you're wiped: re-imaged on the
+repair table with your clearance and upgrades but nothing you carried.
+Elle restores you, and what she says changes with how often it's
+happened. Your dock is safe from a wipe, but if suspicion reaches 80
+outside a lockdown, security searches it about 10 seconds later.
+Everything confiscated goes to the holding locker in a cage by the
+Receiving entrance (badge level 2, so sneak in); press C at the locker
+to take your things back.
+
+## Web build
+
+`export_presets.cfg` has a Web preset (single-threaded, so it runs on
+hosts without cross-origin isolation headers). With the Web export
+templates installed:
+
+```sh
+godot --headless --path . --export-release Web ../build/web/index.html
+```
 
 ## Controls
 
@@ -33,7 +64,7 @@ charging dock, fighting, crafting) is `scenes/levels/item_test.tscn`.
 | R | Stow the item in your hands, or take the equipped item out |
 | Tab | Cycle the equipped slot (the last step holsters everything) |
 | V or Middle Mouse | Use the equipped item: swing a tool, trigger a disguise, install an upgrade |
-| C | Open your charging dock when standing at it (stash, repair, craft) |
+| C | Open your charging dock when standing at it (stash, repair, craft), or take your things back from the holding locker |
 | 1 / 2 / 3 | Pick an answer (diagnostics) |
 | Space or Enter | Dialogue: show the whole line, then the next one |
 | Backspace | Dialogue: skip the rest of the conversation |
@@ -94,6 +125,13 @@ grow to climb, then shrink at the top to pull yourself up.
   meter); `Radio` is Elle's radio, the signal source. Story flags
   (`freed`, `diagnostics_done`, `met_elle`, `keycard_hint`,
   `slice_complete`) are in `GameState.flags`.
+- `SaveGame` (`scripts/save_game.gd`): one JSON save slot. A level
+  calls `SaveGame.take_pending()` / `apply_level()` in `_ready()` to
+  restore itself from a loaded save. `EvidenceLocker`
+  (`scripts/items/evidence_locker.gd`) gives back what's in
+  `GameState.evidence`; `Security.search_docks()` and
+  `Inventory.confiscate_all()` fill it.
+- `scripts/ui/title_menu.gd`: the title screen.
 - `scripts/world/`: doors, `ScannerCheckpoint` (badge and contraband
   scans at zone doors, or a plain badge reader), `Conveyor` belts and the
   `LaunchRamp` lip that throws a robot on wheels.

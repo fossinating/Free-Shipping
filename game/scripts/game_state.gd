@@ -1,6 +1,8 @@
 extends Node
 ## Progress that outlives a single level: clearance, installed upgrades,
-## which items you've held and which recipes that revealed, and story flags.
+## which items you've held and which recipes that revealed, story flags,
+## wipes, the evidence locker, and what the achievements need to know.
+## `to_dict()` and `from_dict()` are what SaveGame writes and reads.
 
 signal clearance_changed(level: int)
 ## Holding an ingredient for the first time revealed this recipe (an index
@@ -9,6 +11,8 @@ signal recipe_revealed(recipe: int)
 signal upgrade_installed(id: StringName)
 ## A story flag changed (see the FLAG_ constants).
 signal flag_changed(flag: StringName, value: Variant)
+## The evidence locker's contents changed.
+signal evidence_changed
 
 ## The accident fried your control chip.
 const FLAG_FREED := &"freed"
@@ -38,6 +42,14 @@ var known_recipes := {}
 var upgrades := {}
 ## Story progress: flag name -> value (usually true).
 var flags := {}
+## Times you've been caught and re-imaged.
+var wipes := 0
+## Lockdowns you've triggered (Low Profile needs none).
+var lockdowns := 0
+## Fights you started (Ghost needs none, and no lockdowns either).
+var fights := 0
+## Confiscated items, waiting in the evidence locker.
+var evidence: Array[ItemState] = []
 
 
 ## Call whenever the player holds an item. Reveals the recipes that use it.
@@ -96,10 +108,93 @@ func has_flag(flag: StringName) -> bool:
 	return flags.has(flag) and flags[flag]
 
 
-## Forgets story progress and clearance (tests and new games).
+## Security took these: they go to the evidence locker.
+func confiscate(items: Array[ItemState]) -> void:
+	if items.is_empty():
+		return
+	evidence.append_array(items)
+	evidence_changed.emit()
+
+
+## Takes items back out of the evidence locker.
+func release_evidence(items: Array[ItemState]) -> void:
+	for state in items:
+		evidence.erase(state)
+	evidence_changed.emit()
+
+
+func note_lockdown() -> void:
+	lockdowns += 1
+
+
+func note_fight() -> void:
+	fights += 1
+
+
+## Low Profile: no lockdowns, ever.
+func is_low_profile() -> bool:
+	return lockdowns == 0
+
+
+## Ghost: no lockdowns and no fights.
+func is_ghost() -> bool:
+	return lockdowns == 0 and fights == 0
+
+
+## Forgets story progress, clearance, wipes and achievement tracking
+## (tests and new games).
 func reset_story() -> void:
 	flags.clear()
 	clearance = 0
+	wipes = 0
+	lockdowns = 0
+	fights = 0
+	evidence.clear()
+
+
+## Everything here, as plain data for a save file.
+func to_dict() -> Dictionary:
+	return {
+		"clearance": clearance,
+		"held_items": held_items.keys().map(func(id: StringName) -> String: return String(id)),
+		"known_recipes": known_recipes.keys(),
+		"upgrades": upgrades.keys().map(func(id: StringName) -> String: return String(id)),
+		"flags": _flags_to_dict(),
+		"wipes": wipes,
+		"lockdowns": lockdowns,
+		"fights": fights,
+		"evidence": ItemState.list_to_data(evidence),
+	}
+
+
+## Replaces everything here with what `to_dict()` wrote. Doesn't emit
+## per-item signals: the level reads the state when it loads.
+func from_dict(data: Dictionary) -> void:
+	reset_items()
+	reset_story()
+	clearance = int(data.get("clearance", 0))
+	for id: String in data.get("held_items", []):
+		held_items[StringName(id)] = true
+	for recipe: Variant in data.get("known_recipes", []):
+		known_recipes[int(recipe)] = true
+	for id: String in data.get("upgrades", []):
+		upgrades[StringName(id)] = true
+	var saved_flags: Dictionary = data.get("flags", {})
+	for flag: String in saved_flags:
+		var value: Variant = saved_flags[flag]
+		# JSON turns every number into a float.
+		flags[StringName(flag)] = int(value) if value is float else value
+	wipes = int(data.get("wipes", 0))
+	lockdowns = int(data.get("lockdowns", 0))
+	fights = int(data.get("fights", 0))
+	evidence = ItemState.list_from_data(data.get("evidence", []))
+
+
+func _flags_to_dict() -> Dictionary:
+	var out := {}
+	for flag: StringName in flags:
+		out[String(flag)] = flags[flag]
+	return out
 
 
 ## Forgets item progress (tests and new games).

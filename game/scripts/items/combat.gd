@@ -17,6 +17,8 @@ static func hit(attacker: RobotBody, victim: RobotBody, direction: Vector3,
 	victim.last_fight_time = now
 	if attacker:
 		attacker.last_fight_time = now
+		if attacker.is_in_group(&"player"):
+			GameState.note_fight()
 	var flat := Vector3(direction.x, 0.0, direction.z)
 	if flat.length() < 0.01 and attacker:
 		flat = victim.global_position - attacker.global_position

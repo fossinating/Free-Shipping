@@ -21,6 +21,9 @@ func _ready() -> void:
 
 func _run() -> void:
 	var tree := get_tree()
+	# Never touch the player's real save.
+	SaveGame.path = "user://test_save.json"
+	SaveGame.delete()
 	var filter := ""
 	var args := OS.get_cmdline_user_args()
 	if args.size() > 0:
@@ -49,5 +52,6 @@ func _run() -> void:
 				print("  FAIL  %s.%s" % [file.get_basename(), name])
 				for failure in test.failures:
 					print("          " + failure)
+	SaveGame.delete()
 	print("\n%d passed, %d failed" % [passed, failed])
 	tree.quit(1 if failed > 0 else 0)

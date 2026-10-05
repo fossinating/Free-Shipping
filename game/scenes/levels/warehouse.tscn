@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=3]
+[gd_scene load_steps=63 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/warehouse.gd" id="1_warehouse"]
 
@@ -18,33 +18,35 @@
 
 [ext_resource type="PackedScene" path="res://scenes/items/charging_dock.tscn" id="9_charging_dock"]
 
-[ext_resource type="PackedScene" path="res://scenes/story/radio.tscn" id="10_radio"]
+[ext_resource type="PackedScene" path="res://scenes/items/evidence_locker.tscn" id="10_evidence_locker"]
 
-[ext_resource type="PackedScene" path="res://scenes/items/item.tscn" id="11_item"]
+[ext_resource type="PackedScene" path="res://scenes/story/radio.tscn" id="11_radio"]
 
-[ext_resource type="Script" path="res://scripts/items/item_spot.gd" id="12_item_spot"]
+[ext_resource type="PackedScene" path="res://scenes/items/item.tscn" id="12_item"]
 
-[ext_resource type="Script" path="res://scripts/work/package_spawner.gd" id="13_package_spawner"]
+[ext_resource type="Script" path="res://scripts/items/item_spot.gd" id="13_item_spot"]
 
-[ext_resource type="PackedScene" path="res://scenes/work/chute.tscn" id="14_chute"]
+[ext_resource type="Script" path="res://scripts/work/package_spawner.gd" id="14_package_spawner"]
 
-[ext_resource type="PackedScene" path="res://scenes/work/package.tscn" id="15_package"]
+[ext_resource type="PackedScene" path="res://scenes/work/chute.tscn" id="15_chute"]
 
-[ext_resource type="PackedScene" path="res://scenes/robot/coworker.tscn" id="16_coworker"]
+[ext_resource type="PackedScene" path="res://scenes/work/package.tscn" id="16_package"]
 
-[ext_resource type="PackedScene" path="res://scenes/robot/guard.tscn" id="17_guard"]
+[ext_resource type="PackedScene" path="res://scenes/robot/coworker.tscn" id="17_coworker"]
 
-[ext_resource type="Script" path="res://scripts/items/keycard_carrier.gd" id="18_keycard_carrier"]
+[ext_resource type="PackedScene" path="res://scenes/robot/guard.tscn" id="18_guard"]
 
-[ext_resource type="PackedScene" path="res://scenes/robot/robot.tscn" id="19_robot"]
+[ext_resource type="Script" path="res://scripts/items/keycard_carrier.gd" id="19_keycard_carrier"]
 
-[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="20_player"]
+[ext_resource type="PackedScene" path="res://scenes/robot/robot.tscn" id="20_robot"]
 
-[ext_resource type="Script" path="res://scripts/story/signal_receiver.gd" id="21_signal_receiver"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="21_player"]
 
-[ext_resource type="Script" path="res://scripts/story/diagnostics.gd" id="22_diagnostics"]
+[ext_resource type="Script" path="res://scripts/story/signal_receiver.gd" id="22_signal_receiver"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="23_hud"]
+[ext_resource type="Script" path="res://scripts/story/diagnostics.gd" id="23_diagnostics"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="24_hud"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
 sky_top_color = Color(0.35, 0.45, 0.6, 1)
@@ -179,11 +181,14 @@ size = Vector3(32, 8, 28)
 [sub_resource type="BoxShape3D" id="Shape_ReceivingOffice"]
 size = Vector3(10, 3, 8)
 
+[sub_resource type="BoxShape3D" id="Shape_Holding"]
+size = Vector3(3.1, 3, 6)
+
 [sub_resource type="StandardMaterial3D" id="Mat_maintenance"]
 albedo_color = Color(0.85, 0.85, 0.3, 1)
 roughness = 0.6
 
-[node name="Warehouse" type="Node3D" node_paths=PackedStringArray("hud", "player", "maintenance_bot", "diagnostics", "receiver", "radio", "bay_door", "hardware_zone", "respawn")]
+[node name="Warehouse" type="Node3D" node_paths=PackedStringArray("hud", "player", "maintenance_bot", "diagnostics", "receiver", "radio", "bay_door", "hardware_zone", "respawn", "dock", "bay_zone")]
 script = ExtResource("1_warehouse")
 hud = NodePath("HUD")
 player = NodePath("Player")
@@ -194,6 +199,8 @@ radio = NodePath("Radio")
 bay_door = NodePath("Geometry/BayDoor")
 hardware_zone = NodePath("Zones/Hardware")
 respawn = NodePath("Respawn")
+dock = NodePath("Dock")
+bay_zone = NodePath("Zones/MaintenanceBay")
 
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = SubResource("Env")
@@ -635,6 +642,24 @@ use_collision = true
 size = Vector3(3.0, 4.0, 0.1)
 material = SubResource("Mat_door")
 
+[node name="HoldingNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 30.45, 1.0, -4.5)
+use_collision = true
+size = Vector3(3.1, 2.0, 0.2)
+material = SubResource("Mat_office")
+
+[node name="HoldingSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 30.45, 1.0, 1.5)
+use_collision = true
+size = Vector3(3.1, 2.0, 0.2)
+material = SubResource("Mat_office")
+
+[node name="HoldingEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 32.0, 1.0, -0.75)
+use_collision = true
+size = Vector3(0.2, 2.0, 4.5)
+material = SubResource("Mat_office")
+
 [node name="BaySign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 4.0, -7.9)
 pixel_size = 0.01
@@ -761,6 +786,24 @@ pixel_size = 0.01
 billboard = 1
 text = "RECEIVING OFFICE
 CLEARANCE 2"
+font_size = 32
+outline_size = 10
+
+[node name="HoldingSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 32.3, 2.4, 0.9)
+pixel_size = 0.01
+billboard = 1
+text = "HOLDING
+CLEARANCE 2"
+font_size = 32
+outline_size = 10
+
+[node name="BackupSign" type="Label3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -12.6, 3.6, -2.2)
+pixel_size = 0.01
+billboard = 1
+text = "M-7 BACKUP TERMINAL
+Walk in to save"
 font_size = 32
 outline_size = 10
 
@@ -971,6 +1014,15 @@ required_clearance = 2
 [node name="Shape" type="CollisionShape3D" parent="Zones/ReceivingOffice"]
 shape = SubResource("Shape_ReceivingOffice")
 
+[node name="Holding" type="Area3D" parent="Zones"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 30.45, 1.5, -1.5)
+script = ExtResource("7_zone")
+zone_name = "Holding cage"
+required_clearance = 2
+
+[node name="Shape" type="CollisionShape3D" parent="Zones/Holding"]
+shape = SubResource("Shape_Holding")
+
 [node name="Security" type="Node3D" parent="."]
 
 [node name="ElectronicsCamera" parent="Security" instance=ExtResource("8_security_camera")]
@@ -988,117 +1040,120 @@ sweep_degrees = 100.0
 [node name="Dock" parent="." instance=ExtResource("9_charging_dock")]
 transform = Transform3D(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, -26.0, 0.0, 6.0)
 
-[node name="Radio" parent="." instance=ExtResource("10_radio")]
+[node name="EvidenceLocker" parent="." instance=ExtResource("10_evidence_locker")]
+transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 30.0, 0.0, -1.5)
+
+[node name="Radio" parent="." instance=ExtResource("11_radio")]
 transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 26.1, 2.8, -10.0)
 
 [node name="Items" type="Node3D" parent="."]
 
-[node name="ToolBenchCutter" parent="Items" instance=ExtResource("11_item")]
+[node name="ToolBenchCutter" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 1.1, -17.0)
 item_id = &"box_cutter"
 
-[node name="OfficeKeycard" parent="Items" instance=ExtResource("11_item")]
+[node name="OfficeKeycard" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -7.6, 1.08, -37.5)
 item_id = &"keycard_1"
 
-[node name="IslandCoil" parent="Items" instance=ExtResource("11_item")]
+[node name="IslandCoil" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 25.0, 2.75, -32.5)
 item_id = &"electromagnet_coil"
 
-[node name="IslandWrench" parent="Items" instance=ExtResource("11_item")]
+[node name="IslandWrench" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 23.0, 2.6, -31.0)
 item_id = &"wrench"
 
-[node name="WheelMotor" parent="Items" instance=ExtResource("11_item")]
+[node name="WheelMotor" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 54.0, 1.4, -10.0)
 item_id = &"wheel_motor"
 
-[node name="PartsStrap" parent="Items" instance=ExtResource("11_item")]
+[node name="PartsStrap" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 53.3, 1.3, -9.3)
 item_id = &"strap"
 
-[node name="PalletTape" parent="Items" instance=ExtResource("11_item")]
+[node name="PalletTape" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 41.0, 1.3, -7.0)
 item_id = &"tape"
 
-[node name="RecOfficeKeycard" parent="Items" instance=ExtResource("11_item")]
+[node name="RecOfficeKeycard" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 55.6, 1.08, 2.0)
 item_id = &"keycard_2"
 
-[node name="OverstockId" parent="Items" instance=ExtResource("11_item")]
+[node name="OverstockId" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 37.0, 7.6, 1.0)
 item_id = &"fake_id"
 
-[node name="OverstockSpoofer" parent="Items" instance=ExtResource("11_item")]
+[node name="OverstockSpoofer" parent="Items" instance=ExtResource("12_item")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 39.0, 7.6, 1.0)
 item_id = &"scanner_spoofer"
 
 [node name="ElectronicsSpotA" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 15.0, 3.2, -6.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"electronics"
 
 [node name="ElectronicsSpotB" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 19.5, 3.2, -11.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"electronics"
 
 [node name="ElectronicsSpotC" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 17.3, 0.3, -12.5)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"electronics"
 
 [node name="HardwareSpotA" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.2, -21.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"hardware"
 
 [node name="HardwareSpotB" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 6.0, 3.2, -26.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"hardware"
 
 [node name="HardwareSpotC" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 1.2, -20.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"hardware"
 
 [node name="ReceivingSpotA" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 1.3, -11.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"receiving"
 
 [node name="ReceivingSpotB" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 37.0, 1.3, -7.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"receiving"
 
 [node name="ReceivingSpotC" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 45.0, 1.3, -11.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"receiving"
 
 [node name="ReceivingSpotD" type="Marker3D" parent="Items"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 41.0, 2.5, -11.0)
-script = ExtResource("12_item_spot")
+script = ExtResource("13_item_spot")
 pool = &"receiving"
 
 [node name="Work" type="Node3D" parent="."]
 
 [node name="StationC" type="Marker3D" parent="Work"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 0.0, 9.0)
-script = ExtResource("13_package_spawner")
+script = ExtResource("14_package_spawner")
 
-[node name="ChuteC" parent="Work" instance=ExtResource("14_chute")]
+[node name="ChuteC" parent="Work" instance=ExtResource("15_chute")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 10.0, 0.0, 9.0)
 
-[node name="Inbound1" parent="Work" instance=ExtResource("15_package")]
+[node name="Inbound1" parent="Work" instance=ExtResource("16_package")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 56.0, 0.4, 10.5)
 
-[node name="Inbound2" parent="Work" instance=ExtResource("15_package")]
+[node name="Inbound2" parent="Work" instance=ExtResource("16_package")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 52.0, 0.4, 10.5)
 
-[node name="Inbound3" parent="Work" instance=ExtResource("15_package")]
+[node name="Inbound3" parent="Work" instance=ExtResource("16_package")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 48.0, 0.4, 10.5)
 
 [node name="Coworkers" type="Node3D" parent="."]
@@ -1111,7 +1166,7 @@ transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 13.0, 0.0, 
 [node name="Point2" type="Marker3D" parent="Coworkers/RestockerRoute"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 23.0, 0.0, -2.0)
 
-[node name="Restocker" parent="Coworkers" instance=ExtResource("16_coworker")]
+[node name="Restocker" parent="Coworkers" instance=ExtResource("17_coworker")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 13.0, 0.05, -2.0)
 
 [node name="Brain" parent="Coworkers/Restocker" node_paths=PackedStringArray("route")]
@@ -1125,7 +1180,7 @@ transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -5.0, 0.0, 
 [node name="Point2" type="Marker3D" parent="Coworkers/HardwareStockerRoute"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 10.0, 0.0, -23.5)
 
-[node name="HardwareStocker" parent="Coworkers" instance=ExtResource("16_coworker")]
+[node name="HardwareStocker" parent="Coworkers" instance=ExtResource("17_coworker")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -5.0, 0.05, -23.5)
 
 [node name="Brain" parent="Coworkers/HardwareStocker" node_paths=PackedStringArray("route")]
@@ -1139,7 +1194,7 @@ transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 38.0, 0.0, 
 [node name="Point2" type="Marker3D" parent="Coworkers/UnloaderRoute"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 57.0, 0.0, 8.0)
 
-[node name="Unloader" parent="Coworkers" instance=ExtResource("16_coworker")]
+[node name="Unloader" parent="Coworkers" instance=ExtResource("17_coworker")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 38.0, 0.05, 8.0)
 
 [node name="Brain" parent="Coworkers/Unloader" node_paths=PackedStringArray("route")]
@@ -1161,7 +1216,7 @@ transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 10.0, 0.0, 
 [node name="Point4" type="Marker3D" parent="Guards/FloorGuardRoute"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 0.0, 4.0)
 
-[node name="FloorGuard" parent="Guards" instance=ExtResource("17_guard")]
+[node name="FloorGuard" parent="Guards" instance=ExtResource("18_guard")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 0.05, -5.0)
 
 [node name="Brain" parent="Guards/FloorGuard" node_paths=PackedStringArray("route")]
@@ -1181,14 +1236,14 @@ transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 12.0, 0.0, 
 [node name="Point4" type="Marker3D" parent="Guards/SupervisorRoute"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -6.0, 0.0, -29.0)
 
-[node name="Supervisor" parent="Guards" instance=ExtResource("17_guard")]
+[node name="Supervisor" parent="Guards" instance=ExtResource("18_guard")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -6.0, 0.05, -18.0)
 
 [node name="Brain" parent="Guards/Supervisor" node_paths=PackedStringArray("route")]
 route = NodePath("../../SupervisorRoute")
 
 [node name="Keycard" type="Node" parent="Guards/Supervisor"]
-script = ExtResource("18_keycard_carrier")
+script = ExtResource("19_keycard_carrier")
 level = 1
 
 [node name="SupervisorTag" type="Label3D" parent="Guards/Supervisor"]
@@ -1213,14 +1268,14 @@ transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 46.0, 0.0, 
 [node name="Point4" type="Marker3D" parent="Guards/DockBossRoute"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 0.0, 6.0)
 
-[node name="DockBoss" parent="Guards" instance=ExtResource("17_guard")]
+[node name="DockBoss" parent="Guards" instance=ExtResource("18_guard")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 33.0, 0.05, -2.0)
 
 [node name="Brain" parent="Guards/DockBoss" node_paths=PackedStringArray("route")]
 route = NodePath("../../DockBossRoute")
 
 [node name="Keycard" type="Node" parent="Guards/DockBoss"]
-script = ExtResource("18_keycard_carrier")
+script = ExtResource("19_keycard_carrier")
 level = 2
 
 [node name="DockBossTag" type="Label3D" parent="Guards/DockBoss"]
@@ -1231,7 +1286,7 @@ text = "DOCK BOSS"
 font_size = 28
 outline_size = 10
 
-[node name="MaintenanceBot" parent="." instance=ExtResource("19_robot")]
+[node name="MaintenanceBot" parent="." instance=ExtResource("20_robot")]
 transform = Transform3D(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0, -19.5, 0.05, 0.0)
 
 [node name="Casing" parent="MaintenanceBot/Visual/Core"]
@@ -1249,18 +1304,18 @@ outline_size = 10
 [node name="Respawn" type="Marker3D" parent="."]
 transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, -22.0, 0.85, 0.0)
 
-[node name="Player" parent="." instance=ExtResource("20_player")]
+[node name="Player" parent="." instance=ExtResource("21_player")]
 transform = Transform3D(0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, -22.0, 0.85, 0.0)
 
 [node name="SignalReceiver" type="Node" parent="." node_paths=PackedStringArray("robot")]
-script = ExtResource("21_signal_receiver")
+script = ExtResource("22_signal_receiver")
 robot = NodePath("../Player")
 
 [node name="Diagnostics" type="Node" parent="." node_paths=PackedStringArray("robot", "hud")]
-script = ExtResource("22_diagnostics")
+script = ExtResource("23_diagnostics")
 robot = NodePath("../Player")
 hud = NodePath("../HUD")
 
-[node name="HUD" parent="." node_paths=PackedStringArray("controller", "receiver") instance=ExtResource("23_hud")]
+[node name="HUD" parent="." node_paths=PackedStringArray("controller", "receiver") instance=ExtResource("24_hud")]
 controller = NodePath("../Player/Controller")
 receiver = NodePath("../SignalReceiver")

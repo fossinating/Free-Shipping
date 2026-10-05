@@ -7,6 +7,8 @@ extends Marker3D
 
 ## The pickup that turned up here, once it has.
 var item: Item
+## Don't spawn anything (a loaded save brings its own items).
+var disabled := false
 
 
 func _ready() -> void:
@@ -14,6 +16,8 @@ func _ready() -> void:
 
 
 func _spawn() -> void:
+	if disabled:
+		return
 	var id := ItemCatalog.pick_from_pool(pool)
 	if id == &"":
 		push_warning("ItemSpot %s: unknown pool %s" % [name, pool])

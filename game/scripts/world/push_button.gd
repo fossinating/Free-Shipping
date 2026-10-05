@@ -7,10 +7,30 @@ signal pressed
 
 ## How close (vertically) the core has to be to count as a press.
 @export var reach_tolerance := 0.6
+## Robots this close (on the floor plan) get a hint how to press it.
+@export var hint_distance := 2.5
 
 var is_pressed := false
 
 @onready var _light: MeshInstance3D = $Light
+
+
+func _ready() -> void:
+	add_to_group(&"push_buttons")
+
+
+## How `robot` could press this button ("" if it's pressed or far away).
+## Jam players never worked out that you grow to reach buttons.
+func get_hint(robot: RobotBody) -> String:
+	var offset := global_position - robot.global_position
+	if is_pressed or Vector2(offset.x, offset.z).length() > hint_distance:
+		return ""
+	var height := global_position.y - robot.get_core_position().y
+	if height > reach_tolerance:
+		return "Hold E to grow up to the button"
+	if height < -reach_tolerance:
+		return "Hold Q to shrink down to the button"
+	return "Walk into the button to press it"
 
 
 func _physics_process(_delta: float) -> void:

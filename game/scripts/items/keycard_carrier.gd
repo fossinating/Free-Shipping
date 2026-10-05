@@ -52,3 +52,10 @@ func drop() -> Item:
 	card.linear_velocity = Vector3(randf_range(-1.0, 1.0), 3.0, randf_range(-1.0, 1.0))
 	dropped.emit(card)
 	return card
+
+
+## Takes the card away quietly (a loaded game where you already have it).
+func remove_card() -> void:
+	has_card = false
+	if _clip:
+		_clip.hide()

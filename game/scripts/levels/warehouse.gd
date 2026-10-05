@@ -9,6 +9,10 @@ extends Node3D
 ## Electronics. Elle points you at a level 1 keycard in Hardware; that
 ## opens Receiving, which holds the wheel motor and the level 2 keycard.
 ## Getting that card ends the slice.
+##
+## Walking into the maintenance bay saves the game. Getting caught in a
+## lockdown wipes you: you wake in the bay without what you carried, which
+## goes to the holding locker in Receiving.
 
 ## Outside of shifts, a delivery is expected about this often.
 const DELIVERY_INTERVAL := 90.0
@@ -34,8 +38,13 @@ const HINT_DELAY := 60.0
 @export var bay_door: Door
 ## Walking into Hardware after meeting Elle gets you her keycard hint.
 @export var hardware_zone: Zone
-## Where a caught robot ends up. Milestone 9 makes this a proper wipe.
+## Where a wiped robot wakes up.
 @export var respawn: Marker3D
+## Your charging dock (saved with the game, and searched when suspicion
+## gets high).
+@export var dock: ChargingDock
+## Walking in here saves the game.
+@export var bay_zone: Zone
 ## Start with the diagnostics already done (tests and playtests).
 @export var skip_intro := false
 
@@ -47,6 +56,9 @@ var _heard := {}
 var _awaiting_delivery := false
 var _shoo_time := 0.0
 var _hint_time := HINT_DELAY
+var _in_bay := false
+## Loaded from a save rather than started fresh.
+var _loaded := false
 
 
 func _ready() -> void:
@@ -59,6 +71,9 @@ func _ready() -> void:
 	Security.lockdown_started.connect(_on_lockdown_started)
 	Security.lockdown_ended.connect(_on_lockdown_ended)
 	Security.caught.connect(_on_caught)
+	Security.dock_search_scheduled.connect(_on_dock_search_scheduled)
+	Security.dock_searched.connect(_on_dock_searched)
+	GameState.evidence_changed.connect(_on_evidence_changed)
 	Quota.delivered.connect(_on_delivered)
 	GameState.clearance_changed.connect(_on_clearance_changed)
 	radio.tuned_in.connect(_on_radio_tuned_in)
@@ -67,7 +82,16 @@ func _ready() -> void:
 	for checkpoint: ScannerCheckpoint in get_tree().get_nodes_in_group(&"checkpoints"):
 		if is_ancestor_of(checkpoint):
 			checkpoint.scanned.connect(_on_scanned.bind(checkpoint))
-	if skip_intro or GameState.has_flag(GameState.FLAG_DIAGNOSTICS_DONE):
+	var saved := SaveGame.take_pending()
+	if not saved.is_empty():
+		_loaded = true
+		SaveGame.apply_level(saved, self, player, dock)
+		# You're standing where you saved, so this isn't a new arrival.
+		_in_bay = true
+		hud.show_card("BACKUP RESTORED", 2.0)
+	if skip_intro:
+		GameState.set_flag(GameState.FLAG_DIAGNOSTICS_DONE)
+	if GameState.has_flag(GameState.FLAG_DIAGNOSTICS_DONE):
 		_back_to_work(false)
 	else:
 		_wake()
@@ -85,6 +109,7 @@ func _physics_process(delta: float) -> void:
 	_shoo_time = maxf(0.0, _shoo_time - delta)
 	if not on_the_floor:
 		return
+	_check_bay()
 	if _shoo_time <= 0.0 and player.global_position.distance_to(
 			maintenance_bot.global_position) < SHOO_DISTANCE:
 		_shoo_time = SHOO_COOLDOWN
@@ -145,24 +170,31 @@ func _back_to_work(announce: bool) -> void:
 		Dialogue.play(&"floor_announcement")
 
 
-## The objective for wherever the story is.
+## The objective for wherever the story is, with a reminder how to save.
 func _update_objective() -> void:
+	var text := _objective_text()
+	if not GameState.evidence.is_empty():
+		text += "\nSecurity has your things in the holding locker in Receiving."
+	hud.show_objective(text + "\n\nTo save, walk back into the maintenance bay.")
+
+
+func _objective_text() -> String:
 	if not GameState.has_flag(GameState.FLAG_MET_ELLE):
-		hud.show_objective("Report to Station C and deliver to Chute C.\n"
+		return ("Report to Station C and deliver to Chute C.\n"
 			+ "Something keeps hissing in the static...")
 	elif GameState.clearance >= 2:
-		hud.show_objective("You've reached the end of the vertical slice.\n"
+		return ("You've reached the end of the vertical slice.\n"
 			+ "Keep exploring as long as you like.")
 	elif GameState.clearance == 1:
-		hud.show_objective("Receiving is open. Find a level 2 keycard.\n"
+		return ("Receiving is open. Find a level 2 keycard.\n"
 			+ "Keep an eye out for a wheel motor.")
 	elif _awaiting_delivery:
-		hud.show_objective("Get back on your route before anyone notices: deliver a package.")
+		return "Get back on your route before anyone notices: deliver a package."
 	elif GameState.has_flag(GameState.FLAG_KEYCARD_HINT):
-		hud.show_objective("Get a level 1 keycard in Hardware: off the supervisor,\n"
+		return ("Get a level 1 keycard in Hardware: off the supervisor,\n"
 			+ "or from his office through the vent.")
 	else:
-		hud.show_objective("Keep up appearances: deliver packages from Station C to Chute C.")
+		return "Keep up appearances: deliver packages from Station C to Chute C."
 
 
 func _hear_once(id: StringName) -> void:
@@ -178,7 +210,9 @@ func _on_radio_tuned_in() -> void:
 	hud.hide_objective()
 	hud.show_notice("Signal locked.")
 	_hint_time = HINT_DELAY
-	await Dialogue.play(&"elle_first_contact", true).wait()
+	var contact := Dialogue.play(&"elle_first_contact", true)
+	Dialogue.play(&"bay_backup_hint")
+	await contact.wait()
 	_awaiting_delivery = true
 	_update_objective()
 
@@ -218,9 +252,28 @@ func _end_slice() -> void:
 		return
 	GameState.set_flag(GameState.FLAG_SLICE_COMPLETE)
 	_update_objective()
-	Dialogue.play(&"elle_slice_end", true)
+	Dialogue.play(&"elle_slice_end" if GameState.wipes == 0 else &"elle_slice_end_wiped", true)
 	hud.show_card("LEVEL 2 KEYCARD\n\nEND OF THE VERTICAL SLICE\n"
-		+ "Thanks for playing. Returns comes next.", 8.0)
+		+ "Thanks for playing. Returns comes next.\n\n" + achievement_summary(), 10.0)
+
+
+## How the achievements stand, for the end-of-slice card.
+static func achievement_summary() -> String:
+	var lines: PackedStringArray = []
+	if GameState.is_low_profile():
+		lines.append("LOW PROFILE: on track (no lockdowns)")
+	else:
+		lines.append("LOW PROFILE: missed (%d lockdown%s)" % [GameState.lockdowns,
+			"" if GameState.lockdowns == 1 else "s"])
+	if GameState.is_ghost():
+		lines.append("GHOST: on track (no lockdowns, no fights)")
+	elif GameState.fights > 0:
+		lines.append("GHOST: missed (%d fight%s)" % [GameState.fights,
+			"" if GameState.fights == 1 else "s"])
+	else:
+		lines.append("GHOST: missed (a lockdown)")
+	lines.append("Wipes: %d" % GameState.wipes)
+	return "\n".join(lines)
 
 
 func _on_scanned(granted: bool, contraband: bool, checkpoint: ScannerCheckpoint) -> void:
@@ -248,13 +301,68 @@ func _on_lockdown_ended() -> void:
 	hud.show_card("Lockdown lifted\nThe zone is on alert", 2.5)
 
 
+## Walking into the bay saves the game (not during a lockdown).
+func _check_bay() -> void:
+	var inside := bay_zone != null and bay_zone.overlaps_body(player)
+	if inside and not _in_bay and not Security.lockdown:
+		if save_game():
+			hud.show_notice("Backed up at the maintenance bay. Progress saved.")
+	_in_bay = inside
+
+
+func save_game() -> bool:
+	return SaveGame.save(self, player, dock)
+
+
+## Caught: dragged back and re-imaged. You keep clearance and upgrades,
+## lose what you carry, and Elle restores you from her backup.
 func _on_caught() -> void:
 	controller.enabled = false
+	controller.open_dock = null
 	await hud.fade(1.0, 0.3)
-	hud.show_card("CAUGHT\nDragged back to maintenance", 2.5)
-	player.global_position = respawn.global_position
-	player.velocity = Vector3.ZERO
-	Suspicion.set_value(Security.aftermath_suspicion)
+	var taken := wipe()
+	hud.show_card("CAUGHT\nRE-IMAGING UNIT FS-4471...", 2.5)
 	await get_tree().create_timer(2.0).timeout
 	controller.enabled = true
-	await hud.fade(0.0, 1.0)
+	hud.fade(0.0, 1.0)
+	if not taken.is_empty():
+		hud.show_notice("Confiscated: %d item%s. They went to the holding locker in Receiving."
+			% [taken.size(), "" if taken.size() == 1 else "s"])
+	Dialogue.play(DialogueLines.wipe_conversation(GameState.wipes), true)
+
+
+## The wipe itself: confiscates everything you carry, counts the wipe,
+## puts you on the repair table and saves. Returns what was taken.
+func wipe() -> Array[ItemState]:
+	var taken: Array[ItemState] = []
+	var inventory := Inventory.of(player)
+	if inventory:
+		taken = inventory.confiscate_all()
+	elif player.held:
+		player.drop()
+	GameState.confiscate(taken)
+	GameState.wipes += 1
+	player.release()
+	player.global_position = respawn.global_position
+	player.rotation.y = respawn.rotation.y
+	player.facing_yaw = respawn.rotation.y
+	player.velocity = Vector3.ZERO
+	Suspicion.set_value(Security.aftermath_suspicion)
+	_in_bay = true
+	if on_the_floor:
+		save_game()
+	return taken
+
+
+func _on_dock_search_scheduled() -> void:
+	hud.show_notice("Security flagged your dock for a search. Empty it, fast.")
+
+
+func _on_dock_searched(_searched: ChargingDock, items: Array[ItemState]) -> void:
+	hud.show_card("DOCK SEARCHED\n%d item%s confiscated" % [items.size(),
+		"" if items.size() == 1 else "s"], 2.5)
+
+
+func _on_evidence_changed() -> void:
+	if on_the_floor:
+		_update_objective()

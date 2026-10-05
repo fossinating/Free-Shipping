@@ -71,3 +71,32 @@ func get_label() -> String:
 	if uses >= 0:
 		return "%s ×%d" % [get_name(), uses]
 	return get_name()
+
+
+## This item as plain data for a save file.
+func to_data() -> Dictionary:
+	return {"id": String(id), "durability": durability, "uses": uses}
+
+
+## An item from `to_data()`, or null if its id no longer exists.
+static func from_data(data: Dictionary) -> ItemState:
+	var item_id := StringName(data.get("id", ""))
+	if ItemCatalog.get_def(item_id).is_empty():
+		return null
+	var state := ItemState.new(item_id)
+	state.durability = int(data.get("durability", state.durability))
+	state.uses = int(data.get("uses", state.uses))
+	return state
+
+
+static func list_to_data(items: Array[ItemState]) -> Array:
+	return items.map(func(state: ItemState) -> Dictionary: return state.to_data())
+
+
+static func list_from_data(list: Array) -> Array[ItemState]:
+	var items: Array[ItemState] = []
+	for data: Dictionary in list:
+		var state := from_data(data)
+		if state:
+			items.append(state)
+	return items

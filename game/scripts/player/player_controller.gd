@@ -107,8 +107,26 @@ func _update_items() -> void:
 			notice.emit(text)
 	if Input.is_action_just_pressed("open_dock"):
 		var dock := ChargingDock.find_near(robot)
+		var locker := EvidenceLocker.find_near(robot)
 		if dock:
 			open_dock = dock
+		elif locker:
+			_open_locker(locker)
+
+
+## Takes confiscated items back out of an evidence locker.
+func _open_locker(locker: EvidenceLocker) -> void:
+	if locker.get_count() == 0:
+		notice.emit("The locker is empty")
+		return
+	var taken := locker.retrieve(inventory)
+	if taken.is_empty():
+		notice.emit("Inventory full")
+	elif locker.get_count() > 0:
+		notice.emit("Took back %d item%s. %d still inside, make room" % [taken.size(),
+			"" if taken.size() == 1 else "s", locker.get_count()])
+	else:
+		notice.emit("Took back everything security confiscated")
 
 
 func _update_hands(delta: float) -> void:
@@ -170,12 +188,20 @@ func get_prompt() -> String:
 		return "Click / F to grab"
 	if inventory and not _controlled() and ChargingDock.find_near(robot):
 		return "C to open your dock"
+	if inventory and not _controlled():
+		var locker := EvidenceLocker.find_near(robot)
+		if locker and locker.get_count() > 0:
+			return "C to take back your confiscated items (%d)" % locker.get_count()
 	if not robot.arms_input and robot.find_grab_target(robot.max_arm_reach):
 		return "Hold Shift / Right Mouse to reach further"
 	if robot.is_ledge_in_reach():
 		return "Hold Shift / Right Mouse to grab the ledge"
 	if robot.magnetic_hands and robot.is_metal_in_reach():
 		return "Hold Shift / Right Mouse to stick to the metal"
+	for button: PushButton in get_tree().get_nodes_in_group(&"push_buttons"):
+		var hint := button.get_hint(robot)
+		if hint != "":
+			return hint
 	return ""
 
 

@@ -87,6 +87,27 @@ func remove(state: ItemState) -> bool:
 	return true
 
 
+## Security takes everything the robot carries: the item in its hands
+## (a package is just dropped) and every slot. Returns the items taken.
+func confiscate_all() -> Array[ItemState]:
+	var taken: Array[ItemState] = []
+	if robot.held is Item:
+		var item := robot.held as Item
+		robot.held = null
+		robot.let_go.emit(item)
+		taken.append(item.state)
+		item.queue_free()
+	elif robot.held:
+		robot.drop()
+	for i in slots.size():
+		if slots[i]:
+			taken.append(slots[i])
+			slots[i] = null
+	selected = -1
+	changed.emit()
+	return taken
+
+
 ## Selects the next slot, wrapping through "holstered".
 func cycle() -> void:
 	selected += 1

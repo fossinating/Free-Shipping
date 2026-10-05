@@ -6,7 +6,7 @@ const DELIVERY_INTERVAL := 60.0
 
 @export var hud: Hud
 @export var player: RobotBody
-## Where a caught robot ends up. Milestone 9 makes this a proper wipe.
+## Where a caught (wiped) robot ends up.
 @export var respawn: Marker3D
 
 
@@ -32,7 +32,12 @@ func _on_caught() -> void:
 	var controller: PlayerController = player.get_node("Controller")
 	controller.enabled = false
 	await hud.fade(1.0, 0.3)
-	hud.show_card("CAUGHT\nDragged back to maintenance", 2.5)
+	# A wipe: what you carry is confiscated (see the warehouse for the rest).
+	var inventory := Inventory.of(player)
+	if inventory:
+		GameState.confiscate(inventory.confiscate_all())
+	GameState.wipes += 1
+	hud.show_card("CAUGHT\nRe-imaged at maintenance", 2.5)
 	player.global_position = respawn.global_position
 	player.velocity = Vector3.ZERO
 	Suspicion.set_value(Security.aftermath_suspicion)

@@ -1,6 +1,7 @@
 extends Node
 ## Security's response: lockdowns, sightings, noise, and dispatching guards
-## to check on robots that fall behind.
+## to check on robots that fall behind, and searches your charging dock
+## when suspicion gets high.
 ##
 ## A lockdown starts when suspicion maxes out. It ends once no watcher has
 ## seen you for a while; hiding or blending back in (carrying normal stock)
@@ -17,6 +18,10 @@ signal caught
 signal noise(position: Vector3, radius: float)
 ## A guard should go check on the player (they're behind on deliveries).
 signal check_in_requested
+## Suspicion got high enough that security will search your dock soon.
+signal dock_search_scheduled
+## Security searched a charging dock and took what was in it.
+signal dock_searched(dock: ChargingDock, items: Array[ItemState])
 
 ## Seconds unseen before a lockdown ends.
 @export var lockdown_end_time := 12.0
@@ -28,6 +33,12 @@ signal check_in_requested
 @export var heightened_multiplier := 1.5
 ## While under review, a guard checks in this often.
 @export var check_in_interval := 45.0
+## Once suspicion reaches a dock's search level, the search comes this
+## many seconds later, even if suspicion drops again. A lockdown calls it
+## off: security is busy hunting you, and catching you is its own cost...
+@export var dock_search_delay := 10.0
+## ...and after a search, there isn't another one for this long.
+@export var dock_search_cooldown := 90.0
 
 var lockdown := false
 var last_known_position := Vector3.ZERO
@@ -37,6 +48,9 @@ var heightened_until := 0.0
 
 var _unseen := 0.0
 var _check_in_timer := 0.0
+## Seconds until a scheduled dock search, or -1 for none.
+var _search_in := -1.0
+var _search_cooldown := 0.0
 
 
 func _ready() -> void:
@@ -57,6 +71,7 @@ func _physics_process(delta: float) -> void:
 			check_in_requested.emit()
 	else:
 		_check_in_timer = 0.0
+	_update_dock_search(delta)
 
 
 func reset() -> void:
@@ -65,6 +80,8 @@ func reset() -> void:
 	heightened_until = 0.0
 	_unseen = 0.0
 	_check_in_timer = 0.0
+	_search_in = -1.0
+	_search_cooldown = 0.0
 
 
 func start_lockdown() -> void:
@@ -72,6 +89,7 @@ func start_lockdown() -> void:
 		return
 	lockdown = true
 	_unseen = 0.0
+	GameState.note_lockdown()
 	var player := _player()
 	if player:
 		last_known_position = player.global_position
@@ -108,6 +126,27 @@ func make_noise(position: Vector3, radius: float) -> void:
 	noise.emit(position, radius)
 
 
+## Whether a dock search is on its way.
+func is_dock_search_scheduled() -> bool:
+	return _search_in >= 0.0
+
+
+## Searches every charging dock. What's in them goes to the evidence
+## locker. Returns how many items were taken.
+func search_docks() -> int:
+	_search_in = -1.0
+	var taken := 0
+	for dock: ChargingDock in get_tree().get_nodes_in_group(&"docks"):
+		if dock.stash.is_empty():
+			continue
+		var items := dock.confiscate()
+		GameState.confiscate(items)
+		taken += items.size()
+		dock_searched.emit(dock, items)
+	_search_cooldown = dock_search_cooldown
+	return taken
+
+
 ## 0 when just seen, 1 when the lockdown is about to end.
 func get_lockdown_progress() -> float:
 	return clampf(_unseen / lockdown_end_time, 0.0, 1.0)
@@ -125,6 +164,26 @@ func get_alert_multiplier(position: Vector3) -> float:
 func is_blending_in(robot: RobotBody) -> bool:
 	return HidingSpot.is_hidden(robot) or (robot.held != null and robot.held.is_stock()
 		and not Inventory.shows_contraband(robot))
+
+
+## High suspicion schedules a search of your dock.
+func _update_dock_search(delta: float) -> void:
+	_search_cooldown = maxf(0.0, _search_cooldown - delta)
+	if lockdown or not Suspicion.enabled:
+		_search_in = -1.0
+		return
+	if _search_in >= 0.0:
+		_search_in -= delta
+		if _search_in < 0.0:
+			search_docks()
+		return
+	if _search_cooldown > 0.0:
+		return
+	for dock: ChargingDock in get_tree().get_nodes_in_group(&"docks"):
+		if dock.is_searchable() and not dock.stash.is_empty():
+			_search_in = dock_search_delay
+			dock_search_scheduled.emit()
+			return
 
 
 func _player() -> RobotBody:
