@@ -54,6 +54,8 @@ func _ready() -> void:
 	_mesh.mesh = mesh
 	_label.position.y = size.y / 2.0 + 0.005
 	_update_label()
+	# Fast throws would otherwise tunnel through walls and floors.
+	continuous_cd = true
 	contact_monitor = true
 	max_contacts_reported = 1
 	body_entered.connect(_on_body_entered)
@@ -96,6 +98,11 @@ func _update_label() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if global_position.y < RobotBody.FALL_LIMIT and not is_held() and self is not Item:
+		# Fell out of the level. Spawners restock plain packages; items are
+		# one of a kind, so those are left alone.
+		queue_free()
+		return
 	var speed := linear_velocity.length()
 	_speed_before_contact = maxf(speed, _last_frame_speed)
 	_last_frame_speed = speed

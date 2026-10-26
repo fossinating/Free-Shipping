@@ -339,7 +339,7 @@ func wipe() -> Array[ItemState]:
 	if inventory:
 		taken = inventory.confiscate_all()
 	elif player.held:
-		player.drop()
+		player.drop(true)
 	GameState.confiscate(taken)
 	GameState.wipes += 1
 	player.release()

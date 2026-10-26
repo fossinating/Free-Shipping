@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=42 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/stealth_test.gd" id="1_stealth_test"]
 
@@ -47,21 +47,84 @@ agent_height = 2.0
 agent_radius = 0.5
 agent_max_climb = 0.25
 
+[sub_resource type="BoxShape3D" id="BoxShape_1"]
+size = Vector3(32.0, 1.0, 28.0)
+
 [sub_resource type="StandardMaterial3D" id="Mat_floor"]
 albedo_color = Color(0.32, 0.33, 0.35, 1)
 roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(32.0, 1.0, 28.0)
+material = SubResource("Mat_floor")
+
+[sub_resource type="BoxShape3D" id="BoxShape_2"]
+size = Vector3(34.0, 8.0, 1.0)
 
 [sub_resource type="StandardMaterial3D" id="Mat_wall"]
 albedo_color = Color(0.55, 0.58, 0.62, 1)
 roughness = 0.85
 
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
+size = Vector3(34.0, 8.0, 1.0)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_3"]
+size = Vector3(1.0, 8.0, 28.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(1.0, 8.0, 28.0)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_4"]
+size = Vector3(4.0, 1.0, 1.2)
+
 [sub_resource type="StandardMaterial3D" id="Mat_crate"]
 albedo_color = Color(0.62, 0.45, 0.27, 1)
 roughness = 0.85
 
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(4.0, 1.0, 1.2)
+material = SubResource("Mat_crate")
+
+[sub_resource type="BoxShape3D" id="BoxShape_5"]
+size = Vector3(3.0, 3.0, 2.0)
+
 [sub_resource type="StandardMaterial3D" id="Mat_shelf"]
 albedo_color = Color(0.25, 0.42, 0.7, 1)
 roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(3.0, 3.0, 2.0)
+material = SubResource("Mat_shelf")
+
+[sub_resource type="BoxShape3D" id="BoxShape_6"]
+size = Vector3(0.4, 5.0, 10.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(0.4, 5.0, 10.0)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_7"]
+size = Vector3(4.0, 5.0, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(4.0, 5.0, 0.4)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_8"]
+size = Vector3(3.0, 5.0, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
+size = Vector3(3.0, 5.0, 0.4)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_9"]
+size = Vector3(3.0, 1.0, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(3.0, 1.0, 1.2)
+material = SubResource("Mat_crate")
 
 [sub_resource type="BoxShape3D" id="Shape_Fulfillment"]
 size = Vector3(32, 8, 28)
@@ -92,80 +155,116 @@ navigation_mesh = SubResource("NavMesh")
 
 [node name="Geometry" type="Node3D" parent="." groups=["navigation_geometry"]]
 
-[node name="Floor" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, -0.5, 0.0)
-use_collision = true
-size = Vector3(32.0, 1.0, 28.0)
-material = SubResource("Mat_floor")
+[node name="Floor" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -0.5, 0.0)
 
-[node name="WallNorth" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 4.0, -14.5)
-use_collision = true
-size = Vector3(34.0, 8.0, 1.0)
-material = SubResource("Mat_wall")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/Floor"]
+shape = SubResource("BoxShape_1")
 
-[node name="WallSouth" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 4.0, 14.5)
-use_collision = true
-size = Vector3(34.0, 8.0, 1.0)
-material = SubResource("Mat_wall")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/Floor"]
+mesh = SubResource("BoxMesh_1")
 
-[node name="WallWest" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -16.5, 4.0, 0.0)
-use_collision = true
-size = Vector3(1.0, 8.0, 28.0)
-material = SubResource("Mat_wall")
+[node name="WallNorth" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.0, -14.5)
 
-[node name="WallEast" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 16.5, 4.0, 0.0)
-use_collision = true
-size = Vector3(1.0, 8.0, 28.0)
-material = SubResource("Mat_wall")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/WallNorth"]
+shape = SubResource("BoxShape_2")
 
-[node name="BenchWest" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -4.0, 0.5, 0.0)
-use_collision = true
-size = Vector3(4.0, 1.0, 1.2)
-material = SubResource("Mat_crate")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/WallNorth"]
+mesh = SubResource("BoxMesh_2")
 
-[node name="BenchEast" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 0.5, 0.0)
-use_collision = true
-size = Vector3(4.0, 1.0, 1.2)
-material = SubResource("Mat_crate")
+[node name="WallSouth" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.0, 14.5)
 
-[node name="TallShelf" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -13.0, 1.5, -11.0)
-use_collision = true
-size = Vector3(3.0, 3.0, 2.0)
-material = SubResource("Mat_shelf")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/WallSouth"]
+shape = SubResource("BoxShape_2")
 
-[node name="RecordsWallWest" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 7.0, 2.5, -9.0)
-use_collision = true
-size = Vector3(0.4, 5.0, 10.0)
-material = SubResource("Mat_wall")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/WallSouth"]
+mesh = SubResource("BoxMesh_2")
 
-[node name="RecordsWallSouthA" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 9.0, 2.5, -4.0)
-use_collision = true
-size = Vector3(4.0, 5.0, 0.4)
-material = SubResource("Mat_wall")
+[node name="WallWest" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -16.5, 4.0, 0.0)
 
-[node name="RecordsWallSouthB" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 14.5, 2.5, -4.0)
-use_collision = true
-size = Vector3(3.0, 5.0, 0.4)
-material = SubResource("Mat_wall")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/WallWest"]
+shape = SubResource("BoxShape_3")
 
-[node name="RecordsDesk" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 12.0, 0.5, -11.0)
-use_collision = true
-size = Vector3(3.0, 1.0, 1.2)
-material = SubResource("Mat_crate")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/WallWest"]
+mesh = SubResource("BoxMesh_3")
+
+[node name="WallEast" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 16.5, 4.0, 0.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/WallEast"]
+shape = SubResource("BoxShape_3")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/WallEast"]
+mesh = SubResource("BoxMesh_3")
+
+[node name="BenchWest" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.0, 0.5, 0.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/BenchWest"]
+shape = SubResource("BoxShape_4")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/BenchWest"]
+mesh = SubResource("BoxMesh_4")
+
+[node name="BenchEast" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 0.5, 0.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/BenchEast"]
+shape = SubResource("BoxShape_4")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/BenchEast"]
+mesh = SubResource("BoxMesh_4")
+
+[node name="TallShelf" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -13.0, 1.5, -11.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/TallShelf"]
+shape = SubResource("BoxShape_5")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/TallShelf"]
+mesh = SubResource("BoxMesh_5")
+
+[node name="RecordsWallWest" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 7.0, 2.5, -9.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/RecordsWallWest"]
+shape = SubResource("BoxShape_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/RecordsWallWest"]
+mesh = SubResource("BoxMesh_6")
+
+[node name="RecordsWallSouthA" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 9.0, 2.5, -4.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/RecordsWallSouthA"]
+shape = SubResource("BoxShape_7")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/RecordsWallSouthA"]
+mesh = SubResource("BoxMesh_7")
+
+[node name="RecordsWallSouthB" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 14.5, 2.5, -4.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/RecordsWallSouthB"]
+shape = SubResource("BoxShape_8")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/RecordsWallSouthB"]
+mesh = SubResource("BoxMesh_8")
+
+[node name="RecordsDesk" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 12.0, 0.5, -11.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/RecordsDesk"]
+shape = SubResource("BoxShape_9")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/RecordsDesk"]
+mesh = SubResource("BoxMesh_9")
 
 [node name="BenchSign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -0.5, 2.4, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -0.5, 2.4, 0.0)
 pixel_size = 0.01
 billboard = 1
 text = "WORKBENCHES
@@ -174,7 +273,7 @@ font_size = 40
 outline_size = 10
 
 [node name="RecordsSign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 11.5, 4.2, -3.6)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 11.5, 4.2, -3.6)
 pixel_size = 0.01
 billboard = 1
 text = "RECORDS
@@ -183,7 +282,7 @@ font_size = 40
 outline_size = 10
 
 [node name="ShelfSign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -13.0, 4.2, -9.8)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -13.0, 4.2, -9.8)
 pixel_size = 0.01
 billboard = 1
 text = "Key part up top"
@@ -191,7 +290,7 @@ font_size = 40
 outline_size = 10
 
 [node name="ChuteSign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 8.0, 2.6, 9.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 2.6, 9.0)
 pixel_size = 0.01
 billboard = 1
 text = "Deliveries lower suspicion"
@@ -201,7 +300,7 @@ outline_size = 10
 [node name="Zones" type="Node3D" parent="."]
 
 [node name="Fulfillment" type="Area3D" parent="Zones"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 4.0, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.0, 0.0)
 script = ExtResource("3_zone")
 zone_name = "Fulfillment"
 
@@ -209,7 +308,7 @@ zone_name = "Fulfillment"
 shape = SubResource("Shape_Fulfillment")
 
 [node name="Storage" type="Area3D" parent="Zones"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -13.0, 4.0, -10.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -13.0, 4.0, -10.0)
 script = ExtResource("3_zone")
 zone_name = "Storage"
 allow_resize = true
@@ -218,7 +317,7 @@ allow_resize = true
 shape = SubResource("Shape_Storage")
 
 [node name="Records" type="Area3D" parent="Zones"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 11.5, 2.5, -9.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 11.5, 2.5, -9.0)
 script = ExtResource("3_zone")
 zone_name = "Records"
 required_clearance = 1
@@ -229,79 +328,79 @@ shape = SubResource("Shape_Records")
 [node name="Security" type="Node3D" parent="."]
 
 [node name="BenchCamera" parent="Security" instance=ExtResource("4_security_camera")]
-transform = Transform3D(-1.0, 0, 0.0, 0, 1, 0, 0.0, 0, -1.0, 0.0, 6.0, -13.6)
+transform = Transform3D(-1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 6.0, -13.6)
 sweep_degrees = 70.0
 
 [node name="Items" type="Node3D" parent="."]
 
 [node name="Tape1" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -5.5, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -5.5, 1.1, 0.0)
 item_id = &"tape"
 
 [node name="Tape2" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -4.8, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.8, 1.1, 0.0)
 item_id = &"tape"
 
 [node name="Tape3" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -4.1, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -4.1, 1.1, 0.0)
 item_id = &"tape"
 
 [node name="BoxCutter" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -3.0, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -3.0, 1.1, 0.0)
 item_id = &"box_cutter"
 
 [node name="Magnet1" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 1.5, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.5, 1.1, 0.0)
 item_id = &"magnet"
 
 [node name="Magnet2" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 2.2, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 2.2, 1.1, 0.0)
 item_id = &"magnet"
 
 [node name="ScrapCircuit" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 1.1, 0.0)
 item_id = &"scrap_circuit"
 
 [node name="Spoofer" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.8, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.8, 1.1, 0.0)
 item_id = &"scanner_spoofer"
 
 [node name="FakeId" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 4.6, 1.1, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 4.6, 1.1, 0.0)
 item_id = &"fake_id"
 
 [node name="Coil" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -13.0, 3.2, -11.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -13.0, 3.2, -11.0)
 item_id = &"electromagnet_coil"
 
 [node name="RecordsCutter" parent="Items" instance=ExtResource("5_item")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 12.0, 1.1, -11.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 12.0, 1.1, -11.0)
 item_id = &"box_cutter"
 
 [node name="Dock" parent="." instance=ExtResource("6_charging_dock")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -12.0, 0.0, 10.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -12.0, 0.0, 10.0)
 
 [node name="Work" type="Node3D" parent="."]
 
 [node name="Station" type="Marker3D" parent="Work"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 4.0, 0.0, 9.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 4.0, 0.0, 9.0)
 script = ExtResource("7_package_spawner")
 
 [node name="Chute" parent="Work" instance=ExtResource("8_chute")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 11.0, 0.0, 9.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 11.0, 0.0, 9.0)
 
 [node name="Coworkers" type="Node3D" parent="."]
 
 [node name="WorkerRoute" type="Node3D" parent="Coworkers"]
 
 [node name="Point1" type="Marker3D" parent="Coworkers/WorkerRoute"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 5.0, 0.0, 6.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 5.0, 0.0, 6.0)
 
 [node name="Point2" type="Marker3D" parent="Coworkers/WorkerRoute"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 11.0, 0.0, 6.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 11.0, 0.0, 6.0)
 
 [node name="Worker" parent="Coworkers" instance=ExtResource("9_coworker")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 5.0, 0.05, 6.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 5.0, 0.05, 6.0)
 
 [node name="Brain" parent="Coworkers/Worker" node_paths=PackedStringArray("route")]
 route = NodePath("../../WorkerRoute")
@@ -311,28 +410,28 @@ route = NodePath("../../WorkerRoute")
 [node name="FloorGuardRoute" type="Node3D" parent="Guards"]
 
 [node name="Point1" type="Marker3D" parent="Guards/FloorGuardRoute"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.0, -6.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 0.0, -6.0)
 
 [node name="Point2" type="Marker3D" parent="Guards/FloorGuardRoute"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 4.0, 0.0, -6.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 4.0, 0.0, -6.0)
 
 [node name="Point3" type="Marker3D" parent="Guards/FloorGuardRoute"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 4.0, 0.0, 4.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 4.0, 0.0, 4.0)
 
 [node name="Point4" type="Marker3D" parent="Guards/FloorGuardRoute"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.0, 4.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 0.0, 4.0)
 
 [node name="FloorGuard" parent="Guards" instance=ExtResource("10_guard")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.05, -6.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 0.05, -6.0)
 
 [node name="Brain" parent="Guards/FloorGuard" node_paths=PackedStringArray("route")]
 route = NodePath("../../FloorGuardRoute")
 
 [node name="Respawn" type="Marker3D" parent="."]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -12.0, 0.05, 8.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -12.0, 0.05, 8.0)
 
 [node name="Player" parent="." instance=ExtResource("11_player")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -12.0, 0.05, 8.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -12.0, 0.05, 8.0)
 
 [node name="HUD" parent="." node_paths=PackedStringArray("controller") instance=ExtResource("12_hud")]
 controller = NodePath("../Player/Controller")

@@ -179,9 +179,12 @@ func get_prompt() -> String:
 			return "Hold Q to shrink and pull yourself up"
 		return "Keep holding Q to climb up"
 	if robot.held:
+		var can_stow := robot.held is Item and inventory and not _controlled()
+		if not robot.can_let_go():
+			return ("R to stow  ·  " if can_stow else "") + "No room to set it down here"
 		if _charging and _charge >= TAP_TIME and (not _controlled() or program.allows_throw()):
 			return "Release to throw"
-		if robot.held is Item and inventory and not _controlled():
+		if can_stow:
 			return "R to stow  ·  Click / F to set down, hold to throw"
 		return "Click / F to set down, hold to aim and throw"
 	if robot.find_grab_target():

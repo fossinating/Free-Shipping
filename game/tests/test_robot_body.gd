@@ -137,3 +137,77 @@ func test_short_robot_cannot_press_high_button() -> void:
 	robot.move_input = Vector3.BACK
 	await seconds(1.0)
 	check(not button.is_pressed, "a normal-height robot can't reach the high button")
+
+
+func _give_package(robot: RobotBody) -> Package:
+	var package: Package = load("res://scenes/work/package.tscn").instantiate()
+	room.add_child(package)
+	package.global_position = robot.get_hold_position()
+	robot.grab(package)
+	await physics_frames(2)
+	return package
+
+
+func test_shrunk_set_down_at_a_chute_keeps_the_robot_on_the_floor() -> void:
+	# Fully shrunk behind the chute at (16, 0, 4): the hold spot is inside
+	# the bin's back wall (GH #10).
+	var robot := await _spawn_robot(Vector3(16, 0.05, 5.33), 0.0, 0.0)
+	var package := await _give_package(robot)
+	check(not robot.drop(), "there's no room to set it down against the bin")
+	check(robot.held == package, "so the robot keeps holding it")
+	await seconds(1.0)
+	check(robot.global_position.y > -0.05 and robot.is_on_floor(),
+		"the robot stays on the floor (y %.2f)" % robot.global_position.y)
+	# Tall enough to clear the rim, it goes in.
+	var received := [0]
+	(room.get_node("Work/AnyChute") as Chute).received.connect(
+		func(_p: Package) -> void: received[0] += 1)
+	robot.extension_input = 1.0
+	await seconds(0.15)
+	robot.extension_input = 0.0
+	await seconds(0.3)
+	check(robot.drop(), "grown, it can set the package down")
+	await seconds(1.0)
+	check(received[0] == 1, "into the chute")
+	check(robot.global_position.y > -0.05, "and still stands on the floor")
+
+
+func test_set_down_against_a_wall_stays_in_the_room() -> void:
+	# Flush against the south wall (its face at z 20), at several heights (GH #11).
+	for start_extension in [0.0, 0.2, 0.4, 1.0]:
+		var robot := await _spawn_robot(Vector3(0, 0.05, 19.47), PI, start_extension)
+		var package := await _give_package(robot)
+		var dropped := robot.drop()
+		await seconds(1.0)
+		if dropped:
+			check(package.global_position.z < 20.0 and package.global_position.y > 0.0,
+				"set down at %.1f, the package stays in the room (at %s)"
+				% [start_extension, package.global_position])
+		else:
+			check(robot.held == package, "or the robot keeps holding it at %.1f" % start_extension)
+		room.queue_free()
+		await physics_frames(2)
+
+
+func test_turning_keeps_the_scale_exact() -> void:
+	# Driving in circles while carrying (GH #14). The old drift broke the
+	# held package's basis within about 15 s.
+	var robot := await _spawn_robot(Vector3(0, 0.05, 10))
+	await _give_package(robot)
+	for i in 900:
+		var yaw := wrapf(i * 0.05, -PI, PI)
+		robot.facing_yaw = yaw
+		robot.move_input = Basis(Vector3.UP, yaw) * Vector3.FORWARD * 0.3
+		await tree.physics_frame
+	robot.move_input = Vector3.ZERO
+	var drift := (robot.scale - Vector3.ONE).abs()
+	check(maxf(drift.x, maxf(drift.y, drift.z)) < 1e-6, "scale stays 1 (was %s)" % robot.scale)
+
+
+func test_falling_out_of_the_level_puts_the_robot_back() -> void:
+	var robot := await _spawn_robot(Vector3(0, 0.05, 10))
+	await seconds(1.2)
+	robot.global_position = Vector3(0, RobotBody.FALL_LIMIT - 1.0, 10)
+	await physics_frames(2)
+	check(robot.global_position.y > -0.1 and robot.global_position.y < 1.0,
+		"back where it stood (at %s)" % robot.global_position)

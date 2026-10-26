@@ -407,3 +407,20 @@ func test_magnetic_hands_climb_metal_shelving() -> void:
 	var overstock: Item = level.get_node("Items/OverstockId")
 	check(overstock.global_position.distance_to(robot.global_position) < 2.0,
 		"where the overstock was out of everyone else's reach")
+
+
+func test_guards_find_paths_around_props() -> void:
+	# GH #13: the baked navmesh has to reach the NavigationServer.
+	await _start()
+	await seconds(0.3)
+	var map := robot.get_world_3d().navigation_map
+	# Past CrateA (2, -6) from the floor guard's first waypoint.
+	var path := NavigationServer3D.map_get_path(map, Vector3(-1, 0, -6), Vector3(5, 0, -6), true)
+	check(path.size() > 2, "a path bends around the crate (%d points)" % path.size())
+	var brain: GuardBrain = level.get_node("Guards/FloorGuard/Brain")
+	brain.process_mode = Node.PROCESS_MODE_INHERIT
+	var guard: RobotBody = level.get_node("Guards/FloorGuard")
+	# The first leg runs from (-4, -5) to (10, -5), past CrateA.
+	await seconds(12.0)
+	check(guard.global_position.x > 7.0 or brain._index > 1,
+		"the floor guard gets past the crate (at %s)" % guard.global_position)

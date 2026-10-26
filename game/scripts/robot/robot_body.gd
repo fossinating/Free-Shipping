@@ -35,6 +35,10 @@ const MANTLE_TIME := 0.22
 const HANG_DISTANCE := 0.55
 ## Nodes in this group are metal: magnetic hands stick to them.
 const METAL_GROUP := &"metal"
+## A body that falls below this has left the level and is put back where
+## it stood a moment before.
+const FALL_LIMIT := -40.0
+const GROUND_SAMPLE_TIME := 0.5
 
 @export_group("Movement")
 @export var move_speed := 6.0
@@ -119,6 +123,10 @@ var _query_boxes := {}
 ## Set by conveyors each physics frame the body rides one.
 var _belt_velocity := Vector3.ZERO
 var _belt_frames := 0
+# Recent spots the body stood on, sampled every GROUND_SAMPLE_TIME. Falling
+# out returns it to the older one, from before whatever went wrong.
+var _ground_spots: Array[Vector3] = []
+var _ground_timer := 0.0
 
 @onready var _treads_shape: CollisionShape3D = $TreadsShape
 @onready var _leg_shape: CollisionShape3D = $LegShape
@@ -131,6 +139,9 @@ var _belt_frames := 0
 
 func _ready() -> void:
 	add_to_group(&"robots")
+	# Stepping or being moved off something (a package knocked away at
+	# speed) shouldn't fling the body with that thing's velocity.
+	platform_on_leave = PLATFORM_ON_LEAVE_DO_NOTHING
 	# Each robot resizes its own leg, so it needs its own shape.
 	_leg_shape.shape = _leg_shape.shape.duplicate()
 	for shape_node: CollisionShape3D in [_treads_shape, _leg_shape, _core_shape]:
@@ -138,6 +149,7 @@ func _ready() -> void:
 	extension = clampf(start_extension, 0.0, max_extension)
 	_target_extension = extension
 	facing_yaw = rotation.y
+	_set_yaw(facing_yaw)
 	_apply_shape()
 
 
@@ -239,27 +251,53 @@ func grab(package: Package) -> void:
 	grabbed.emit(package)
 
 
-## Lets go of the held package, giving it this velocity.
-func throw(launch_velocity: Vector3) -> void:
+## Lets go of the held package, giving it this velocity. If something in
+## front leaves no room to let go (a wall, a chute's side), the robot keeps
+## holding it and this returns false. `force` (a blow, a wipe) always lets
+## go, setting the package on top of the core when the front is blocked.
+func throw(launch_velocity: Vector3, force := false) -> bool:
 	if not held:
-		return
+		return false
+	var spot: Variant = _free_spot_for(held)
+	if spot == null and not force:
+		return false
 	var package := held
 	held = null
-	package.global_position = _free_spot_for(package)
-	package.detach(launch_velocity, self)
+	if spot == null:
+		# Clear of the body already, so it can collide with it straight away.
+		package.global_position = get_core_position() \
+			+ Vector3.UP * (CORE_HEIGHT / 2.0 + package.size.y / 2.0 + 0.05)
+		package.detach(Vector3.ZERO, self)
+		remove_collision_exception_with(package)
+	else:
+		package.global_position = spot
+		package.detach(launch_velocity, self)
+		# Don't collide with the package until it has cleared the body.
+		get_tree().create_timer(0.3).timeout.connect(_end_collision_exception.bind(package))
 	let_go.emit(package)
-	# Don't collide with the package until it has cleared the body.
-	get_tree().create_timer(0.3).timeout.connect(_end_collision_exception.bind(package))
+	return true
+
+
+## Whether there's room in front to set down or throw the held package.
+func can_let_go() -> bool:
+	return held != null and _free_spot_for(held) != null
 
 
 func _end_collision_exception(package: Variant) -> void:
-	if is_instance_valid(package):
-		remove_collision_exception_with(package)
+	if not is_instance_valid(package):
+		return
+	if package.is_held():
+		return
+	if _overlaps(package):
+		# Ending it now would shove the two apart, possibly into the floor.
+		get_tree().create_timer(0.1).timeout.connect(_end_collision_exception.bind(package))
+		return
+	remove_collision_exception_with(package)
 
 
-## Sets the held package down in front of the robot.
-func drop() -> void:
-	throw(Vector3(velocity.x, 0.0, velocity.z))
+## Sets the held package down in front of the robot. See throw.
+func drop(force := false) -> bool:
+	return throw(Vector3(velocity.x, 0.0, velocity.z), force)
 
 
 func is_stunned() -> bool:
@@ -271,7 +309,7 @@ func is_stunned() -> bool:
 func knock_back(push: Vector3, stun_seconds: float) -> void:
 	release()
 	if held:
-		drop()
+		drop(true)
 	velocity = Vector3(push.x, 3.0, push.z)
 	stun_time = maxf(stun_time, stun_seconds)
 	knocked_back.emit()
@@ -310,7 +348,13 @@ func _core_offset(ext: float) -> float:
 func _update_facing(delta: float) -> void:
 	if is_hooked or is_stunned():
 		return
-	rotation.y = lerp_angle(rotation.y, facing_yaw, 1.0 - exp(-turn_speed * delta))
+	_set_yaw(lerp_angle(rotation.y, facing_yaw, 1.0 - exp(-turn_speed * delta)))
+
+
+## Turns the body to `yaw` by rebuilding its basis. Writing `rotation.y`
+## every frame instead lets float error creep into the scale.
+func _set_yaw(yaw: float) -> void:
+	basis = Basis(Vector3.UP, yaw)
 
 
 func _update_extension(delta: float) -> void:
@@ -386,6 +430,24 @@ func _process_moving(delta: float) -> void:
 		velocity.y -= gravity * delta
 	move_and_slide()
 	_push_packages(delta)
+	_track_ground(delta)
+
+
+func _track_ground(delta: float) -> void:
+	if global_position.y < FALL_LIMIT:
+		var spot: Vector3 = _ground_spots[0] if not _ground_spots.is_empty() \
+			else global_position * Vector3(1, 0, 1)
+		global_position = spot + Vector3.UP * 0.05
+		velocity = Vector3.ZERO
+		is_launched = false
+		_ground_spots = [spot]
+		return
+	_ground_timer -= delta
+	if is_on_floor() and _ground_timer <= 0.0:
+		_ground_timer = GROUND_SAMPLE_TIME
+		_ground_spots.append(global_position)
+		if _ground_spots.size() > 2:
+			_ground_spots.pop_front()
 
 
 func _push_packages(delta: float) -> void:
@@ -407,22 +469,47 @@ func _carry(delta: float) -> void:
 		return
 	var weight := 1.0 - exp(-carry_smoothing * delta)
 	held.global_position = held.global_position.lerp(get_hold_position(), weight)
-	held.global_basis = held.global_basis.slerp(global_basis, weight).orthonormalized()
+	var from := Quaternion(held.global_basis.orthonormalized())
+	var to := Quaternion(global_basis.orthonormalized())
+	held.global_basis = Basis(from.slerp(to, weight))
 
 
-## The hold position if the package fits there, otherwise on top of the core.
-func _free_spot_for(package: Package) -> Vector3:
+## Where the package can be let go: the hold position, or a little closer
+## if something is just in front of it. Null when there's no room clear of
+## the body. The package is swept out from the core rather than tested at
+## the hold spot, since a spot already past a wall's face can read as free.
+func _free_spot_for(package: Package) -> Variant:
 	var spot := get_hold_position()
+	var start := get_core_position() + Vector3.DOWN * 0.1
 	var query := PhysicsShapeQueryParameters3D.new()
 	var box := BoxShape3D.new()
 	box.size = package.size - Vector3.ONE * 0.04
 	query.shape = box
-	query.transform = Transform3D(global_basis, spot)
+	query.transform = Transform3D(global_basis.orthonormalized(), start)
+	query.motion = spot - start
 	query.collision_mask = collision_mask
 	query.exclude = [get_rid(), package.get_rid()]
-	if get_world_3d().direct_space_state.intersect_shape(query, 1).is_empty():
-		return spot
-	return get_core_position() + Vector3.UP * (CORE_HEIGHT / 2.0 + package.size.y / 2.0 + 0.05)
+	var safe := get_world_3d().direct_space_state.cast_motion(query)[0] as float
+	var distance := safe * query.motion.length()
+	# Any closer and the package would overlap the core.
+	if distance < CORE_HALF_DEPTH + package.size.z / 2.0 + 0.02:
+		return null
+	return start + query.motion * safe
+
+
+## Whether a package is overlapping this robot's shapes.
+func _overlaps(package: Package) -> bool:
+	var query := PhysicsShapeQueryParameters3D.new()
+	var box := BoxShape3D.new()
+	box.size = package.size
+	query.shape = box
+	query.transform = package.global_transform.orthonormalized()
+	query.collision_mask = collision_layer
+	query.exclude = [package.get_rid()]
+	for hit: Dictionary in get_world_3d().direct_space_state.intersect_shape(query, 8):
+		if hit.collider == self:
+			return true
+	return false
 
 
 func _process_hanging() -> void:
@@ -444,8 +531,8 @@ func _hook(ledge: Dictionary) -> void:
 	_hang_normal = ledge.normal
 	_hang_core_y = get_core_position().y
 	velocity = Vector3.ZERO
-	rotation.y = atan2(_hang_normal.x, _hang_normal.z)
-	facing_yaw = rotation.y
+	facing_yaw = atan2(_hang_normal.x, _hang_normal.z)
+	_set_yaw(facing_yaw)
 	arm_extension = clampf(
 		_flat_distance(global_position, _hang_point) - CORE_HALF_DEPTH, 0.0, max_arm_reach)
 	hooked.emit()

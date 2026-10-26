@@ -8,6 +8,11 @@ const PACKAGE_SCENE := preload("res://scenes/work/package.tscn")
 ## How many packages to keep within `radius` of this spot.
 @export var stock := 3
 @export var radius := 2.0
+## When set, only packages inside this box (in the spawner's frame, centred
+## on it) count as stock, instead of everything within `radius`. Use it to
+## leave out spots near the pile the player can't reach, so packages knocked
+## there don't stop the restocking.
+@export var area := Vector3.ZERO
 @export var interval := 1.0
 ## Destinations to cycle through. Empty gives untagged packages.
 @export var destinations: Array[StringName] = []
@@ -34,10 +39,17 @@ func _physics_process(delta: float) -> void:
 func _count_nearby() -> int:
 	var count := 0
 	for package: Package in get_tree().get_nodes_in_group(&"packages"):
-		if not package.is_held() and package is not Item \
-				and package.global_position.distance_to(global_position) < radius:
+		if not package.is_held() and package is not Item and _in_stock_area(package):
 			count += 1
 	return count
+
+
+func _in_stock_area(package: Package) -> bool:
+	if area == Vector3.ZERO:
+		return package.global_position.distance_to(global_position) < radius
+	var local := global_transform.affine_inverse() * package.global_position
+	return absf(local.x) <= area.x / 2.0 and absf(local.y) <= area.y / 2.0 \
+		and absf(local.z) <= area.z / 2.0
 
 
 func _spawn(offset: Vector3) -> void:

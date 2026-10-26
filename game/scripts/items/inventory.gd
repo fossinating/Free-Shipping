@@ -98,7 +98,7 @@ func confiscate_all() -> Array[ItemState]:
 		taken.append(item.state)
 		item.queue_free()
 	elif robot.held:
-		robot.drop()
+		robot.drop(true)
 	for i in slots.size():
 		if slots[i]:
 			taken.append(slots[i])
