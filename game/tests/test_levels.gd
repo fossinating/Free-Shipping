@@ -67,6 +67,13 @@ func _resize_to(extension: float, timeout := 2.0) -> void:
 	await physics_frames(3)
 
 
+## Sets the height exactly, where _resize_to would overshoot.
+func _set_extension(value: float) -> void:
+	robot.extension = value
+	robot._target_extension = value
+	robot._apply_shape()
+
+
 func _swing_with(id: StringName) -> String:
 	inventory.add(ItemState.new(id))
 	inventory.select(inventory.slots.find(inventory.get_items().back()))
@@ -459,3 +466,25 @@ func test_level_geometry_has_no_trimesh_colliders() -> void:
 					check(false, "%s: %s collides as CSG" % [path, state.get_node_name(i)])
 				if state.get_node_property_value(i, p) is ConcavePolygonShape3D:
 					check(false, "%s: %s has a trimesh shape" % [path, state.get_node_name(i)])
+
+
+func test_ledge_prompt_only_when_the_ledge_can_be_hooked() -> void:
+	# Jarvis #21: at about 1.8 the prompt offered the receiving office wall,
+	# but the arms stop at its face below the top and never hook it.
+	await _start()
+	await _teleport(Vector3(54, 0.05, -3.2), _yaw(Vector3.BACK))
+	_set_extension(1.8)
+	await physics_frames(3)
+	check(not robot.is_ledge_in_reach(), "too short, the ledge isn't offered")
+	check(controller.get_prompt().begins_with("Grow"), "the prompt says to grow (%s)" % controller.get_prompt())
+	robot.arms_input = true
+	await seconds(0.5)
+	check(not robot.is_hooked, "and indeed the arms don't hook it")
+	robot.arms_input = false
+	await seconds(0.3)
+	await _resize_to(2.0)
+	check(robot.is_ledge_in_reach(), "grown, the ledge is offered")
+	check(controller.get_prompt().contains("grab the ledge"), "with the grab prompt (%s)" % controller.get_prompt())
+	robot.arms_input = true
+	await seconds(0.5)
+	check(robot.is_hooked, "and the arms hook it")

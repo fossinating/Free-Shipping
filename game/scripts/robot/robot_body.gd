@@ -186,9 +186,19 @@ func get_hand_position() -> Vector3:
 	return get_core_position() + get_forward() * (CORE_HALF_DEPTH + arm_extension)
 
 
-## True when the arms could hook a ledge right now if they were extended.
+## True when the arms would hook a ledge right now if they were extended.
 func is_ledge_in_reach() -> bool:
-	return not _find_ledge(max_arm_reach).is_empty()
+	# The arms stop short of whatever is in front of the core, so a ledge
+	# whose wall rises past the core is never hooked; mirror that here.
+	var reach := minf(max_arm_reach, _free_reach() - 0.02)
+	return reach > 0.2 and not _find_ledge(reach).is_empty() \
+		and find_grab_target(max_arm_reach) == null
+
+
+## True when there's a ledge ahead whose top is too high to hook from this
+## height: growing until the core is level with it would help.
+func is_ledge_above_reach() -> bool:
+	return not is_ledge_in_reach() and not _find_ledge(max_arm_reach).is_empty()
 
 
 ## True when magnetic hands could cling to metal in front right now.
@@ -398,7 +408,8 @@ func _update_arms(delta: float) -> void:
 	arm_extension = minf(arm_extension, _free_reach())
 	if arms_input and arm_extension > 0.2 and not held:
 		var ledge := _find_ledge(arm_extension)
-		if not ledge.is_empty():
+		# Reaching for a package wins over hooking the edge it sits on.
+		if not ledge.is_empty() and find_grab_target(max_arm_reach) == null:
 			_hook(ledge)
 		elif magnetic_hands:
 			var metal := _find_metal(arm_extension)
