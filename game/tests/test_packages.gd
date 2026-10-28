@@ -195,7 +195,15 @@ func test_player_tap_drops_and_hold_throws() -> void:
 	Input.action_press("interact")
 	await seconds(0.6)
 	check(arc.visible, "holding should show the throw arc")
+	# Jarvis #25: the arc was hidden behind the robot from straight behind.
+	var camera: PlayerCamera = room.get_node("Player/CameraRig")
+	var view: Camera3D = camera.get_node("Pivot/SpringArm/Camera")
+	check(camera.aiming and view.h_offset > 0.5, "aiming moves the view over the shoulder")
+	var marker: MeshInstance3D = arc.get_child(0)
+	check(marker.is_visible_in_tree() and marker.global_position.y < 0.2,
+		"a landing ring lies on the floor (at %s)" % marker.global_position)
 	Input.action_release("interact")
 	await physics_frames(2)
 	check(player.held == null and not arc.visible, "releasing should throw and hide the arc")
+	check(not camera.aiming, "and the view goes back behind the robot")
 	check(package.linear_velocity.length() > 5.0, "the package should fly")

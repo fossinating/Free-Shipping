@@ -33,6 +33,8 @@ var enabled := true:
 			robot.arms_input = false
 			_charging = false
 			throw_arc.hide()
+			if camera:
+				camera.aiming = false
 
 ## The dock whose panel is open, or null. Movement stops while it's open.
 var open_dock: ChargingDock = null:
@@ -135,6 +137,7 @@ func _open_locker(locker: EvidenceLocker) -> void:
 
 
 func _update_hands(delta: float) -> void:
+	camera.aiming = false
 	if not robot.held:
 		_charging = false
 		throw_arc.hide()
@@ -152,6 +155,7 @@ func _update_hands(delta: float) -> void:
 	var may_throw := not _controlled() or _charge < TAP_TIME or program.can_throw()
 	if Input.is_action_pressed("interact"):
 		if _charge >= TAP_TIME and may_throw:
+			camera.aiming = true
 			throw_arc.draw(ThrowArc.predict(robot.get_world_3d().direct_space_state,
 				robot.get_hold_position(), get_throw_velocity(), _gravity(),
 				[robot.get_rid(), robot.held.get_rid()]))
