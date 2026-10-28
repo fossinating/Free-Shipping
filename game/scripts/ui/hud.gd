@@ -16,6 +16,7 @@ var _denied_time := 0.0
 var _notice_time := 0.0
 var _dock_panel: DockPanel
 var _dialogue_box: DialogueBox
+var pause_menu: PauseMenu
 ## A story objective (outside control mode) is showing.
 var _story_objective := false
 ## Off while something else needs the player's attention (diagnostics).
@@ -51,9 +52,13 @@ func _ready() -> void:
 	add_child(_dock_panel)
 	_dialogue_box = DialogueBox.new()
 	add_child(_dialogue_box)
+	pause_menu = PauseMenu.new()
+	pause_menu.controller = controller
+	add_child(pause_menu)
 	# The fade covers everything but the cards.
 	move_child(_fade, -1)
 	move_child(_card, -1)
+	move_child(pause_menu, -1)
 	if controller:
 		controller.notice.connect(show_notice)
 	GameState.recipe_revealed.connect(func(recipe: int) -> void:
