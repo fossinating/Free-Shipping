@@ -424,3 +424,38 @@ func test_guards_find_paths_around_props() -> void:
 	await seconds(12.0)
 	check(guard.global_position.x > 7.0 or brain._index > 1,
 		"the floor guard gets past the crate (at %s)" % guard.global_position)
+
+
+func test_guards_find_paths_when_the_game_changes_scene() -> void:
+	# GH #13 only showed when the warehouse was loaded the way the game
+	# loads it, with change_scene, not added under the test runner.
+	var runner := tree.current_scene
+	var stand_in := Node.new()
+	tree.root.add_child(stand_in)
+	# change_scene frees the current scene; let that be the stand-in.
+	tree.current_scene = stand_in
+	tree.change_scene_to_file(WAREHOUSE)
+	await seconds(1.0)
+	var loaded := tree.current_scene
+	tree.current_scene = runner
+	_nodes.append(loaded)
+	var region: NavigationRegion3D = loaded.get_node("Navigation")
+	var path := NavigationServer3D.map_get_path(
+		region.get_navigation_map(), Vector3(-1, 0, -6), Vector3(5, 0, -6), true)
+	check(path.size() > 2, "a path bends around the crate (%d points)" % path.size())
+
+
+func test_level_geometry_has_no_trimesh_colliders() -> void:
+	# GH #11: CSG collision is a one-sided trimesh that fast packages went
+	# straight through. Level geometry should use box colliders.
+	for path in ["res://scenes/levels/opening.tscn", WAREHOUSE,
+			"res://scenes/levels/stealth_test.tscn", "res://scenes/levels/item_test.tscn",
+			"res://scenes/world/test_room.tscn", "res://scenes/work/chute.tscn"]:
+		var state := (load(path) as PackedScene).get_state()
+		for i in state.get_node_count():
+			for p in state.get_node_property_count(i):
+				if state.get_node_property_name(i, p) == &"use_collision" \
+						and state.get_node_property_value(i, p):
+					check(false, "%s: %s collides as CSG" % [path, state.get_node_name(i)])
+				if state.get_node_property_value(i, p) is ConcavePolygonShape3D:
+					check(false, "%s: %s has a trimesh shape" % [path, state.get_node_name(i)])

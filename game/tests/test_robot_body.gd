@@ -211,3 +211,26 @@ func test_falling_out_of_the_level_puts_the_robot_back() -> void:
 	await physics_frames(2)
 	check(robot.global_position.y > -0.1 and robot.global_position.y < 1.0,
 		"back where it stood (at %s)" % robot.global_position)
+
+
+func test_full_strength_throws_dont_tunnel_through_walls() -> void:
+	# GH #11: thrown packages went through walls. A thin partition 2 m in
+	# front of the robot, hit at full throw speed from several heights.
+	for start_extension in [0.0, 0.4, 1.0]:
+		var robot := await _spawn_robot(Vector3(0, 0.05, 15), PI, start_extension)
+		var partition := StaticBody3D.new()
+		var shape := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = Vector3(6, 8, 0.1)
+		shape.shape = box
+		partition.add_child(shape)
+		room.add_child(partition)
+		partition.global_position = Vector3(0, 4, 17)
+		var package := await _give_package(robot)
+		check(robot.throw(Vector3(0, 1.0, 14.0)), "the throw leaves the hand")
+		await seconds(1.5)
+		check(package.global_position.z < 17.0,
+			"thrown at %.1f, the package bounces off the partition (at %s)"
+			% [start_extension, package.global_position])
+		room.queue_free()
+		await physics_frames(2)
