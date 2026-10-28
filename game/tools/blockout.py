@@ -65,6 +65,7 @@ class Scene:
         self.nodes = []
         self._ext_ids = {}
         self._materials = {}
+        self._boxes = {}
         self._root = (root_name, root_type)
         self._root_props = {}
         self._root_paths = []
@@ -150,11 +151,25 @@ class Scene:
         self.node(name, kind, parent, props, pos, yaw, node_paths)
 
     def box(self, name, center, size, material, parent=".", groups=None, roll=0.0, yaw=0.0):
-        self.node(name, "CSGBox3D", parent, {
-            "use_collision": "true",
-            "size": vec3(size),
-            "material": self.material(material),
-        }, pos=center, groups=groups, roll=roll, yaw=yaw)
+        """A static box. Uses a BoxShape3D rather than CSG: CSG collision is a
+        triangle mesh, which shape queries and fast bodies pass through."""
+        shape, mesh = self._box_resources(size, material)
+        self.node(name, "StaticBody3D", parent, pos=center, groups=groups, roll=roll, yaw=yaw)
+        path = name if parent == "." else f"{parent}/{name}"
+        self.node("Shape", "CollisionShape3D", path, {"shape": shape})
+        self.node("Mesh", "MeshInstance3D", path, {"mesh": mesh})
+
+    def _box_resources(self, size, material):
+        key = (vec3(size), material)
+        if key not in self._boxes:
+            n = len(self._boxes) + 1
+            shape = self.sub_resource("BoxShape3D", f"BoxShape_{n}", {"size": vec3(size)})
+            mesh = self.sub_resource("BoxMesh", f"BoxMesh_{n}", {
+                "size": vec3(size),
+                "material": self.material(material),
+            })
+            self._boxes[key] = (shape, mesh)
+        return self._boxes[key]
 
     def label(self, name, pos, text, parent=".", size=40):
         escaped = text.replace('"', '\\"')

@@ -178,3 +178,24 @@ func test_shift_three_ends_in_accident() -> void:
 	check(GameState.has_flag(GameState.FLAG_FREED), "the shock frees you")
 	await seconds(5.0)
 	check(controller.enabled, "and come back afterwards")
+
+
+func test_packages_knocked_behind_the_sorting_line_dont_stop_restocking() -> void:
+	# On the floor strip behind the conveyor, out of reach from the counter (GH #12).
+	await _start(2)
+	await seconds(0.5)
+	var line := level.get_node("Work/SortingLine")
+	var knocked: Array[Package] = []
+	for package: Package in tree.get_nodes_in_group(&"packages"):
+		if package.source == line:
+			knocked.append(package)
+	for i in knocked.size():
+		knocked[i].global_position = Vector3(1.5 + i * 1.5, 0.3, -11.3)
+		knocked[i].linear_velocity = Vector3.ZERO
+	await seconds(4.0)
+	var on_belt := 0
+	for package: Package in tree.get_nodes_in_group(&"packages"):
+		if package.source == line and not knocked.has(package) \
+				and package.global_position.y > 0.9 and absf(package.global_position.z + 9.5) < 0.8:
+			on_belt += 1
+	check(on_belt >= 3, "the conveyor restocks (%d new on it)" % on_belt)

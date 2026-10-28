@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=52 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/opening.gd" id="1_opening"]
 
@@ -39,25 +39,123 @@ ambient_light_color = Color(0.55, 0.57, 0.6, 1)
 ambient_light_energy = 0.5
 tonemap_mode = 2
 
+[sub_resource type="BoxShape3D" id="BoxShape_1"]
+size = Vector3(60.0, 1.0, 42.0)
+
 [sub_resource type="StandardMaterial3D" id="Mat_floor"]
 albedo_color = Color(0.32, 0.33, 0.35, 1)
 roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+size = Vector3(60.0, 1.0, 42.0)
+material = SubResource("Mat_floor")
+
+[sub_resource type="BoxShape3D" id="BoxShape_2"]
+size = Vector3(60.0, 1.0, 14.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
+size = Vector3(60.0, 1.0, 14.0)
+material = SubResource("Mat_floor")
+
+[sub_resource type="BoxShape3D" id="BoxShape_3"]
+size = Vector3(24.0, 1.0, 4.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+size = Vector3(24.0, 1.0, 4.0)
+material = SubResource("Mat_floor")
+
+[sub_resource type="BoxShape3D" id="BoxShape_4"]
+size = Vector3(18.0, 1.0, 4.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4"]
+size = Vector3(18.0, 1.0, 4.0)
+material = SubResource("Mat_floor")
+
+[sub_resource type="BoxShape3D" id="BoxShape_5"]
+size = Vector3(18.0, 0.02, 0.2)
 
 [sub_resource type="StandardMaterial3D" id="Mat_hazard"]
 albedo_color = Color(0.9, 0.75, 0.15, 1)
 roughness = 0.85
 
+[sub_resource type="BoxMesh" id="BoxMesh_5"]
+size = Vector3(18.0, 0.02, 0.2)
+material = SubResource("Mat_hazard")
+
+[sub_resource type="BoxShape3D" id="BoxShape_6"]
+size = Vector3(62.0, 10.0, 1.0)
+
 [sub_resource type="StandardMaterial3D" id="Mat_wall"]
 albedo_color = Color(0.55, 0.58, 0.62, 1)
 roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_6"]
+size = Vector3(62.0, 10.0, 1.0)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_7"]
+size = Vector3(1.0, 10.0, 60.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7"]
+size = Vector3(1.0, 10.0, 60.0)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_8"]
+size = Vector3(4.0, 3.5, 1.5)
 
 [sub_resource type="StandardMaterial3D" id="Mat_shelf"]
 albedo_color = Color(0.25, 0.42, 0.7, 1)
 roughness = 0.85
 
+[sub_resource type="BoxMesh" id="BoxMesh_8"]
+size = Vector3(4.0, 3.5, 1.5)
+material = SubResource("Mat_shelf")
+
+[sub_resource type="BoxShape3D" id="BoxShape_9"]
+size = Vector3(18.0, 0.8, 1.0)
+
 [sub_resource type="StandardMaterial3D" id="Mat_conveyor"]
 albedo_color = Color(0.2, 0.22, 0.24, 1)
 roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_9"]
+size = Vector3(18.0, 0.8, 1.0)
+material = SubResource("Mat_conveyor")
+
+[sub_resource type="BoxShape3D" id="BoxShape_10"]
+size = Vector3(10.0, 10.0, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_10"]
+size = Vector3(10.0, 10.0, 0.4)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_11"]
+size = Vector3(5.0, 10.0, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_11"]
+size = Vector3(5.0, 10.0, 0.4)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_12"]
+size = Vector3(3.0, 6.8, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_12"]
+size = Vector3(3.0, 6.8, 0.4)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_13"]
+size = Vector3(8.0, 0.8, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_13"]
+size = Vector3(8.0, 0.8, 0.6)
+material = SubResource("Mat_wall")
+
+[sub_resource type="BoxShape3D" id="BoxShape_14"]
+size = Vector3(8.0, 1.0, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_14"]
+size = Vector3(8.0, 1.0, 1.4)
+material = SubResource("Mat_conveyor")
 
 [sub_resource type="StandardMaterial3D" id="Mat_door"]
 albedo_color = Color(0.75, 0.3, 0.2, 1)
@@ -87,110 +185,161 @@ shadow_enabled = true
 
 [node name="Geometry" type="Node3D" parent="."]
 
-[node name="FloorSouth" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, -0.5, 9.0)
-use_collision = true
-size = Vector3(60.0, 1.0, 42.0)
-material = SubResource("Mat_floor")
+[node name="FloorSouth" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -0.5, 9.0)
 
-[node name="FloorNorth" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, -0.5, -23.0)
-use_collision = true
-size = Vector3(60.0, 1.0, 14.0)
-material = SubResource("Mat_floor")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/FloorSouth"]
+shape = SubResource("BoxShape_1")
 
-[node name="FloorPitWest" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -18.0, -0.5, -14.0)
-use_collision = true
-size = Vector3(24.0, 1.0, 4.0)
-material = SubResource("Mat_floor")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/FloorSouth"]
+mesh = SubResource("BoxMesh_1")
 
-[node name="FloorPitEast" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 21.0, -0.5, -14.0)
-use_collision = true
-size = Vector3(18.0, 1.0, 4.0)
-material = SubResource("Mat_floor")
+[node name="FloorNorth" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -0.5, -23.0)
 
-[node name="PitBottom" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, -2.5, -14.0)
-use_collision = true
-size = Vector3(18.0, 1.0, 4.0)
-material = SubResource("Mat_floor")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/FloorNorth"]
+shape = SubResource("BoxShape_2")
 
-[node name="PitEdgeStripe" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 0.01, -11.9)
-use_collision = true
-size = Vector3(18.0, 0.02, 0.2)
-material = SubResource("Mat_hazard")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/FloorNorth"]
+mesh = SubResource("BoxMesh_2")
 
-[node name="WallNorth" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 5.0, -30.5)
-use_collision = true
-size = Vector3(62.0, 10.0, 1.0)
-material = SubResource("Mat_wall")
+[node name="FloorPitWest" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.0, -0.5, -14.0)
 
-[node name="WallSouth" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 5.0, 30.5)
-use_collision = true
-size = Vector3(62.0, 10.0, 1.0)
-material = SubResource("Mat_wall")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/FloorPitWest"]
+shape = SubResource("BoxShape_3")
 
-[node name="WallWest" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -30.5, 5.0, 0.0)
-use_collision = true
-size = Vector3(1.0, 10.0, 60.0)
-material = SubResource("Mat_wall")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/FloorPitWest"]
+mesh = SubResource("BoxMesh_3")
 
-[node name="WallEast" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 30.5, 5.0, 0.0)
-use_collision = true
-size = Vector3(1.0, 10.0, 60.0)
-material = SubResource("Mat_wall")
+[node name="FloorPitEast" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 21.0, -0.5, -14.0)
 
-[node name="TallShelf" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -20.0, 1.75, 0.0)
-use_collision = true
-size = Vector3(4.0, 3.5, 1.5)
-material = SubResource("Mat_shelf")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/FloorPitEast"]
+shape = SubResource("BoxShape_4")
 
-[node name="LowConveyor" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -21.0, 2.0, 8.0)
-use_collision = true
-size = Vector3(18.0, 0.8, 1.0)
-material = SubResource("Mat_conveyor")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/FloorPitEast"]
+mesh = SubResource("BoxMesh_4")
 
-[node name="LiftWallWest" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -25.0, 5.0, 14.0)
-use_collision = true
-size = Vector3(10.0, 10.0, 0.4)
-material = SubResource("Mat_wall")
+[node name="PitBottom" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, -2.5, -14.0)
 
-[node name="LiftWallEast" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -14.5, 5.0, 14.0)
-use_collision = true
-size = Vector3(5.0, 10.0, 0.4)
-material = SubResource("Mat_wall")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/PitBottom"]
+shape = SubResource("BoxShape_4")
 
-[node name="LiftLintel" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -18.5, 6.6, 14.0)
-use_collision = true
-size = Vector3(3.0, 6.8, 0.4)
-material = SubResource("Mat_wall")
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/PitBottom"]
+mesh = SubResource("BoxMesh_4")
 
-[node name="SortingCounter" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 0.4, -8.0)
-use_collision = true
-size = Vector3(8.0, 0.8, 0.6)
-material = SubResource("Mat_wall")
+[node name="PitEdgeStripe" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 0.01, -11.9)
 
-[node name="SortingConveyor" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 0.5, -9.5)
-use_collision = true
-size = Vector3(8.0, 1.0, 1.4)
-material = SubResource("Mat_conveyor")
+[node name="Shape" type="CollisionShape3D" parent="Geometry/PitEdgeStripe"]
+shape = SubResource("BoxShape_5")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/PitEdgeStripe"]
+mesh = SubResource("BoxMesh_5")
+
+[node name="WallNorth" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 5.0, -30.5)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/WallNorth"]
+shape = SubResource("BoxShape_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/WallNorth"]
+mesh = SubResource("BoxMesh_6")
+
+[node name="WallSouth" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 5.0, 30.5)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/WallSouth"]
+shape = SubResource("BoxShape_6")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/WallSouth"]
+mesh = SubResource("BoxMesh_6")
+
+[node name="WallWest" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -30.5, 5.0, 0.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/WallWest"]
+shape = SubResource("BoxShape_7")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/WallWest"]
+mesh = SubResource("BoxMesh_7")
+
+[node name="WallEast" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 30.5, 5.0, 0.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/WallEast"]
+shape = SubResource("BoxShape_7")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/WallEast"]
+mesh = SubResource("BoxMesh_7")
+
+[node name="TallShelf" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 1.75, 0.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/TallShelf"]
+shape = SubResource("BoxShape_8")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/TallShelf"]
+mesh = SubResource("BoxMesh_8")
+
+[node name="LowConveyor" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -21.0, 2.0, 8.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/LowConveyor"]
+shape = SubResource("BoxShape_9")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/LowConveyor"]
+mesh = SubResource("BoxMesh_9")
+
+[node name="LiftWallWest" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -25.0, 5.0, 14.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/LiftWallWest"]
+shape = SubResource("BoxShape_10")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/LiftWallWest"]
+mesh = SubResource("BoxMesh_10")
+
+[node name="LiftWallEast" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -14.5, 5.0, 14.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/LiftWallEast"]
+shape = SubResource("BoxShape_11")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/LiftWallEast"]
+mesh = SubResource("BoxMesh_11")
+
+[node name="LiftLintel" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 6.6, 14.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/LiftLintel"]
+shape = SubResource("BoxShape_12")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/LiftLintel"]
+mesh = SubResource("BoxMesh_12")
+
+[node name="SortingCounter" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 0.4, -8.0)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/SortingCounter"]
+shape = SubResource("BoxShape_13")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/SortingCounter"]
+mesh = SubResource("BoxMesh_13")
+
+[node name="SortingConveyor" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 0.5, -9.5)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/SortingConveyor"]
+shape = SubResource("BoxShape_14")
+
+[node name="Mesh" type="MeshInstance3D" parent="Geometry/SortingConveyor"]
+mesh = SubResource("BoxMesh_14")
 
 [node name="StationASign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 2.5, 18.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 2.5, 18.0)
 pixel_size = 0.01
 billboard = 1
 text = "STATION A"
@@ -198,7 +347,7 @@ font_size = 40
 outline_size = 10
 
 [node name="Chute1Sign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 8.0, 2.5, 18.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 2.5, 18.0)
 pixel_size = 0.01
 billboard = 1
 text = "CHUTE 1"
@@ -206,7 +355,7 @@ font_size = 40
 outline_size = 10
 
 [node name="ShelfSign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -20.0, 4.6, 0.8)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 4.6, 0.8)
 pixel_size = 0.01
 billboard = 1
 text = "STORAGE"
@@ -214,7 +363,7 @@ font_size = 40
 outline_size = 10
 
 [node name="LiftSign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -18.5, 3.6, 13.6)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 3.6, 13.6)
 pixel_size = 0.01
 billboard = 1
 text = "LIFT"
@@ -222,7 +371,7 @@ font_size = 40
 outline_size = 10
 
 [node name="Chute2Sign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -18.5, 2.5, 17.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 2.5, 17.5)
 pixel_size = 0.01
 billboard = 1
 text = "CHUTE 2"
@@ -230,7 +379,7 @@ font_size = 40
 outline_size = 10
 
 [node name="SortingSign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 2.6, -9.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 2.6, -9.5)
 pixel_size = 0.01
 billboard = 1
 text = "SORTING
@@ -239,7 +388,7 @@ font_size = 40
 outline_size = 10
 
 [node name="CorridorSign" type="Label3D" parent="Geometry"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 22.0, 3.2, -2.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 22.0, 3.2, -2.0)
 pixel_size = 0.01
 billboard = 1
 text = "CORRIDOR B"
@@ -247,7 +396,7 @@ font_size = 40
 outline_size = 10
 
 [node name="LiftDoor" type="AnimatableBody3D" parent="Geometry" node_paths=PackedStringArray("button")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -18.5, 1.6, 14.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 1.6, 14.0)
 script = ExtResource("2_door")
 button = NodePath("../LiftButton")
 
@@ -258,46 +407,48 @@ shape = SubResource("Shape_door")
 mesh = SubResource("Mesh_door")
 
 [node name="LiftButton" parent="Geometry" instance=ExtResource("3_push_button")]
-transform = Transform3D(-1.0, 0, 0.0, 0, 1, 0, 0.0, 0, -1.0, -15.5, 3.4, 13.8)
+transform = Transform3D(-1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0, -15.5, 3.4, 13.8)
 
 [node name="AccidentSite" parent="Geometry" instance=ExtResource("4_accident_site")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 22.0, 0.0, -6.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 22.0, 0.0, -6.0)
 
 [node name="Work" type="Node3D" parent="."]
 
 [node name="StationA" type="Marker3D" parent="Work"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.0, 18.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 0.0, 18.0)
 script = ExtResource("5_package_spawner")
 stock = 3
+area = Vector3(4, 2, 2.4)
 
 [node name="Chute1" parent="Work" instance=ExtResource("6_chute")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 8.0, 0.0, 18.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 0.0, 18.0)
 
 [node name="TopShelf" type="Marker3D" parent="Work"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -20.0, 3.5, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 3.5, 0.0)
 script = ExtResource("5_package_spawner")
 stock = 2
 
 [node name="Chute2" parent="Work" instance=ExtResource("6_chute")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -18.5, 0.0, 17.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 0.0, 17.5)
 
 [node name="SortingLine" type="Marker3D" parent="Work"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 1.0, -9.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 1.0, -9.5)
 script = ExtResource("5_package_spawner")
 stock = 3
 radius = 3.0
+area = Vector3(8.4, 1.2, 1.6)
 destinations = Array[StringName]([&"red", &"blue"])
 
 [node name="RedChute" parent="Work" instance=ExtResource("6_chute")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 0.0, -19.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -19.0)
 accepts = &"red"
 
 [node name="BlueChute" parent="Work" instance=ExtResource("6_chute")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 6.0, 0.0, -19.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 6.0, 0.0, -19.0)
 accepts = &"blue"
 
 [node name="Player" parent="." instance=ExtResource("7_player")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 0.05, 26.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.05, 26.0)
 
 [node name="Program" type="Node" parent="." node_paths=PackedStringArray("robot")]
 script = ExtResource("8_control_program")
@@ -309,13 +460,13 @@ title = "Shift 1"
 quota = 4
 
 [node name="Report" type="Marker3D" parent="Program/Shift1"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.0, 20.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 0.0, 20.5)
 script = ExtResource("10_shift_step")
 instruction = "Report to Station A."
 kind = 0
 
 [node name="Pick" type="Marker3D" parent="Program/Shift1" node_paths=PackedStringArray("target")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.0, 19.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 0.0, 19.5)
 script = ExtResource("10_shift_step")
 instruction = "Pick up a package (Click / F)."
 kind = 1
@@ -323,7 +474,7 @@ target = NodePath("../../../Work/StationA")
 radius = 2.5
 
 [node name="Deliver" type="Marker3D" parent="Program/Shift1" node_paths=PackedStringArray("target")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 8.0, 0.0, 19.8)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 0.0, 19.8)
 script = ExtResource("10_shift_step")
 instruction = "Carry it to Chute 1 and set it in (tap Click / F)."
 kind = 2
@@ -331,7 +482,7 @@ target = NodePath("../../../Work/Chute1")
 radius = 2.5
 
 [node name="Quota" type="Marker3D" parent="Program/Shift1" node_paths=PackedStringArray("target", "source")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 0.0, 20.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 20.0)
 script = ExtResource("10_shift_step")
 instruction = "Meet quota: deliver 3 more packages from Station A to Chute 1."
 kind = 2
@@ -342,10 +493,10 @@ radius = 1.0
 corridor_width = 4.0
 
 [node name="Waypoint1" type="Marker3D" parent="Program/Shift1/Quota"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -8.0, 0.0, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -8.0, 0.0, 0.0)
 
 [node name="Waypoint2" type="Marker3D" parent="Program/Shift1/Quota"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 8.0, 0.0, 0.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 0.0, 0.0)
 
 [node name="Shift2" type="Node" parent="Program"]
 script = ExtResource("9_shift")
@@ -353,19 +504,19 @@ title = "Shift 2"
 quota = 2
 
 [node name="GoToShelf" type="Marker3D" parent="Program/Shift2"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -20.0, 0.0, 2.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 0.0, 2.5)
 script = ExtResource("10_shift_step")
 instruction = "Go to the storage shelf."
 kind = 0
 
 [node name="Waypoint1" type="Marker3D" parent="Program/Shift2/GoToShelf"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 20.0, 0.0, 7.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 20.0, 0.0, 7.5)
 
 [node name="Waypoint2" type="Marker3D" parent="Program/Shift2/GoToShelf"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 12.0, 0.0, 0.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 12.0, 0.0, 0.5)
 
 [node name="Pick" type="Marker3D" parent="Program/Shift2" node_paths=PackedStringArray("target")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -20.0, 0.0, 1.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 0.0, 1.5)
 script = ExtResource("10_shift_step")
 instruction = "Grow (hold E) to reach the top shelf, then grab a package."
 kind = 1
@@ -374,7 +525,7 @@ radius = 2.5
 max_extension = 3.0
 
 [node name="UnderConveyor" type="Marker3D" parent="Program/Shift2"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -20.0, 0.0, 11.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 0.0, 11.0)
 script = ExtResource("10_shift_step")
 instruction = "Shrink (hold Q) to fit under the conveyor."
 kind = 0
@@ -382,7 +533,7 @@ radius = 1.2
 max_extension = 3.0
 
 [node name="CallLift" type="Marker3D" parent="Program/Shift2" node_paths=PackedStringArray("target")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -15.5, 0.0, 12.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -15.5, 0.0, 12.5)
 script = ExtResource("10_shift_step")
 instruction = "Grow to press the lift call button."
 kind = 3
@@ -391,7 +542,7 @@ radius = 2.5
 max_extension = 3.0
 
 [node name="Deliver" type="Marker3D" parent="Program/Shift2" node_paths=PackedStringArray("target")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -18.5, 0.0, 16.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 0.0, 16.0)
 script = ExtResource("10_shift_step")
 instruction = "Deliver the package to Chute 2."
 kind = 2
@@ -400,10 +551,10 @@ radius = 2.5
 max_extension = 3.0
 
 [node name="Waypoint1" type="Marker3D" parent="Program/Shift2/Deliver"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 0.0, -3.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -3.5)
 
 [node name="Again" type="Marker3D" parent="Program/Shift2" node_paths=PackedStringArray("target", "source")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -18.5, 0.0, 16.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 0.0, 16.0)
 script = ExtResource("10_shift_step")
 instruction = "Meet quota: bring one more package from the top shelf."
 kind = 2
@@ -413,19 +564,19 @@ radius = 2.5
 max_extension = 3.0
 
 [node name="Waypoint1" type="Marker3D" parent="Program/Shift2/Again"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 0.0, -3.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -3.0)
 
 [node name="Waypoint2" type="Marker3D" parent="Program/Shift2/Again"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0.0, -5.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -1.5, 0.0, -5.0)
 
 [node name="Waypoint3" type="Marker3D" parent="Program/Shift2/Again"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0.0, -14.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -1.5, 0.0, -14.5)
 
 [node name="Waypoint4" type="Marker3D" parent="Program/Shift2/Again"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -1.5, 0.0, -5.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -1.5, 0.0, -5.0)
 
 [node name="Waypoint5" type="Marker3D" parent="Program/Shift2/Again"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 0.0, -3.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -3.0)
 
 [node name="Shift3" type="Node" parent="Program"]
 script = ExtResource("9_shift")
@@ -433,22 +584,22 @@ title = "Shift 3"
 quota = 3
 
 [node name="Report" type="Marker3D" parent="Program/Shift3"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 0.0, -6.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 0.0, -6.5)
 script = ExtResource("10_shift_step")
 instruction = "Report to the sorting station."
 kind = 0
 
 [node name="Waypoint1" type="Marker3D" parent="Program/Shift3/Report"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -15.0, 0.0, 23.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -15.0, 0.0, 23.5)
 
 [node name="Waypoint2" type="Marker3D" parent="Program/Shift3/Report"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -9.0, 0.0, 16.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -9.0, 0.0, 16.5)
 
 [node name="Waypoint3" type="Marker3D" parent="Program/Shift3/Report"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -5.0, 0.0, 4.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -5.0, 0.0, 4.5)
 
 [node name="Pick" type="Marker3D" parent="Program/Shift3" node_paths=PackedStringArray("target")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 0.0, -6.8)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 0.0, -6.8)
 script = ExtResource("10_shift_step")
 instruction = "Packages are on the far side of the counter. Extend your arms (hold Shift) to reach one."
 kind = 1
@@ -457,7 +608,7 @@ radius = 3.0
 allow_arms = true
 
 [node name="Sort" type="Marker3D" parent="Program/Shift3" node_paths=PackedStringArray("source")]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 3.0, 0.0, -6.8)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 0.0, -6.8)
 script = ExtResource("10_shift_step")
 instruction = "Efficiency policy: throw packages across the gap into the chute that matches their label. Hold Click / F to aim, release to throw."
 kind = 2
@@ -468,7 +619,7 @@ allow_arms = true
 allow_throw = true
 
 [node name="Reroute" type="Marker3D" parent="Program/Shift3"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, 22.0, 0.0, -6.0)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 22.0, 0.0, -6.0)
 script = ExtResource("10_shift_step")
 instruction = "Route updated. Proceed through Corridor B. Route is mandatory."
 kind = 4
@@ -476,7 +627,7 @@ radius = 1.0
 corridor_width = 2.0
 
 [node name="Waypoint1" type="Marker3D" parent="Program/Shift3/Reroute"]
-transform = Transform3D(1.0, 0, 0.0, 0, 1, 0, 0.0, 0, 1.0, -10.0, 0.0, -0.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -10.0, 0.0, -0.5)
 
 [node name="RouteGuide" type="MeshInstance3D" parent="." node_paths=PackedStringArray("program")]
 script = ExtResource("11_route_guide")

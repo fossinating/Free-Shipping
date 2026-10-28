@@ -85,13 +85,18 @@ def main():
                pos=(22, 0, -6))
 
     s.node("Work", "Node3D")
-    s.scripted("StationA", "Marker3D", SPAWNER, "Work", pos=(-8, 0, 18), props={"stock": "3"})
+    # Stock only counts packages a robot on the route can still reach: the
+    # route stops at z 18, and short arms reach about 1.3 m past it.
+    s.scripted("StationA", "Marker3D", SPAWNER, "Work", pos=(-8, 0, 18),
+               props={"stock": "3", "area": "Vector3(4, 2, 2.4)"})
     s.instance("Chute1", CHUTE, "Work", pos=(8, 0, 18))
     s.scripted("TopShelf", "Marker3D", SPAWNER, "Work", pos=(-20, 3.5, 0),
                props={"stock": "2"})
     s.instance("Chute2", CHUTE, "Work", pos=(-18.5, 0, 17.5))
+    # Only packages on the conveyor top count, not ones knocked onto the
+    # floor behind it, out of reach from the counter.
     s.scripted("SortingLine", "Marker3D", SPAWNER, "Work", pos=(3, 1.0, -9.5),
-               props={"stock": "3", "radius": "3.0",
+               props={"stock": "3", "radius": "3.0", "area": "Vector3(8.4, 1.2, 1.6)",
                       "destinations": 'Array[StringName]([&"red", &"blue"])'})
     s.instance("RedChute", CHUTE, "Work", pos=(0, 0, -19), props={"accepts": '&"red"'})
     s.instance("BlueChute", CHUTE, "Work", pos=(6, 0, -19), props={"accepts": '&"blue"'})
