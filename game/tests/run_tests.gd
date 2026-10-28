@@ -26,6 +26,7 @@ func _run() -> void:
 	OS.add_logger(errors)
 	# Never touch the player's real save.
 	SaveGame.path = "user://test_save.json"
+	Settings.path = "user://test_settings.cfg"
 	SaveGame.delete()
 	var filter := ""
 	var args := OS.get_cmdline_user_args()

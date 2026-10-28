@@ -345,6 +345,9 @@ billboard = 1
 text = "STATION A"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="Chute1Sign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 2.5, 18.0)
@@ -353,6 +356,9 @@ billboard = 1
 text = "CHUTE 1"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="ShelfSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -20.0, 4.6, 0.8)
@@ -361,6 +367,9 @@ billboard = 1
 text = "STORAGE"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="LiftSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 3.6, 13.6)
@@ -369,6 +378,9 @@ billboard = 1
 text = "LIFT"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="Chute2Sign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 2.5, 17.5)
@@ -377,6 +389,9 @@ billboard = 1
 text = "CHUTE 2"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="SortingSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 3.0, 2.6, -9.5)
@@ -386,6 +401,9 @@ text = "SORTING
 Efficiency policy: throw, don't walk"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="CorridorSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 22.0, 3.2, -2.0)
@@ -394,6 +412,9 @@ billboard = 1
 text = "CORRIDOR B"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="LiftDoor" type="AnimatableBody3D" parent="Geometry" node_paths=PackedStringArray("button")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 1.6, 14.0)

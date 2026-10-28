@@ -313,3 +313,42 @@ func test_buttons_prompt_you_to_grow() -> void:
 	check(button.get_hint(player).contains("grow"), "a button over your head says to grow")
 	player.global_position = below + Vector3(10.0, 0.0, 0.0)
 	check(button.get_hint(player) == "", "but not from across the room")
+
+
+func test_pause_menu_resumes_reloads_and_saves_sensitivity() -> void:
+	# Jarvis #27: there was no way out of a stuck state but quitting.
+	Settings.load_once()
+	var before := Settings.mouse_sensitivity
+	var scene := tree.current_scene
+	level = load(WAREHOUSE).instantiate()
+	level.skip_intro = true
+	tree.root.add_child(level)
+	_nodes.append(level)
+	await physics_frames(3)
+	var hud: Hud = level.get_node("HUD")
+	var menu := hud.pause_menu
+	var press := InputEventAction.new()
+	press.action = &"pause"
+	press.pressed = true
+	Input.parse_input_event(press)
+	await tree.process_frame
+	await tree.process_frame
+	check(menu.visible and tree.paused, "Esc pauses and opens the menu")
+	check(menu.reload_button.disabled, "no backup of this level to reload yet")
+	menu.sensitivity.value = 0.004
+	check(Settings.mouse_sensitivity == 0.004, "the slider sets mouse sensitivity")
+	menu.close()
+	check(not menu.visible and not tree.paused, "Resume unpauses")
+	var saved := ConfigFile.new()
+	check(saved.load(Settings.path) == OK
+		and saved.get_value("input", "mouse_sensitivity") == 0.004, "and it's saved")
+	# Pretend the warehouse was saved, as the maintenance bay does.
+	tree.current_scene = level
+	SaveGame.write({"version": SaveGame.VERSION, "scene": WAREHOUSE})
+	menu.open()
+	check(not menu.reload_button.disabled, "with a backup of this level, reload is offered")
+	menu.close()
+	tree.current_scene = scene
+	Settings.mouse_sensitivity = before
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.path))
+	SaveGame.delete()

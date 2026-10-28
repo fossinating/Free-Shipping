@@ -223,8 +223,12 @@ func test_level2_card_by_fighting_ends_the_slice() -> void:
 	await physics_frames(2)
 	check(GameState.clearance == 2, "your badge is level 2")
 	check(GameState.has_flag(GameState.FLAG_SLICE_COMPLETE), "that's the end of the slice")
-	check(_card_text().contains("END OF THE VERTICAL SLICE"), "an end card says so")
-	check(Dialogue.is_playing(&"elle_slice_end"), "and Elle signs off")
+	check(Dialogue.is_playing(&"elle_slice_end"), "Elle signs off")
+	check(not _card_text().contains("END"), "before the end card covers the screen")
+	Dialogue.skip()
+	# After the level 1 card, if that's still up.
+	await seconds(3.0)
+	check(_card_text().contains("END OF THE VERTICAL SLICE"), "then an end card says so")
 	check(controller.robot == robot, "you can keep playing afterwards")
 
 

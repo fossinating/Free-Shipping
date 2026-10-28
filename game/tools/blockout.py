@@ -179,6 +179,10 @@ class Scene:
             "text": f'"{escaped}"',
             "font_size": str(size),
             "outline_size": "10",
+            # Fade out up close, where a billboard would fill the screen.
+            "visibility_range_begin": "4.0",
+            "visibility_range_begin_margin": "2.0",
+            "visibility_range_fade_mode": "1",
         }, pos=pos)
 
     def environment(self):

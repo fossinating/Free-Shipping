@@ -69,7 +69,8 @@ godot --headless --path . --export-release Web ../build/web/index.html
 | Space or Enter | Dialogue: show the whole line, then the next one |
 | Backspace | Dialogue: skip the rest of the conversation |
 | T | Dialogue: toggle auto-advance |
-| Esc | Free the mouse |
+| Esc | Pause: resume, reload the last backup, return to the title, mouse sensitivity |
+| F1 | Show or hide the controls list (always shown during the opening shifts) |
 
 Climbing: grow until your core is level with a ledge, extend your arms to
 hook it, then shrink to pull yourself up.

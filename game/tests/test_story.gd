@@ -303,3 +303,46 @@ func test_radio_waits_for_the_diagnostics() -> void:
 	await physics_frames(3)
 	check(not radio.is_found and not GameState.has_flag(GameState.FLAG_MET_ELLE),
 		"even right next to it")
+
+
+func test_diagnostic_question_stays_up_with_its_answers() -> void:
+	# Jarvis #26: auto-advance cleared M-7's question with the answers still showing.
+	Dialogue.auto_advance = true
+	await _start(false)
+	var hud: Hud = level.get_node("HUD")
+	check(hud.get_node("Prompt").visible == false, "no prompts while M-7 talks you through it")
+	await _until_test(0)
+	var question := Dialogue.get_text()
+	await seconds(Dialogue.get_auto_time() + 3.0)
+	check(Dialogue.is_busy() and Dialogue.get_text() == question,
+		"the question is still up while you choose")
+	diagnostics.answer(0)
+	await physics_frames(2)
+	check(Dialogue.get_text() != question, "answering moves on")
+
+
+func test_hud_cards_queue_and_controls_hide_after_the_opening() -> void:
+	await _start(true)
+	var hud: Hud = level.get_node("HUD")
+	var card: Label = hud.get_node("Card")
+	var notice: Label = hud.get_node("Notice")
+	await physics_frames(2)
+	check(not hud.get_node("Controls").visible, "the controls list is hidden on the floor")
+	Input.action_press("toggle_controls")
+	await physics_frames(2)
+	Input.action_release("toggle_controls")
+	await physics_frames(2)
+	# process_frame fires before nodes process, so wait for a second one.
+	await tree.process_frame
+	await tree.process_frame
+	check(hud.get_node("Controls").visible, "F1 shows it")
+	hud.show_card("FIRST", 0.5)
+	hud.show_card("SECOND", 0.5)
+	hud.show_notice("A notice")
+	await physics_frames(2)
+	check(card.text == "FIRST" and not notice.visible, "one card at a time, notices wait")
+	await seconds(0.6)
+	check(card.visible and card.text == "SECOND", "the next card follows")
+	await seconds(0.6)
+	check(not card.visible and notice.visible and notice.text == "A notice",
+		"then the notice shows")

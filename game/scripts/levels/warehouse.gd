@@ -136,6 +136,8 @@ func _wake() -> void:
 	controller.enabled = true
 	hud.fade(0.0, 2.0)
 	hud.show_notice("Nobody is steering you. Act like somebody is.")
+	# Hints for the shelves around you would only distract from M-7.
+	hud.show_prompts = false
 	await Dialogue.play(&"bay_wake").wait()
 	diagnostics.start()
 
@@ -152,6 +154,7 @@ func _on_diagnostics_finished(anomalies: int) -> void:
 	GameState.set_flag(GameState.FLAG_DIAGNOSTIC_ANOMALIES, anomalies)
 	var outcome := &"diagnostics_clean" if anomalies == 0 else &"diagnostics_flagged"
 	await Dialogue.play(outcome).wait()
+	hud.show_prompts = true
 	_back_to_work(true)
 
 
@@ -252,7 +255,9 @@ func _end_slice() -> void:
 		return
 	GameState.set_flag(GameState.FLAG_SLICE_COMPLETE)
 	_update_objective()
-	Dialogue.play(&"elle_slice_end" if GameState.wipes == 0 else &"elle_slice_end_wiped", true)
+	# Let Elle finish before the card covers the screen.
+	await Dialogue.play(&"elle_slice_end" if GameState.wipes == 0 else &"elle_slice_end_wiped",
+		true).wait()
 	hud.show_card("LEVEL 2 KEYCARD\n\nEND OF THE VERTICAL SLICE\n"
 		+ "Thanks for playing. Returns comes next.\n\n" + achievement_summary(), 10.0)
 

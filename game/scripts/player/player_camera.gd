@@ -3,7 +3,6 @@ extends Node3D
 ## Third-person orbit camera that follows the robot's core. Pulls back as
 ## the robot grows so tall climbs stay readable.
 
-@export var mouse_sensitivity := 0.0025
 @export var min_pitch := deg_to_rad(-70.0)
 @export var max_pitch := deg_to_rad(35.0)
 @export var base_distance := 4.5
@@ -33,6 +32,7 @@ var _aim := 0.0
 
 
 func _ready() -> void:
+	Settings.load_once()
 	top_level = true
 	if target:
 		yaw = target.rotation.y
@@ -43,8 +43,8 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var motion := event as InputEventMouseMotion
-		yaw -= motion.relative.x * mouse_sensitivity
-		pitch = clampf(pitch - motion.relative.y * mouse_sensitivity, min_pitch, max_pitch)
+		yaw -= motion.relative.x * Settings.mouse_sensitivity
+		pitch = clampf(pitch - motion.relative.y * Settings.mouse_sensitivity, min_pitch, max_pitch)
 
 
 func _physics_process(delta: float) -> void:

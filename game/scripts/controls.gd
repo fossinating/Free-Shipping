@@ -22,6 +22,7 @@ const KEYS := {
 	"choice_2": [KEY_2],
 	"choice_3": [KEY_3],
 	"pause": [KEY_ESCAPE],
+	"toggle_controls": [KEY_F1],
 }
 
 const MOUSE_BUTTONS := {

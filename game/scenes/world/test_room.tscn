@@ -264,6 +264,9 @@ text = "Extend arms (Shift) at the crate,
 then shrink (Q) to climb"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="ShelfSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 5.0, 4.8, -6.9)
@@ -273,6 +276,9 @@ text = "Grow (E) until your core
 is level with the top"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="VentSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -11.0, 2.4, 5.6)
@@ -281,6 +287,9 @@ billboard = 1
 text = "Shrink (Q) to fit"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="ButtonSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 1.5, 5.9)
@@ -289,6 +298,9 @@ billboard = 1
 text = "Grow to press the button"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="ChuteSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 14.0, 2.5, 4.0)
@@ -298,6 +310,9 @@ text = "Grab a package (Click / F)
 and set it in the chute"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="SortSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 14.0, 2.5, 13.6)
@@ -307,6 +322,9 @@ text = "Hold Click / F to aim, release to throw.
 Match the chute color"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="HighButton" parent="Geometry" instance=ExtResource("1_push_button")]
 transform = Transform3D(-1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0, 8.0, 5.0, 6.0)
