@@ -488,3 +488,13 @@ func test_ledge_prompt_only_when_the_ledge_can_be_hooked() -> void:
 	robot.arms_input = true
 	await seconds(0.5)
 	check(robot.is_hooked, "and the arms hook it")
+
+
+func test_reaching_elles_radio_is_allowed_resizing() -> void:
+	# Jarvis #23: the returns rack was outside the Electronics aisles zone.
+	await _start()
+	await _teleport(Vector3(25.0, 0.05, -10), _yaw(Vector3.RIGHT))
+	_set_extension(2.0)
+	await physics_frames(3)
+	check(not Offenses.evaluate(robot).has(Offenses.ODD_HEIGHT),
+		"growing at the returns rack counts as aisle resizing")
