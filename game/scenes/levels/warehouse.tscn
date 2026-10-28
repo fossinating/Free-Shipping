@@ -556,7 +556,7 @@ size = Vector3(40, 8, 28)
 size = Vector3(16, 6, 16)
 
 [sub_resource type="BoxShape3D" id="Shape_Electronics"]
-size = Vector3(8, 8, 10)
+size = Vector3(14.75, 8, 10)
 
 [sub_resource type="BoxShape3D" id="Shape_Hardware"]
 size = Vector3(40, 14, 26)
@@ -1576,7 +1576,7 @@ allow_resize = true
 shape = SubResource("Shape_MaintenanceBay")
 
 [node name="Electronics" type="Area3D" parent="Zones"]
-transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 17.25, 4.0, -8.5)
+transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 20.625, 4.0, -8.5)
 script = ExtResource("7_zone")
 zone_name = "Electronics aisles"
 allow_resize = true

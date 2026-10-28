@@ -27,6 +27,8 @@ const DESCRIPTION := {
 
 ## Company standard torso extension, plus some slack.
 const NORMAL_EXTENSION := 0.7
+## Shrunk below this, you're well under company standard height.
+const SHORT_EXTENSION := 0.15
 ## A fight stays suspicious this long after the last blow.
 const FIGHT_MEMORY := 3.0
 
@@ -43,7 +45,9 @@ static func evaluate(robot: RobotBody) -> Dictionary:
 		resizing_ok = resizing_ok or zone.allow_resize
 	if robot.is_hooked or robot.is_mantling:
 		found[CLIMBING] = SEVERITY[CLIMBING]
-	if robot.extension > NORMAL_EXTENSION and not resizing_ok:
+	var odd := robot.extension > NORMAL_EXTENSION \
+		or (robot.extension < SHORT_EXTENSION and not HidingSpot.is_hidden(robot))
+	if odd and not resizing_ok:
 		found[ODD_HEIGHT] = SEVERITY[ODD_HEIGHT]
 	if Inventory.shows_contraband(robot):
 		found[CONTRABAND] = SEVERITY[CONTRABAND]

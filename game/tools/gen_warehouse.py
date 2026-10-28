@@ -229,7 +229,8 @@ ZONES = [
     ("Fulfillment", (8, 4, 0), (40, 8, 28), {}),
     ("MaintenanceBay", (-20, 3, 0), (16, 6, 16),
      {"zone_name": '"Maintenance Bay"', "allow_resize": "true"}),
-    ("Electronics", (17.25, 4, -8.5), (8, 8, 10),
+    # Covers the returns rack too, so reaching Elle's radio isn't suspicious.
+    ("Electronics", (20.625, 4, -8.5), (14.75, 8, 10),
      {"zone_name": '"Electronics aisles"', "allow_resize": "true"}),
     ("Hardware", (8, 1, -27), (40, 14, 26), {}),
     ("HardwareAisle", (3, 4, -23.5), (12, 8, 3.8),

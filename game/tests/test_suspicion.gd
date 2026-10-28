@@ -168,3 +168,15 @@ func test_coworker_patrols() -> void:
 	# It starts on its first point, waits there, then walks to the next.
 	await seconds(coworker.get_node("Brain").wait_time + 1.5)
 	check(coworker.global_position.distance_to(start) > 3.0, "coworkers walk their route")
+
+
+func test_being_well_under_standard_height_is_odd() -> void:
+	# Jarvis #24: shrinking used to cost nothing anywhere.
+	await _start()
+	await _grow(-3.0)
+	check(robot.extension < Offenses.SHORT_EXTENSION, "fully shrunk")
+	check(Offenses.evaluate(robot).has(Offenses.ODD_HEIGHT), "being tiny on the open floor is odd")
+	await _teleport(Vector3(-12.5, 0.05, 0))
+	check(not Offenses.evaluate(robot).has(Offenses.ODD_HEIGHT), "but normal in the storage aisles")
+	await _grow(0.25)
+	check(not Offenses.evaluate(robot).has(Offenses.ODD_HEIGHT), "and a little short is fine anywhere")
