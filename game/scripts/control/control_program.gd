@@ -92,6 +92,12 @@ func filter_move(input: Vector3) -> Vector3:
 	return input
 
 
+## Whether the current step lets the arms extend. Unlike filter_arms, this
+## doesn't tell the player off.
+func allows_arms() -> bool:
+	return not active or current_step == null or current_step.allow_arms
+
+
 func filter_arms(wanted: bool) -> bool:
 	if not active or current_step == null or not wanted:
 		return wanted

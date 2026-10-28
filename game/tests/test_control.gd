@@ -199,3 +199,54 @@ func test_packages_knocked_behind_the_sorting_line_dont_stop_restocking() -> voi
 				and package.global_position.y > 0.9 and absf(package.global_position.z + 9.5) < 0.8:
 			on_belt += 1
 	check(on_belt >= 3, "the conveyor restocks (%d new on it)" % on_belt)
+
+
+func test_shift_three_hold_shift_then_grab() -> void:
+	# Jarvis #20: holding Shift first hooked the conveyor edge, and grabbing
+	# is off while hooked. A package in reach should win over the ledge.
+	await _start(2)
+	await _teleport(Vector3(3, 0.05, -6.5))
+	check(program.current_step.name == "Pick", "at the sorting station")
+	# Up against the counter, the conveyor edge a hand's length away.
+	await _teleport(Vector3(3, 0.05, -8.2))
+	await seconds(0.5)
+	Input.action_press("extend_arms")
+	await seconds(0.5)
+	check(not robot.is_hooked, "holding Shift at the line doesn't hook the conveyor")
+	Input.action_press("interact")
+	await physics_frames(2)
+	Input.action_release("interact")
+	await physics_frames(2)
+	Input.action_release("extend_arms")
+	check(robot.held != null, "then F grabs a package")
+
+
+func test_hints_dont_ask_for_what_control_mode_denies() -> void:
+	# Jarvis #22: Shift 1 offered "reach further" though arms are denied.
+	await _start()
+	_take_controls()
+	var controller: PlayerController = level.get_node("Player/Controller")
+	await _teleport(Vector3(-8, 0.05, 20.5))
+	check(program.current_step.name == "Pick", "at Station A")
+	var package := _package_from("Work/StationA")
+	# Back off until the package is out of short reach but within full reach.
+	var away := (robot.global_position - package.global_position) * Vector3(1, 0, 1)
+	var spot := package.global_position * Vector3(1, 0, 1) + away.normalized() * 1.9
+	await _teleport(Vector3(spot.x, 0.05, spot.z), atan2(away.x, away.z))
+	check(robot.find_grab_target() == null and robot.find_grab_target(robot.max_arm_reach) != null,
+		"the package is just out of short reach")
+	check(controller.get_prompt() == "Step closer to reach it",
+		"the hint says to step closer (%s)" % controller.get_prompt())
+
+
+func test_growing_past_the_cap_says_its_the_maximum() -> void:
+	await _start(1)
+	var reasons: Array[String] = []
+	program.denied.connect(func(reason: String) -> void: reasons.append(reason))
+	await _teleport(Vector3(-20, 0.05, 2.5), 0.0)
+	check(program.current_step.name == "Pick", "at the shelf, asked to grow")
+	Input.action_press("grow")
+	await seconds(2.0)
+	Input.action_release("grow")
+	check(reasons.has("Maximum authorized height reached"),
+		"growing past the cap says it's the maximum (%s)" % [reasons])

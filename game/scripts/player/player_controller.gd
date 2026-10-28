@@ -8,6 +8,9 @@ signal notice(text: String)
 
 ## Presses shorter than this set a package down instead of throwing it.
 const TAP_TIME := 0.18
+## Company standard height. Control mode keeps you here unless a step says
+## otherwise.
+const STANDARD_EXTENSION := 0.4
 
 @export var camera: PlayerCamera
 @export var throw_arc: ThrowArc
@@ -82,7 +85,9 @@ func _physics_process(delta: float) -> void:
 		move = program.filter_move(move)
 		arms = program.filter_arms(arms)
 		if resize > 0.0 and robot.extension >= robot.extension_limit - 0.01:
-			program.deny("Height change not authorized")
+			# Steps that ask you to grow cap it above company standard height.
+			program.deny("Maximum authorized height reached"
+				if robot.extension_limit > STANDARD_EXTENSION else "Height change not authorized")
 	robot.move_input = move
 	robot.extension_input = resize
 	robot.arms_input = arms
@@ -195,11 +200,16 @@ func get_prompt() -> String:
 		var locker := EvidenceLocker.find_near(robot)
 		if locker and locker.get_count() > 0:
 			return "C to take back your confiscated items (%d)" % locker.get_count()
+	# Control mode decides whether the arms may extend; don't offer what
+	# it would deny.
+	var arms_allowed := not _controlled() or program.allows_arms()
 	if not robot.arms_input and robot.find_grab_target(robot.max_arm_reach):
-		return "Hold Shift / Right Mouse to reach further"
-	if robot.is_ledge_in_reach():
+		return "Hold Shift / Right Mouse to reach further" if arms_allowed else "Step closer to reach it"
+	if arms_allowed and robot.is_ledge_in_reach():
 		return "Hold Shift / Right Mouse to grab the ledge"
-	if robot.magnetic_hands and robot.is_metal_in_reach():
+	if not _controlled() and robot.is_ledge_above_reach():
+		return "Grow (hold E) until your core is level with the ledge"
+	if arms_allowed and robot.magnetic_hands and robot.is_metal_in_reach():
 		return "Hold Shift / Right Mouse to stick to the metal"
 	for button: PushButton in get_tree().get_nodes_in_group(&"push_buttons"):
 		var hint := button.get_hint(robot)

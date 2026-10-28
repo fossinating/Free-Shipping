@@ -544,7 +544,7 @@ max_extension = 3.0
 [node name="Deliver" type="Marker3D" parent="Program/Shift2" node_paths=PackedStringArray("target")]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -18.5, 0.0, 16.0)
 script = ExtResource("10_shift_step")
-instruction = "Deliver the package to Chute 2."
+instruction = "Shrink (hold Q) to fit through the lift door, then deliver the package to Chute 2."
 kind = 2
 target = NodePath("../../../Work/Chute2")
 radius = 2.5

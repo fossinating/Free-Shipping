@@ -131,7 +131,7 @@ def main():
              "Grow to press the lift call button.",
              {"target": "Geometry/LiftButton", "max_extension": 3.0, "radius": 2.5}),
             ("Deliver", DELIVER, (-18.5, 0, 16),
-             "Deliver the package to Chute 2.",
+             "Shrink (hold Q) to fit through the lift door, then deliver the package to Chute 2.",
              {"target": "Chute2", "max_extension": 3.0, "radius": 2.5,
               "waypoints": [(-18.5, 0, 12.5)]}),
             ("Again", DELIVER, (-18.5, 0, 16),
