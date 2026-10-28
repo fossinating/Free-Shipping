@@ -143,7 +143,9 @@ func update(delta: float) -> void:
 		_shown = minf(length, _shown + chars_per_second * delta)
 		return
 	_hold += delta
-	if auto_advance and _hold >= get_auto_time():
+	# Lines marked "wait" stay up until advanced or replaced (a question
+	# whose answers are on screen).
+	if auto_advance and not get_line().get("wait", false) and _hold >= get_auto_time():
 		_next_line()
 
 

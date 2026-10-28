@@ -57,7 +57,7 @@ R  stow held item / take out equipped item
 Tab  cycle equipped slot    V / Middle Mouse  use it
 C  open your dock, or the holding locker (when next to it)
 Space  next line    Backspace  skip    T  auto-advance
-Esc  free the mouse"
+Esc  free the mouse    F1  show / hide this list"
 
 [node name="Status" type="Label" parent="."]
 anchors_preset = 1

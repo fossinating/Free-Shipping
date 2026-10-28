@@ -73,6 +73,9 @@ omni_range = 8.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 2.2, 0)
 pixel_size = 0.008
 billboard = 1
+visibility_range_begin = 2.5
+visibility_range_begin_margin = 1.5
+visibility_range_fade_mode = 1
 modulate = Color(1, 0.85, 0.2, 1)
 text = "REPAIR TICKET #4471
 STATUS: PENDING

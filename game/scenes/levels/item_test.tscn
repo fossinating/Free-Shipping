@@ -271,6 +271,9 @@ text = "WORKBENCHES
 Grab with F, stow with R"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="RecordsSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 11.5, 4.2, -3.6)
@@ -280,6 +283,9 @@ text = "RECORDS
 CLEARANCE 1"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="ShelfSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, -13.0, 4.2, -9.8)
@@ -288,6 +294,9 @@ billboard = 1
 text = "Key part up top"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="ChuteSign" type="Label3D" parent="Geometry"]
 transform = Transform3D(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 8.0, 2.6, 9.0)
@@ -296,6 +305,9 @@ billboard = 1
 text = "Deliveries lower suspicion"
 font_size = 40
 outline_size = 10
+visibility_range_begin = 4.0
+visibility_range_begin_margin = 2.0
+visibility_range_fade_mode = 1
 
 [node name="Zones" type="Node3D" parent="."]
 

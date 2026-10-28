@@ -4,6 +4,9 @@ extends CanvasLayer
 ## denials and shift cards, the inventory, the dock panel, dialogue and
 ## story objectives, and the signal meter and static from your fried chip.
 
+## A card finished showing, so the next one can.
+signal card_finished
+
 @export var controller: PlayerController
 @export var program: ControlProgram
 ## Your fried control chip, once there is one.
@@ -15,7 +18,13 @@ var _dock_panel: DockPanel
 var _dialogue_box: DialogueBox
 ## A story objective (outside control mode) is showing.
 var _story_objective := false
+## Off while something else needs the player's attention (diagnostics).
+var show_prompts := true
+## The controls list, toggled with F1. Shown during control mode anyway.
+var show_controls := false
+var _card_busy := false
 
+@onready var _controls: Label = $Controls
 @onready var _prompt: Label = $Prompt
 @onready var _status: Label = $Status
 @onready var _quota: Label = $Quota
@@ -66,7 +75,15 @@ func _ready() -> void:
 			show_card("%s COMPLETE\nPerformance: acceptable" % shift.title.to_upper(), 2.5))
 
 
+func _physics_process(_delta: float) -> void:
+	if Input.is_action_just_pressed("toggle_controls"):
+		show_controls = not show_controls
+
+
 func _process(delta: float) -> void:
+	_controls.visible = show_controls or (program != null and program.active)
+	# Cards sit in the middle of the screen; the objective waits them out.
+	_objective.modulate.a = 0.0 if _card_busy else 1.0
 	if _denied_time > 0.0:
 		_denied_time -= delta
 		_denied.modulate.a = clampf(_denied_time / 0.4, 0.0, 1.0)
@@ -82,10 +99,12 @@ func _process(delta: float) -> void:
 	if not controller:
 		return
 	_update_items()
-	var prompt := controller.get_prompt()
+	var prompt := controller.get_prompt() if show_prompts and controller.enabled else ""
 	_prompt.text = prompt
 	_prompt.visible = prompt != ""
 	_status.text = "Height %.1f m" % controller.robot.get_height()
+	if not _controls.visible:
+		_status.text += "  ·  F1 controls"
 	if Suspicion.enabled:
 		_status.text += "  ·  Badge: clearance %d" % GameState.clearance
 	if Quota.target > 0:
@@ -180,8 +199,10 @@ func hide_choices() -> void:
 	_dialogue_box.hide_choices()
 
 
-## A short line above the prompt that fades out.
+## A short line above the prompt that fades out. Waits for any card.
 func show_notice(text: String) -> void:
+	while _card_busy:
+		await card_finished
 	_notice.text = text
 	_notice.show()
 	_notice_time = 2.5
@@ -194,12 +215,23 @@ func flash_denied(reason: String, title := "ACTION DENIED") -> void:
 
 
 ## Shows big centered text for a while. Returns once it's hidden again.
+## Cards queue up behind each other instead of drawing on top.
 func show_card(text: String, seconds: float) -> void:
+	while _card_busy:
+		await card_finished
+	_card_busy = true
+	_notice.hide()
+	_notice_time = 0.0
 	_card.text = text
 	_card.show()
-	await get_tree().create_timer(seconds).timeout
-	if _card.text == text:
-		_card.hide()
+	await get_tree().create_timer(seconds, false).timeout
+	_card.hide()
+	_card_busy = false
+	card_finished.emit()
+
+
+func is_card_showing() -> bool:
+	return _card_busy
 
 
 ## Fades the screen to `alpha` of `color` over `seconds`.

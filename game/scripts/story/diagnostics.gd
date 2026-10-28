@@ -167,7 +167,7 @@ func _next() -> void:
 		return
 	_timer = 0.0
 	_waiting = true
-	Dialogue.play([{"speaker": &"maintenance", "text": TESTS[index].prompt}], true)
+	Dialogue.play([{"speaker": &"maintenance", "text": TESTS[index].prompt, "wait": true}], true)
 	_show_test()
 	test_started.emit(index)
 
